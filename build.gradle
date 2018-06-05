@@ -1,5 +1,5 @@
 group 'ru.kbakaras.e2'
-version '0.0.2'
+version '0.0.3'
 
 apply plugin: 'java'
 apply plugin: 'maven-publish'
@@ -8,13 +8,13 @@ sourceCompatibility = 1.8
 
 repositories {
     maven {
-        url "http://apps-srv-1/nexus/content/repositories/butu"
+        url "http://apps-srv-1/nexus/content/repositories/kbakaras"
     }
     mavenCentral()
 }
 
 dependencies {
-    compile group: 'org.butu.sugar', name: 'butu-sugar', version: '1.2.0', changing: true
+    compile group: 'ru.kbakaras.sugar', name: 'sugar', version: '1.2.0', changing: true
 
     compile group: 'org.dom4j', name: 'dom4j', version: '2.1.0'
 
