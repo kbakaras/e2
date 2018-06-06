@@ -1,10 +1,10 @@
 package ru.kbakaras.e2.message;
 
-import org.butu.sugar.lazy.Lazy;
 import org.dom4j.DocumentFactory;
 import org.dom4j.Element;
 import org.dom4j.XPath;
 import org.jaxen.SimpleVariableContext;
+import ru.kbakaras.sugar.lazy.Lazy;
 
 import java.util.List;
 import java.util.Optional;

@@ -1,6 +1,6 @@
 package ru.kbakaras.e2.message;
 
-import org.butu.sugar.lazy.Lazy;
+import ru.kbakaras.sugar.lazy.Lazy;
 
 public abstract class E2AttributeValue {
     abstract public <R extends E2Referring<?>> R apply(R referring);

@@ -1,6 +1,6 @@
 package ru.kbakaras.e2.message;
 
-import org.butu.sugar.utils.MapBuilder;
+import ru.kbakaras.sugar.utils.MapBuilder;
 
 import java.util.Map;
 
