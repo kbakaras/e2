@@ -39,9 +39,9 @@ public class E2Filter implements E2Referring<E2Filter> {
                 .orElseThrow(() -> new E2Exception4Read("Filter value is not a reference!"));
     }
 
-    public E2Value value() {
+    public E2Scalar value() {
         return Optional.ofNullable(xml.element(E2.VALUE))
-                .map(value -> new E2Value(value.getText()))
+                .map(value -> new E2Scalar(value.getText()))
                 .orElseThrow(() -> new E2Exception4Read("Filter does not contain string!"));
     }
 
