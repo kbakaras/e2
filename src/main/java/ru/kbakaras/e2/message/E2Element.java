@@ -50,6 +50,10 @@ public class E2Element {
         return Optional.ofNullable(attributeOrNull(attributeName));
     }
 
+    /**
+     * @return true, если атрибут существует и содержит значение "true". Во всех остальных
+     * случаях - false.
+     */
     public boolean attributeBoolean(String attributeName) {
         return attribute(attributeName)
                 .map(attr -> "true".equals(attr.value().string()))

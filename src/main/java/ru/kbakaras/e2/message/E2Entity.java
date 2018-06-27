@@ -64,7 +64,7 @@ public class E2Entity {
      * Создаёт новый элемент в данной сущности, копирует признак изменённости и уникальный идентификатор
      * из переданного в параметре исходного элемента.
      * @param source Исходный элемент.
-     * @return Обёртка-писатель для нового элемента.
+     * @return Обёртка для нового элемента.
      */
     public E2Element addElement(E2Element source) {
         return new E2Element(xml.addElement("element"), this)
@@ -72,6 +72,12 @@ public class E2Entity {
                 .setUid(source.getUid());
     }
 
+    /**
+     * Создаёт новый элемент в данной сущности, назначет ему указанный uid.
+     * При назначении uid не выполняется никаких проверок на уникальность.
+     * @param uid
+     * @return Обёртка для нового элемента
+     */
     public E2Element addElement(String uid) {
         return new E2Element(xml.addElement("element"), this).setUid(uid);
     }
