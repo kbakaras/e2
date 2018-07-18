@@ -6,18 +6,18 @@ import org.dom4j.XPath;
 import org.jaxen.SimpleVariableContext;
 import ru.kbakaras.sugar.lazy.Lazy;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class E2Element {
     public final E2Entity parent;
+    public final E2Attributes attributes;
 
     private Element xml;
 
     public E2Element(Element xml, E2Entity parent) {
-        this.xml    = xml;
-        this.parent = parent;
+        this.xml        = xml;
+        this.parent     = parent;
+        this.attributes = new E2Attributes(xml);
     }
 
     public String entityName() {
@@ -32,34 +32,18 @@ public class E2Element {
         return Boolean.parseBoolean(xml.attributeValue(E2.CHANGED));
     }
 
-    public List<E2Attribute> attributes() {
-        return xml.elements("attribute").stream()
-                .map(E2Attribute::new)
-                .collect(Collectors.toList());
-    }
 
-    public E2Attribute attributeOrNull(String attributeName) {
-        XPath expr = attributeXPath.get();
+    public E2Table tableOrNull(String tableName) {
+        XPath expr = tableXPath.get();
         SimpleVariableContext vc = (SimpleVariableContext) expr.getVariableContext();
-        vc.setVariableValue(E2.ATTRIBUTE_NAME, attributeName);
-        Element attribute = (Element) expr.selectSingleNode(xml);
-        return attribute != null ? new E2Attribute(attribute) : null;
+        vc.setVariableValue(E2.TABLE_NAME, tableName);
+        Element table = (Element) expr.selectSingleNode(xml);
+        return table != null ? new E2Table(table, this) : null;
     }
 
-    public Optional<E2Attribute> attribute(String attributeName) {
-        return Optional.ofNullable(attributeOrNull(attributeName));
+    public Optional<E2Table> table(String tableName) {
+        return Optional.ofNullable(tableOrNull(tableName));
     }
-
-    /**
-     * @return true, если атрибут существует и содержит значение "true". Во всех остальных
-     * случаях - false.
-     */
-    public boolean attributeBoolean(String attributeName) {
-        return attribute(attributeName)
-                .map(attr -> "true".equals(attr.value().string()))
-                .orElse(false);
-    }
-
 
 
     public E2Element setUid(String uid) {
@@ -72,18 +56,8 @@ public class E2Element {
         return this;
     }
 
-    public E2Attribute addAttribute(String attributeName) {
-        return new E2Attribute(xml.addElement(E2.ATTRIBUTE))
-                .setAttributeName(attributeName);
-    }
-    public E2Attribute addSynthAttribute(String attributeName) {
-        return new E2Attribute(xml.addElement(E2.ATTRIBUTE))
-                .setAttributeName(attributeName)
-                .setSynth(true);
-    }
-
     public E2Table addTable(String tableName) {
-        return new E2Table(xml.addElement(E2.TABLE), tableName);
+        return new E2Table(xml.addElement(E2.TABLE), this).setName(tableName);
     }
 
     public E2Reference asReference() {
@@ -106,9 +80,9 @@ public class E2Element {
         return false;
     }
 
-    public static Lazy<XPath> attributeXPath = Lazy.of(() -> {
+    private static Lazy<XPath> tableXPath = Lazy.of(() -> {
         XPath expr = DocumentFactory.getInstance().createXPath(
-                "e2:attribute[@attributeName=$attributeName]",
+                "e2:table[@tableName=$tableName]",
                 new SimpleVariableContext());
         expr.setNamespaceURIs(E2.E2MAP);
 
