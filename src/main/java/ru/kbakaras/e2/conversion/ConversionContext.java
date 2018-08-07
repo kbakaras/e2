@@ -137,7 +137,7 @@ public class ConversionContext {
                 converted.put(element.asReference());
             }
 
-            return new DestinationContext(element);
+            return new DestinationContext(element).setChanged(sourceElement.isChanged());
         }
     }
 
