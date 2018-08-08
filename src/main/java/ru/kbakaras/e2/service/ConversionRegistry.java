@@ -1,10 +1,10 @@
 package ru.kbakaras.e2.service;
 
-import ru.kbakaras.e2.PackageResolver;
 import ru.kbakaras.e2.conversion.Conversion;
 import ru.kbakaras.e2.conversion.PayloadConversionBind;
 import ru.kbakaras.e2.model.SystemType;
 import ru.kbakaras.sugar.lazy.MapCache;
+import ru.kbakaras.sugar.spring.PackageResolver;
 
 import java.util.HashMap;
 import java.util.Map;
