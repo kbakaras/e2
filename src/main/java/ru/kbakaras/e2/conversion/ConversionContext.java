@@ -137,7 +137,9 @@ public class ConversionContext {
                 converted.put(element.asReference());
             }
 
-            return new DestinationContext(element).setChanged(sourceElement.isChanged());
+            return new DestinationContext(element)
+                    .setChanged(sourceElement.isChanged())
+                    .setDeleted(sourceElement.isDeleted());
         }
     }
 
@@ -152,6 +154,11 @@ public class ConversionContext {
 
         public DestinationContext setChanged(boolean changed) {
             destinationElement.setChanged(changed);
+            return this;
+        }
+
+        public DestinationContext setDeleted(boolean deleted) {
+            destinationElement.setDeleted(deleted);
             return this;
         }
 
@@ -187,6 +194,13 @@ public class ConversionContext {
         public boolean attributeBoolean(String attributeName) {
             accessed.add(attributeName);
             return sourceElement.attributes.getBoolean(attributeName);
+        }
+
+        public boolean attributeEquals(String attributeName, String attributeValue) {
+            accessed.add(attributeName);
+            return sourceElement.attributes.get(attributeName)
+                    .map(attr -> attr.value().string().equals(attributeValue))
+                    .orElse(false);
         }
 
         public class AttributeConversion {
