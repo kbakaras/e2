@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import ru.kbakaras.e2.converted.Converted;
 import ru.kbakaras.e2.message.E2Attribute;
 import ru.kbakaras.e2.message.E2AttributeValue;
+import ru.kbakaras.e2.message.E2Attributes;
 import ru.kbakaras.e2.message.E2Element;
 import ru.kbakaras.e2.message.E2Entity;
 import ru.kbakaras.e2.message.E2Exception4Write;
@@ -12,13 +13,11 @@ import ru.kbakaras.e2.message.E2Reference;
 import ru.kbakaras.e2.message.E2Scalar;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 /**
  * Объект-контекст, передаваемый в специализированную конверсию.
@@ -33,6 +32,7 @@ public class ConversionContext {
     private Conversion conversion;
 
     private List<E2Element> destinationElements = new ArrayList<>();
+    private AttributeConversion COPY = new AttributeConversion();
 
 
     public ConversionContext(Converter4Payload converter, Conversion conversion, E2Element sourceElement, Converted converted) {
@@ -143,10 +143,29 @@ public class ConversionContext {
         }
     }
 
+    /**
+     * Класс используется для настройки конверсий для атрибутов элемента.
+     * Конверсии применяются последовательно (в порядке добавления) в момент
+     * вызова метода {@link DestinationContext#make()}. В момент добавления
+     * конверсии просто формируется отсортированный map.<br/><br/>
+     *
+     * Благодаря тому, что при выполнении конверсий соблюдается тот порядок
+     * в котором они добавлялись при настройке, можно в конверсиях последующих
+     * атрибутов расчитьывать на наличие сконвертированных значений по предшествующим
+     * атрибутам в поле {@link DestinationContext#destinationElement}.<br/><br/>
+     *
+     * Если включен режим копирования всех незатронутых атрибутов (методом
+     * {@link DestinationContext#copyUntouched()}, незатронутые атрибуты обрабатываются
+     * после тех, для которых конверсия задана явно. Порядок обработки нетронутых
+     * атрибутов не гарантируется.
+     */
     public class DestinationContext {
+        private boolean completed = false;
+
         public final E2Element destinationElement;
 
-        private Set<String> accessed = new HashSet<>();
+        private boolean copyUntouched = false;
+        private LinkedHashMap<String, AttributeConversion> conversions = new LinkedHashMap<>();
 
         private DestinationContext(E2Element destinationElement) {
             this.destinationElement = destinationElement;
@@ -163,111 +182,131 @@ public class ConversionContext {
         }
 
 
-        public void copyAttributes(String...attributeNames) {
-            for (String attributeName: attributeNames) {
-                attribute(attributeName).copy();
-            }
-        }
-
-        public void copyAllAttributes(Predicate<E2Attribute> filter) {
-            sourceElement.attributes.list().stream()
-                    .filter(filter)
-                    .map(AttributeConversion::new)
-                    .forEach(AttributeConversion::copy);
+        /**
+         * Включение флага копирования без изменения всех  атрибутов,
+         * незатронутых конверсией.
+         */
+        public DestinationContext copyUntouched() {
+            this.copyUntouched = true;
+            return this;
         }
 
         /**
-         * Копирует в элемент назначения все реквизиты, кроме тех, к которым был зафиксирован
-         * доступ через контекст. Фиксируется только непосредственный доступ через метод контекста
-         * {@link DestinationContext#attribute(String)}, но не опосредованный,
-         * через сам исходный элемент ({@link ConversionContext#sourceElement}).
+         * Позволяет отключить конверсию для перечисленных атрибутов.
+         * @param attributeNames Массив атрибутов
          */
-        public void copyNotAccessed() {
-            copyAllAttributes(attr -> !accessed.contains(attr.attributeName()));
+        public DestinationContext skip(String...attributeNames) {
+            for (String attributeName: attributeNames) {
+                conversions.put(attributeName, null);
+            }
+            return this;
         }
 
-        public AttributeConversion attribute(String attributeName) {
-            accessed.add(attributeName);
-            return new AttributeConversion(attributeName);
+        public AttributeConversion take(String attributeName) {
+            AttributeConversion conversion = new AttributeConversion();
+            conversions.put(attributeName, conversion);
+            return conversion;
         }
 
-        public boolean attributeBoolean(String attributeName) {
-            accessed.add(attributeName);
-            return sourceElement.attributes.getBoolean(attributeName);
-        }
-
-        public boolean attributeEquals(String attributeName, String attributeValue) {
-            accessed.add(attributeName);
-            return sourceElement.attributes.get(attributeName)
-                    .map(attr -> attr.value().string().equals(attributeValue))
-                    .orElse(false);
-        }
-
-        public class AttributeConversion {
-            private Function<E2Scalar, E2Scalar> conversion;
-
-            private String attributeName;
-            private String destinationName;
-            private String explicitEntity;
-
-            private E2Attribute attribute;
-
-            private AttributeConversion(String attributeName) {
-                this.attributeName   = attributeName;
-                this.destinationName = attributeName;
-            }
-            private AttributeConversion(E2Attribute attribute) {
-                this.attribute       = attribute;
-                this.attributeName   = attribute.attributeName();
-                this.destinationName = this.attributeName;
-            }
-
-            public AttributeConversion convert(Function<E2Scalar, E2Scalar> conversion) {
-                this.conversion = conversion;
-                return this;
-            }
-
-            public AttributeConversion convertString(Function<String, String> conversion) {
-                this.conversion = value -> new E2Scalar(conversion.apply(value.string()));
-                return this;
-            }
-
-            public AttributeConversion explicitEntity(String explicitEntity) {
-                this.explicitEntity = explicitEntity;
-                return this;
-            }
-
-            public Optional<E2Attribute> copy() {
-                return optional()
-                        .map(E2Attribute::attributeValue)
-                        .map(this::applyConversion)
-                        .map(value -> value.apply(destinationElement.attributes.add(destinationName)));
-            }
-
-            public Optional<E2Attribute> copyTo(String destinationName) {
-                this.destinationName = destinationName;
-                return copy();
-            }
-
-            private E2AttributeValue applyConversion(E2AttributeValue value) {
-                if (value instanceof E2Scalar) {
-                    return conversion != null ? conversion.apply((E2Scalar) value) : value;
-                } else if (value instanceof E2Reference) {
+        /**
+         * Запускает выполнение всех конверсий для данного элемента.
+         */
+        public void make() {
+            if (!completed) {
+                conversions.forEach((attributeName, conversion) -> {
                     if (conversion != null) {
-                        LOG.warn("Conversion is not applicable for reference-valued attributes! Conversion ignored.");
+                        sourceElement.attributes.get(attributeName).ifPresent(sourceAttribute
+                                -> conversion.apply(sourceAttribute, destinationElement.attributes));
                     }
-                    return converter.input.referencedElement((E2Reference) value)
-                            .map(converter::convertElement)
-                            .map(converted -> converted.get(explicitEntity))
-                            .orElseThrow(() -> new E2Exception4Write("Possibly, explicitEntity is wrong, or you need to provide it!"));
-                } else {
-                    throw new E2Exception4Write("Unknown attribute value type!");
-                }
-            }
+                });
 
-            public Optional<E2Attribute> optional() {
-                return attribute != null ? Optional.of(attribute) : sourceElement.attributes.get(attributeName);
+                sourceElement.attributes.stream()
+                        .filter(sourceAttribute -> !conversions.containsKey(sourceAttribute.attributeName()))
+                        .forEach(sourceAttribute
+                                -> COPY.apply(sourceAttribute, destinationElement.attributes));
+
+                completed = true;
+            } else {
+                throw new E2Exception4Write("Conversions already completed for this destination element!");
             }
+        }
+
+    }
+
+    public class AttributeConversion {
+        private String destinationName;
+        private String explicitEntity;
+        private Function<E2Scalar, E2Scalar> conversion;
+
+        private AttributeConversion() {}
+
+        public AttributeConversion rename(String destinationName) {
+            this.destinationName = destinationName;
+            return this;
+        }
+
+        public AttributeConversion convert(Function<E2Scalar, E2Scalar> conversion) {
+            this.conversion = conversion;
+            return this;
+        }
+
+        public AttributeConversion convertString(Function<String, String> conversion) {
+            this.conversion = value -> new E2Scalar(conversion.apply(value.string()));
+            return this;
+        }
+
+        /**
+         * В том случае, когда конверсия применяется к ссылочному атрибуту, есть возможность,
+         * что элемент, на который он ссылается, конвертируется по варианту Split (то есть разделяется
+         * на две или более сущности). В таком случае, чтобы результирующему реквизиту назначить
+         * ссылочное значение, нужно задать в явном виде сущность этой ссылки.<br/><br/>
+         *
+         * Тогда, к исходному элементу, на который ссылается данный исходный атрибут, будет
+         * применена соответствующая конверсия, а из результата конверсии (объект {@link Converted})
+         * будет получена конкретная ссылка для сущности explicitEntity.<br/><br/>
+         *
+         * Если явно сущность не указать, то конверсия попытается обойтись без неё. И она либо
+         * не понадобится, либо будет выброшено исключение.
+         *
+         * @param explicitEntity Сущность для результирующей ссылки
+         * @return
+         */
+        public AttributeConversion explicitEntity(String explicitEntity) {
+            this.explicitEntity = explicitEntity;
+            return this;
+        }
+
+
+        private E2AttributeValue applyConversion(E2AttributeValue value) {
+            if (value instanceof E2Scalar) {
+                return applyConversion((E2Scalar) value);
+            } else if (value instanceof E2Reference) {
+                return applyConversion((E2Reference) value);
+            } else {
+                throw new E2Exception4Write("Unknown attribute value type!");
+            }
+        }
+        private E2AttributeValue applyConversion(E2Scalar value) {
+            return conversion != null ? conversion.apply(value) : value;
+        }
+        private E2AttributeValue applyConversion(E2Reference value) {
+            if (conversion != null) {
+                LOG.warn("Conversion is not applicable for reference-valued attributes! Conversion ignored.");
+            }
+            return converter.input.referencedElement(value)
+                    .map(converter::convertElement)
+                    .map(converted -> explicitEntity != null ? converted.get(explicitEntity) : converted.get())
+                    .orElseThrow(() -> new E2Exception4Write("Possibly, explicitEntity is wrong, or you need to provide it!"));
+        }
+
+
+        private String destinationName(E2Attribute sourceAttribute) {
+            return destinationName != null ? destinationName : sourceAttribute.attributeName();
+        }
+
+        public void apply(E2Attribute sourceAttribute, E2Attributes destinationAttributes) {
+            applyConversion(sourceAttribute.attributeValue())
+                    .apply(destinationAttributes.add(destinationName(sourceAttribute)));
         }
     }
 }
