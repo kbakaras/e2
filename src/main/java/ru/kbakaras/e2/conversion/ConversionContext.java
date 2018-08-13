@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import ru.kbakaras.e2.converted.Converted;
 import ru.kbakaras.e2.message.E2Attribute;
 import ru.kbakaras.e2.message.E2AttributeValue;
-import ru.kbakaras.e2.message.E2Attributes;
 import ru.kbakaras.e2.message.E2Element;
 import ru.kbakaras.e2.message.E2Entity;
 import ru.kbakaras.e2.message.E2Exception4Write;
@@ -13,11 +12,15 @@ import ru.kbakaras.e2.message.E2Reference;
 import ru.kbakaras.e2.message.E2Scalar;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Объект-контекст, передаваемый в специализированную конверсию.
@@ -121,7 +124,7 @@ public class ConversionContext {
             return this;
         }
 
-        public DestinationContext ok() {
+        public ElementConversion ok() {
             if (entityName == null) {
                 entityName = conversion.getDefaultDestinationEntity();
             }
@@ -137,7 +140,7 @@ public class ConversionContext {
                 converted.put(element.asReference());
             }
 
-            return new DestinationContext(element)
+            return new ElementConversion(element)
                     .setChanged(sourceElement.isChanged())
                     .setDeleted(sourceElement.isDeleted());
         }
@@ -146,37 +149,38 @@ public class ConversionContext {
     /**
      * Класс используется для настройки конверсий для атрибутов элемента.
      * Конверсии применяются последовательно (в порядке добавления) в момент
-     * вызова метода {@link DestinationContext#make()}. В момент добавления
+     * вызова метода {@link ElementConversion#make()}. В момент добавления
      * конверсии просто формируется отсортированный map.<br/><br/>
      *
-     * Благодаря тому, что при выполнении конверсий соблюдается тот порядок
+     * Благодаря тому, что при выполнении конверсий соблюдается тот порядок,
      * в котором они добавлялись при настройке, можно в конверсиях последующих
-     * атрибутов расчитьывать на наличие сконвертированных значений по предшествующим
-     * атрибутам в поле {@link DestinationContext#destinationElement}.<br/><br/>
+     * атрибутов расчитывать на наличие сконвертированных значений по предшествующим
+     * атрибутам в поле {@link ElementConversion#destinationElement}.<br/><br/>
      *
      * Если включен режим копирования всех незатронутых атрибутов (методом
-     * {@link DestinationContext#copyUntouched()}, незатронутые атрибуты обрабатываются
-     * после тех, для которых конверсия задана явно. Порядок обработки нетронутых
+     * {@link ElementConversion#copyUntouched()}, незатронутые атрибуты обрабатываются
+     * до обработки тех, для которых конверсия задана явно. Порядок обработки нетронутых
      * атрибутов не гарантируется.
      */
-    public class DestinationContext {
+    public class ElementConversion {
         private boolean completed = false;
 
         public final E2Element destinationElement;
 
         private boolean copyUntouched = false;
-        private LinkedHashMap<String, AttributeConversion> conversions = new LinkedHashMap<>();
+        private Set<String> skip = new HashSet<>();
+        private LinkedHashMap<String, AttributeProducer> producers = new LinkedHashMap<>();
 
-        private DestinationContext(E2Element destinationElement) {
+        private ElementConversion(E2Element destinationElement) {
             this.destinationElement = destinationElement;
         }
 
-        public DestinationContext setChanged(boolean changed) {
+        public ElementConversion setChanged(boolean changed) {
             destinationElement.setChanged(changed);
             return this;
         }
 
-        public DestinationContext setDeleted(boolean deleted) {
+        public ElementConversion setDeleted(boolean deleted) {
             destinationElement.setDeleted(deleted);
             return this;
         }
@@ -186,26 +190,36 @@ public class ConversionContext {
          * Включение флага копирования без изменения всех  атрибутов,
          * незатронутых конверсией.
          */
-        public DestinationContext copyUntouched() {
+        public ElementConversion copyUntouched() {
             this.copyUntouched = true;
             return this;
         }
 
         /**
-         * Позволяет отключить конверсию для перечисленных атрибутов.
+         * Позволяет для перечисленных атрибутов отключить автоматическую конверсию
+         * (конверсия, выполняемая по флагу, включаемому методом {@link #copyUntouched()}).<br/>
+         * Если конверсия для атрибута была ранее задана в явном виде, вызов данного метода
+         * её не отменит.
          * @param attributeNames Массив атрибутов
          */
-        public DestinationContext skip(String...attributeNames) {
+        public ElementConversion skip(String...attributeNames) {
+            skip.addAll(Arrays.asList(attributeNames));
+            return this;
+        }
+
+        public ElementConversion copy(String...attributeNames) {
             for (String attributeName: attributeNames) {
-                conversions.put(attributeName, null);
+                takeFor(attributeName, attributeName);
             }
             return this;
         }
 
         public AttributeConversion take(String attributeName) {
-            AttributeConversion conversion = new AttributeConversion();
-            conversions.put(attributeName, conversion);
-            return conversion;
+            return takeFor(attributeName, attributeName);
+        }
+
+        public AttributeConversionSetup to(String destinationName) {
+            return new AttributeConversionSetup(destinationName);
         }
 
         /**
@@ -213,17 +227,25 @@ public class ConversionContext {
          */
         public void make() {
             if (!completed) {
-                conversions.forEach((attributeName, conversion) -> {
-                    if (conversion != null) {
-                        sourceElement.attributes.get(attributeName).ifPresent(sourceAttribute
-                                -> conversion.apply(sourceAttribute, destinationElement.attributes));
+                if (copyUntouched) {
+                    sourceElement.attributes.stream()
+                            .filter(sourceAttribute -> !skip.contains(sourceAttribute.attributeName()))
+                            .forEach(sourceAttribute -> COPY.apply(
+                                    sourceAttribute,
+                                    destinationElement.attributes.add(sourceAttribute.attributeName())));
+                }
+                producers.forEach((destinationName, producer) -> {
+                    if (producer.conversion != null) {
+                        sourceElement.attributes.get(producer.sourceName).ifPresent(
+                                sourceAttribute -> producer.conversion.apply(
+                                        sourceAttribute,
+                                        destinationElement.attributes.add(destinationName)));
+                    } else {
+                        producer.supplier.get().apply(
+                                destinationElement.attributes.add(destinationName)
+                        );
                     }
                 });
-
-                sourceElement.attributes.stream()
-                        .filter(sourceAttribute -> !conversions.containsKey(sourceAttribute.attributeName()))
-                        .forEach(sourceAttribute
-                                -> COPY.apply(sourceAttribute, destinationElement.attributes));
 
                 completed = true;
             } else {
@@ -231,19 +253,66 @@ public class ConversionContext {
             }
         }
 
+
+        private AttributeConversion takeFor(String sourceName, String destinationName) {
+            AttributeConversion ac = new AttributeConversion();
+            skip.add(sourceName);
+            producers.put(destinationName,
+                    new AttributeProducer(sourceName, ac));
+
+            return ac;
+        }
+
+        public class AttributeConversionSetup {
+            private String destinationName;
+
+            private AttributeConversionSetup(String destinationName) {
+                this.destinationName = destinationName;
+            }
+
+            public AttributeConversion take(String sourceName) {
+                return takeFor(sourceName, destinationName);
+            }
+
+            public ElementConversion value(String value) {
+                producers.put(destinationName,
+                        new AttributeProducer(() -> new E2Scalar(value)));
+                return ElementConversion.this;
+            }
+        }
+
+        public class TableConversionSetup {
+            private String destinationName;
+
+            public TableConversionSetup(String destinationName) {
+                this.destinationName = destinationName;
+            }
+        }
+    }
+
+
+    private static class AttributeProducer {
+        final Supplier<E2AttributeValue> supplier;
+        final String                     sourceName;
+        final AttributeConversion        conversion;
+
+        private AttributeProducer(String sourceName, AttributeConversion conversion) {
+            this.sourceName = sourceName;
+            this.conversion = conversion;
+            this.supplier   = null;
+        }
+        private AttributeProducer(Supplier<E2AttributeValue> supplier) {
+            this.supplier   = supplier;
+            this.sourceName = null;
+            this.conversion = null;
+        }
     }
 
     public class AttributeConversion {
-        private String destinationName;
         private String explicitEntity;
         private Function<E2Scalar, E2Scalar> conversion;
 
         private AttributeConversion() {}
-
-        public AttributeConversion rename(String destinationName) {
-            this.destinationName = destinationName;
-            return this;
-        }
 
         public AttributeConversion convert(Function<E2Scalar, E2Scalar> conversion) {
             this.conversion = conversion;
@@ -299,14 +368,9 @@ public class ConversionContext {
                     .orElseThrow(() -> new E2Exception4Write("Possibly, explicitEntity is wrong, or you need to provide it!"));
         }
 
-
-        private String destinationName(E2Attribute sourceAttribute) {
-            return destinationName != null ? destinationName : sourceAttribute.attributeName();
-        }
-
-        public void apply(E2Attribute sourceAttribute, E2Attributes destinationAttributes) {
+        public void apply(E2Attribute sourceAttribute, E2Attribute destinationAttribute) {
             applyConversion(sourceAttribute.attributeValue())
-                    .apply(destinationAttributes.add(destinationName(sourceAttribute)));
+                    .apply(destinationAttribute);
         }
     }
 }
