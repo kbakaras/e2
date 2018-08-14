@@ -2,28 +2,35 @@ package ru.kbakaras.e2.conversion.context;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.kbakaras.e2.conversion.Converter4Payload;
 import ru.kbakaras.e2.converted.Converted;
-import ru.kbakaras.e2.message.*;
+import ru.kbakaras.e2.message.E2AttributeValue;
+import ru.kbakaras.e2.message.E2Exception4Write;
+import ru.kbakaras.e2.message.E2Reference;
+import ru.kbakaras.e2.message.E2Scalar;
 
 import java.util.function.Function;
 
-public class Conversion4Attribute extends Producer4Attribute {
-    private static final Logger LOG = LoggerFactory.getLogger(Conversion4Attribute.class);
+public class AttributeConversion extends AttributeProducer {
+    private static final Logger LOG = LoggerFactory.getLogger(AttributeConversion.class);
 
-    private ConversionContext conversionContext;
+    private String sourceName;
+    private String destinationName;
+
     private String explicitEntity;
     private Function<E2Scalar, E2Scalar> conversion;
 
-    Conversion4Attribute(ConversionContext conversionContext) {
-        this.conversionContext = conversionContext;
+    public AttributeConversion(String sourceName, String destinationName) {
+        this.sourceName = sourceName;
+        this.destinationName = destinationName;
     }
 
-    public Conversion4Attribute convert(Function<E2Scalar, E2Scalar> conversion) {
+    public AttributeConversion convert(Function<E2Scalar, E2Scalar> conversion) {
         this.conversion = conversion;
         return this;
     }
 
-    public Conversion4Attribute convertString(Function<String, String> conversion) {
+    public AttributeConversion convertString(Function<String, String> conversion) {
         this.conversion = value -> new E2Scalar(conversion.apply(value.string()));
         return this;
     }
@@ -44,17 +51,17 @@ public class Conversion4Attribute extends Producer4Attribute {
      * @param explicitEntity Сущность для результирующей ссылки
      * @return
      */
-    public Conversion4Attribute explicitEntity(String explicitEntity) {
+    public AttributeConversion explicitEntity(String explicitEntity) {
         this.explicitEntity = explicitEntity;
         return this;
     }
 
 
-    private E2AttributeValue applyConversion(E2AttributeValue value) {
+    private E2AttributeValue applyConversion(E2AttributeValue value, Converter4Payload converter) {
         if (value instanceof E2Scalar) {
             return applyConversion((E2Scalar) value);
         } else if (value instanceof E2Reference) {
-            return applyConversion((E2Reference) value);
+            return applyConversion((E2Reference) value, converter);
         } else {
             throw new E2Exception4Write("Unknown attribute value type!");
         }
@@ -62,18 +69,20 @@ public class Conversion4Attribute extends Producer4Attribute {
     private E2AttributeValue applyConversion(E2Scalar value) {
         return conversion != null ? conversion.apply(value) : value;
     }
-    private E2AttributeValue applyConversion(E2Reference value) {
+    private E2AttributeValue applyConversion(E2Reference value, Converter4Payload converter) {
         if (conversion != null) {
             LOG.warn("Conversion is not applicable for reference-valued attributes! Conversion ignored.");
         }
-        return conversionContext.converter.input.referencedElement(value)
-                .map(conversionContext.converter::convertElement)
+        return converter.input.referencedElement(value)
+                .map(converter::convertElement)
                 .map(converted -> explicitEntity != null ? converted.get(explicitEntity) : converted.get())
                 .orElseThrow(() -> new E2Exception4Write("Possibly, explicitEntity is wrong, or you need to provide it!"));
     }
 
-    public void apply(E2Attribute sourceAttribute, E2Attribute destinationAttribute) {
-        applyConversion(sourceAttribute.attributeValue())
-                .apply(destinationAttribute);
+    @Override
+    public void make(ConversionContext4Producer ccp) {
+        ccp.sourceAttributes.get(sourceName).ifPresent(
+                sourceAttribute -> applyConversion(sourceAttribute.attributeValue(), ccp.parent.parent.converter)
+                        .apply(ccp.destinationAttributes.add(destinationName)));
     }
 }
