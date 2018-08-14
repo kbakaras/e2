@@ -12,7 +12,9 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Объект-контекст, передаваемый в специализированную конверсию.
+ * Объект-контекст, передаваемый в специализированную конверсию. На основании
+ * таких объектов и по мере запуска конверсий для атрибутов-ссылок формируется
+ * стек контекстов конвертации.
  */
 public class ConversionContext {
     public final Converter4Payload converter;
@@ -21,6 +23,12 @@ public class ConversionContext {
 
     public final Conversion conversion;
 
+    /**
+     * Список всех целевых элементов, порождённых в рамках данного
+     * контекста. Не все они обязательно попадут в результаты конверсии,
+     * но в выходном сообщении окажутся все. А также они будут доступны
+     * для поиска в стеке контекстов методом {@link #findDestinationContext(String, String)}.
+     */
     private List<E2Element> destinationElements = new ArrayList<>();
 
 
@@ -32,6 +40,14 @@ public class ConversionContext {
     }
 
 
+    /**
+     * Добавление целевого элемента, порождённого данным продюсером.
+     * Метод запускает порождение элемента указанным продюсером. Элемент
+     * добавляется в качестве целевого элемента, но не добавляется в кэш
+     * результатов. Метод нужен в редких случаях, когда из одного исходного
+     * элемента нужно породить не только результирующий элемент, но и побочный.
+     * @param elementProducer
+     */
     public void addDestination(ElementProducer elementProducer) {
         destinationElements.add(elementProducer.make(this));
     }
