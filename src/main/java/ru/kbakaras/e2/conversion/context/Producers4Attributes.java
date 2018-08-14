@@ -5,38 +5,35 @@ import ru.kbakaras.e2.message.E2AttributeValue;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Set;
 
-public class Producers4Attributes implements IProducers4Attributes {
+public class Producers4Attributes {
     private boolean copyUntouched = false;
     private Set<String> skip = new HashSet<>();
+    private Producers producers;
 
-    protected LinkedList<Producer> producers = new LinkedList<>();
+    Producers4Attributes(Producers producers) {
+        this.producers = producers;
+    }
 
-    @Override
-    public IProducers4Attributes copyUntouched() {
+    public Producers4Attributes copyUntouched() {
         this.copyUntouched = true;
         return this;
     }
 
-    @Override
-    public IProducers4Attributes skip(String... attributeNames) {
+    public Producers4Attributes skip(String... attributeNames) {
         skip.addAll(Arrays.asList(attributeNames));
         return this;
     }
 
-    @Override
     public Producer4AttributeSetup attribute(String attributeName) {
         return new Producer4AttributeSetup(attributeName);
     }
 
-    @Override
     public AttributeConversion take(String sourceName) {
         return new Producer4AttributeSetup(sourceName).take(sourceName);
     }
 
-    @Override
     public void take(String... sourceNames) {
         for (String sourceName: sourceNames) {
             new Producer4AttributeSetup(sourceName).take(sourceName);
@@ -46,7 +43,7 @@ public class Producers4Attributes implements IProducers4Attributes {
     public class Producer4AttributeSetup {
         private String destinationName;
 
-        public Producer4AttributeSetup(String destinationName) {
+        Producer4AttributeSetup(String destinationName) {
             this.destinationName = destinationName;
         }
 
@@ -79,8 +76,7 @@ public class Producers4Attributes implements IProducers4Attributes {
         }
     }
 
-    @Override
-    public void make(ConversionContext4Producer ccp) {
+    void makeAuto(ConversionContext4Producer ccp) {
         if (copyUntouched) {
             ccp.sourceAttributes.stream()
                     .map(E2Attribute::attributeName)
@@ -88,7 +84,5 @@ public class Producers4Attributes implements IProducers4Attributes {
                     .forEach(sourceName -> new AttributeConversion(sourceName, sourceName)
                             .make(ccp));
         }
-
-        producers.forEach(producer -> producer.make(ccp));
     }
 }

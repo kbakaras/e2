@@ -9,9 +9,9 @@ public class ConversionCopy extends Conversion {
     public ConversionCopy(String destinationEntityName) {
         super(destinationEntityName);
 
-        ElementProducer copyProducer = new ElementProducer();
-        copyProducer.attributes().copyUntouched();
-        copyProducer.tables().copyUntouchedTables();
+        copyProducer = new ElementProducer();
+        copyProducer.attributes.copyUntouched();
+        copyProducer.tables.copyUntouched();
     }
 
     @Override

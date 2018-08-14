@@ -21,7 +21,10 @@ public class ElementProducer {
     private Boolean deleted;
     private Function<ConversionContext4Element, Boolean> deletedFunction;
 
-    private Producers4Tables producers = new Producers4Tables();
+    private Producers producers = new Producers();
+
+    public final Producers4Attributes attributes = new Producers4Attributes(producers);
+    public final Producers4Tables     tables     = new Producers4Tables(producers);
 
 
     public ElementProducer entity(String entityName) {
@@ -50,6 +53,7 @@ public class ElementProducer {
         this.changed = changed;
         return this;
     }
+
     public ElementProducer deleted(Function<ConversionContext4Element, Boolean> deletedFunction) {
         this.deletedFunction = deletedFunction;
         return this;
@@ -61,18 +65,12 @@ public class ElementProducer {
     }
 
 
-    public IProducers4Attributes attributes() {
-        return producers;
-    }
     public Producers4Attributes.Producer4AttributeSetup attributes(String attributeName) {
-        return producers.attribute(attributeName);
+        return attributes.attribute(attributeName);
     }
 
-    public IProducers4Tables tables() {
-        return producers;
-    }
     public Producers4Tables.Producer4TableSetup tables(String tableName) {
-        return producers.table(tableName);
+        return tables.table(tableName);
     }
 
 
@@ -100,6 +98,8 @@ public class ElementProducer {
             destinationElement.setDeleted(deletedFunction.apply(cce));
         }
 
+        attributes.makeAuto(ccp);
+        tables.makeAuto(ccp);
         producers.make(ccp);
 
         return destinationElement;

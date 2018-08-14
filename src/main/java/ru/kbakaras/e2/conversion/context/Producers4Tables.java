@@ -6,19 +6,22 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Producers4Tables extends Producers4Attributes implements IProducers4Tables {
-    private boolean copyUntouchedTables = false;
-    private Set<String> skipTables = new HashSet<>();
+public class Producers4Tables {
+    private boolean copyUntouched = false;
+    private Set<String> skip = new HashSet<>();
+    private Producers producers;
 
-    @Override
-    public IProducers4Attributes copyUntouchedTables() {
-        this.copyUntouchedTables = true;
+    public Producers4Tables(Producers producers) {
+        this.producers = producers;
+    }
+
+    public Producers4Tables copyUntouched() {
+        this.copyUntouched = true;
         return this;
     }
 
-    @Override
-    public IProducers4Attributes skipTables(String... attributeNames) {
-        skipTables.addAll(Arrays.asList(attributeNames));
+    public Producers4Tables skip(String... attributeNames) {
+        skip.addAll(Arrays.asList(attributeNames));
         return this;
     }
 
@@ -44,15 +47,13 @@ public class Producers4Tables extends Producers4Attributes implements IProducers
         }
     }
 
-    @Override
-    public void make(ConversionContext4Producer ccp) {
-        if (copyUntouchedTables) {
+    void makeAuto(ConversionContext4Producer ccp) {
+        if (copyUntouched) {
             ccp.parent.sourceElement.tables().stream()
                     .map(E2Table::tableName)
-                    .filter(sourceName -> !skipTables.contains(sourceName))
+                    .filter(sourceName -> !skip.contains(sourceName))
                     .forEach(sourceName -> new TableConversion(sourceName, sourceName)
                             .make(ccp));
         }
-        super.make(ccp);
     }
 }

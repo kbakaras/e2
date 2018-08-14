@@ -7,18 +7,16 @@ public class TableConversion extends TableProducer {
     private String sourceName;
     private String destinationName;
 
-    private Producers4Attributes producers = new Producers4Attributes();
+    private Producers producers = new Producers();
+    public final Producers4Attributes attributes = new Producers4Attributes(producers);
 
     public TableConversion(String sourceName, String destinationName) {
         this.sourceName = sourceName;
         this.destinationName = destinationName;
     }
 
-    public IProducers4Attributes attributes() {
-        return producers;
-    }
     public Producers4Attributes.Producer4AttributeSetup attributes(String attributeName) {
-        return producers.attribute(attributeName);
+        return attributes.attribute(attributeName);
     }
 
     @Override
@@ -27,11 +25,12 @@ public class TableConversion extends TableProducer {
                 sourceTable -> {
                     E2Table destinationTable = ccp.parent.destinationElement.addTable(destinationName);
                     for (E2Row row: sourceTable) {
-                        producers.make(
-                                new ConversionContext4Producer(ccp.parent,
-                                        row.attributes,
-                                        destinationTable.addRow().attributes)
-                        );
+                        ConversionContext4Producer ccp2 = new ConversionContext4Producer(ccp.parent,
+                                row.attributes,
+                                destinationTable.addRow().attributes);
+
+                        attributes.makeAuto(ccp2);
+                        producers.make(ccp2);
                     }
                 }
         );
