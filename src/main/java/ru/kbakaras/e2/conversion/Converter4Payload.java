@@ -1,5 +1,6 @@
 package ru.kbakaras.e2.conversion;
 
+import ru.kbakaras.e2.conversion.context.ConversionContext;
 import ru.kbakaras.e2.converted.Converted;
 import ru.kbakaras.e2.message.E2Element;
 import ru.kbakaras.e2.message.E2Payload;
