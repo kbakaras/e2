@@ -4,11 +4,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.kbakaras.e2.conversion.Converter4Payload;
 import ru.kbakaras.e2.converted.Converted;
+import ru.kbakaras.e2.message.E2Attribute;
 import ru.kbakaras.e2.message.E2AttributeValue;
 import ru.kbakaras.e2.message.E2Exception4Write;
 import ru.kbakaras.e2.message.E2Reference;
 import ru.kbakaras.e2.message.E2Scalar;
 
+import java.util.Optional;
 import java.util.function.Function;
 
 public class Conversion4Attribute extends Producer {
@@ -19,6 +21,8 @@ public class Conversion4Attribute extends Producer {
 
     private String explicitEntity;
     private Function<E2Scalar, E2Scalar> conversion;
+
+    private String defaultValue;
 
     Conversion4Attribute(String sourceName, String destinationName) {
         this.sourceName = sourceName;
@@ -56,6 +60,10 @@ public class Conversion4Attribute extends Producer {
         return this;
     }
 
+    public Conversion4Attribute defaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
+        return this;
+    }
 
     private E2AttributeValue applyConversion(E2AttributeValue value, Converter4Payload converter) {
         if (value instanceof E2Scalar) {
@@ -81,8 +89,13 @@ public class Conversion4Attribute extends Producer {
 
     @Override
     void make(ConversionContext4Producer ccp) {
-        ccp.sourceAttributes.get(sourceName).ifPresent(
-                sourceAttribute -> applyConversion(sourceAttribute.attributeValue(), ccp.parent.parent.converter)
-                        .apply(ccp.destinationAttributes.add(destinationName)));
+        Optional<E2Attribute> src = ccp.sourceAttributes.get(sourceName);
+        if (src.isPresent()) {
+            applyConversion(src.get().attributeValue(), ccp.parent.parent.converter)
+                    .apply(ccp.destinationAttributes.add(destinationName));
+
+        } else if (defaultValue != null) {
+            ccp.destinationAttributes.add(destinationName).setValue(defaultValue);
+        }
     }
 }

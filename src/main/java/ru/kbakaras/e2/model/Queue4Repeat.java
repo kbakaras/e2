@@ -4,5 +4,5 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "queue4delivery")
-public class Queue4Delivery extends BasicQueue4Delivery {}
+@Table(name = "queue4repeat")
+public class Queue4Repeat extends BasicQueue4Delivery {}
