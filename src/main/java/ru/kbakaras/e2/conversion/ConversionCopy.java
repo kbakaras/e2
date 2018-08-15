@@ -1,15 +1,15 @@
 package ru.kbakaras.e2.conversion;
 
+import ru.kbakaras.e2.conversion.context.Conversion4Element;
 import ru.kbakaras.e2.conversion.context.ConversionContext;
-import ru.kbakaras.e2.conversion.context.ElementProducer;
 
 public class ConversionCopy extends Conversion {
-    private ElementProducer copyProducer;
+    private Conversion4Element copyProducer;
 
     public ConversionCopy(String destinationEntityName) {
         super(destinationEntityName);
 
-        copyProducer = new ElementProducer();
+        copyProducer = new Conversion4Element();
         copyProducer.attributes.copyUntouched();
         copyProducer.tables.copyUntouched();
     }

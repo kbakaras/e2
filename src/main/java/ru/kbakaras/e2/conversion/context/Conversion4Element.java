@@ -12,7 +12,7 @@ import java.util.function.Function;
  * результирующего элемента (со всеми результирующими атрибутами
  * и табличными частями) на основании контекста конверсии.
  */
-public class ElementProducer {
+public class Conversion4Element {
     private String entityName;
     private Consumer<E2Entity> entityInitializer;
     private String elementUid;
@@ -27,49 +27,49 @@ public class ElementProducer {
     public final Producers4Tables     tables     = new Producers4Tables(producers);
 
 
-    public ElementProducer entity(String entityName) {
+    public Conversion4Element entity(String entityName) {
         this.entityName = entityName;
         return this;
     }
 
-    public ElementProducer entity(Consumer<E2Entity> entityInitializer) {
+    public Conversion4Element entity(Consumer<E2Entity> entityInitializer) {
         this.entityInitializer = entityInitializer;
         return this;
     }
 
-    public ElementProducer entity(String entityName, Consumer<E2Entity> entityInitializer) {
+    public Conversion4Element entity(String entityName, Consumer<E2Entity> entityInitializer) {
         this.entityName = entityName;
         this.entityInitializer = entityInitializer;
         return this;
     }
 
 
-    public ElementProducer uid(String elementUid) {
+    public Conversion4Element uid(String elementUid) {
         this.elementUid = elementUid;
         return this;
     }
 
-    public ElementProducer changed(boolean changed) {
+    public Conversion4Element changed(boolean changed) {
         this.changed = changed;
         return this;
     }
 
-    public ElementProducer deleted(Function<ConversionContext4Element, Boolean> deletedFunction) {
+    public Conversion4Element deleted(Function<ConversionContext4Element, Boolean> deletedFunction) {
         this.deletedFunction = deletedFunction;
         return this;
     }
 
-    public ElementProducer deleted(boolean deleted) {
+    public Conversion4Element deleted(boolean deleted) {
         this.deleted = deleted;
         return this;
     }
 
 
-    public Producers4Attributes.Producer4AttributeSetup attributes(String attributeName) {
+    public Producers4Attributes.Producer4Attribute attributes(String attributeName) {
         return attributes.attribute(attributeName);
     }
 
-    public Producers4Tables.Producer4TableSetup tables(String tableName) {
+    public Producers4Tables.Producer4Table tables(String tableName) {
         return tables.table(tableName);
     }
 

@@ -11,8 +11,8 @@ import ru.kbakaras.e2.message.E2Scalar;
 
 import java.util.function.Function;
 
-public class AttributeConversion extends AttributeProducer {
-    private static final Logger LOG = LoggerFactory.getLogger(AttributeConversion.class);
+public class Conversion4Attribute extends Producer {
+    private static final Logger LOG = LoggerFactory.getLogger(Conversion4Attribute.class);
 
     private String sourceName;
     private String destinationName;
@@ -20,17 +20,17 @@ public class AttributeConversion extends AttributeProducer {
     private String explicitEntity;
     private Function<E2Scalar, E2Scalar> conversion;
 
-    public AttributeConversion(String sourceName, String destinationName) {
+    Conversion4Attribute(String sourceName, String destinationName) {
         this.sourceName = sourceName;
         this.destinationName = destinationName;
     }
 
-    public AttributeConversion convert(Function<E2Scalar, E2Scalar> conversion) {
+    public Conversion4Attribute convert(Function<E2Scalar, E2Scalar> conversion) {
         this.conversion = conversion;
         return this;
     }
 
-    public AttributeConversion convertString(Function<String, String> conversion) {
+    public Conversion4Attribute convertString(Function<String, String> conversion) {
         this.conversion = value -> new E2Scalar(conversion.apply(value.string()));
         return this;
     }
@@ -51,7 +51,7 @@ public class AttributeConversion extends AttributeProducer {
      * @param explicitEntity Сущность для результирующей ссылки
      * @return
      */
-    public AttributeConversion explicitEntity(String explicitEntity) {
+    public Conversion4Attribute explicitEntity(String explicitEntity) {
         this.explicitEntity = explicitEntity;
         return this;
     }
@@ -80,7 +80,7 @@ public class AttributeConversion extends AttributeProducer {
     }
 
     @Override
-    public void make(ConversionContext4Producer ccp) {
+    void make(ConversionContext4Producer ccp) {
         ccp.sourceAttributes.get(sourceName).ifPresent(
                 sourceAttribute -> applyConversion(sourceAttribute.attributeValue(), ccp.parent.parent.converter)
                         .apply(ccp.destinationAttributes.add(destinationName)));

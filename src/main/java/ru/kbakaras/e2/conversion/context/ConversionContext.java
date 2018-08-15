@@ -46,13 +46,13 @@ public class ConversionContext {
      * добавляется в качестве целевого элемента, но не добавляется в кэш
      * результатов. Метод нужен в редких случаях, когда из одного исходного
      * элемента нужно породить не только результирующий элемент, но и побочный.
-     * @param elementProducer
+     * @param conversion4Element
      */
-    public void addDestination(ElementProducer elementProducer) {
-        destinationElements.add(elementProducer.make(this));
+    public void addDestination(Conversion4Element conversion4Element) {
+        destinationElements.add(conversion4Element.make(this));
     }
-    public void addResult(ElementProducer elementProducer) {
-        E2Element element = elementProducer.make(this);
+    public void addResult(Conversion4Element conversion4Element) {
+        E2Element element = conversion4Element.make(this);
         destinationElements.add(element);
         setResult(element.asReference());
     }

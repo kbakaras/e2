@@ -7,7 +7,7 @@ public class ConversionContext4Producer {
     public final E2Attributes sourceAttributes;
     public final E2Attributes destinationAttributes;
 
-    public ConversionContext4Producer(ConversionContext4Element parent, E2Attributes sourceAttributes, E2Attributes destinationAttributes) {
+    ConversionContext4Producer(ConversionContext4Element parent, E2Attributes sourceAttributes, E2Attributes destinationAttributes) {
         this.parent = parent;
         this.sourceAttributes = sourceAttributes;
         this.destinationAttributes = destinationAttributes;
