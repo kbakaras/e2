@@ -47,7 +47,7 @@ public class Poller4Repeat implements InitializingBean, DisposableBean {
     synchronized public void start() {
         if (timer == null) {
             LOG.info("Starting repeat queue...");
-            timer = new Timer("Poller4Delivery");
+            timer = new Timer("Poller4Repeat");
             timer.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
@@ -60,7 +60,7 @@ public class Poller4Repeat implements InitializingBean, DisposableBean {
     private void process() {
         if (lock.tryLock()) {
             try {
-                LOG.trace("Checking queue for delivery...");
+                LOG.trace("Checking queue for repeat...");
 
                 Supplier<Optional<Queue4Repeat>> supplier = stopOnStuck ?
                         queue4RepeatRepository::getFirstByProcessedIsFalseOrderByTimestampAsc :
@@ -99,7 +99,7 @@ public class Poller4Repeat implements InitializingBean, DisposableBean {
             queue.setProcessed(true);
 
         } catch (Throwable e) {
-            LOG.error("Update delivery error!");
+            LOG.error("Repeat delivery error!");
 
             queue.incAttempt();
             if (queue.getAttempt() >= ATTEMPT_MAX) {
