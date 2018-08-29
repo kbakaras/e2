@@ -5,7 +5,6 @@ import ru.kbakaras.e2.conversion.Converter4Payload;
 import ru.kbakaras.e2.converted.Converted;
 import ru.kbakaras.e2.message.E2Attribute;
 import ru.kbakaras.e2.message.E2Element;
-import ru.kbakaras.e2.message.E2Reference;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,15 +48,41 @@ public class ConversionContext {
      * @param conversion4Element
      */
     public void addDestination(Conversion4Element conversion4Element) {
-        destinationElements.add(conversion4Element.make(this));
+        conversion4Element.make(this, this::addDestination);
     }
+
+    /**
+     * Метод запускает порождение элемента указанным продюсером. Элемент
+     * добавляется в качестве целевого элемента, а также устанавливается в качестве
+     * результата для данной конверсии. В большинстве стандартных случаев конверсии
+     * вызываться должен именно этот метод.
+     * @param conversion4Element
+     */
     public void addResult(Conversion4Element conversion4Element) {
-        E2Element element = conversion4Element.make(this);
-        destinationElements.add(element);
-        setResult(element.asReference());
+        conversion4Element.make(this, this::setResult);
     }
-    public void setResult(E2Reference destinationReference) {
-        converted.put(destinationReference);
+
+    /**
+     * Принудительная установка существующей ссылки на элемент в качестве результата
+     * данной конверсии. Используется в редких нестандартных случаях, когда результирующий
+     * элемент уже сгенерирован где-то заранее и закэширован.<br/>
+     * Указанный элемент при этом также добавляется и в набор целевых элементов данной конверсии.
+     * Это нужно для того, чтобы его можно было обнаружить при поиске по стеку контекстов.
+     * @param destinationElement Ссылка на элемент, устанавливаемая в качестве результата
+     *                             данной конверсии.
+     */
+    public void setResult(E2Element destinationElement) {
+        converted.put(destinationElement.asReference());
+        addDestination(destinationElement);
+    }
+
+    /**
+     * Принудительное добавление существующего элемента только в набор целевых (выходных) элементов
+     * для данной конверсии. В качестве результата данной конверсии этот элемент не устанавливается.
+     * @param destinationElement Элемент, добавляемый в набор целевых элементов данной конверсии.
+     */
+    public void addDestination(E2Element destinationElement) {
+        destinationElements.add(destinationElement);
     }
 
 

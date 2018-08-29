@@ -62,7 +62,7 @@ public abstract class Converted {
         if (!virgin) {
             return getValue(explicitEntity);
         } else {
-            throw new E2Exception4Write("Unable to getValue converted value! Conversion is not done yet.");
+            throw new E2Exception4Write("Unable to get converted value! Conversion is not done yet.");
         }
     }
 

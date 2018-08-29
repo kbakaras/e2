@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class Producers4Attributes {
     private boolean copyUntouched = false;
@@ -40,6 +41,16 @@ public class Producers4Attributes {
 
     public Conversion4Attribute take(String sourceName) {
         return new Producer4Attribute(sourceName).take(sourceName);
+    }
+
+    public Producers4Attributes produce(Consumer<ConversionContext4Producer> producer) {
+        producers.add(new Producer() {
+            @Override
+            void make(ConversionContext4Producer ccp) {
+                producer.accept(ccp);
+            }
+        });
+        return this;
     }
 
 

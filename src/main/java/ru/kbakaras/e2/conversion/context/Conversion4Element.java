@@ -74,7 +74,7 @@ public class Conversion4Element {
     }
 
 
-    E2Element make(ConversionContext cc) {
+    E2Element make(ConversionContext cc, Consumer<E2Element> resultSetter) {
         if (entityName == null) {
             entityName = cc.conversion.getDefaultDestinationEntity();
         }
@@ -90,6 +90,8 @@ public class Conversion4Element {
                 .addElement(elementUid != null ? elementUid : cc.sourceElement.getUid())
                 .setChanged(changed    != null ? changed    : cc.sourceElement.isChanged())
                 .setDeleted(deleted    != null ? deleted    : cc.sourceElement.isDeleted());
+
+        resultSetter.accept(destinationElement);
 
         ConversionContext4Element  cce = new ConversionContext4Element(cc, cc.sourceElement, destinationElement);
         ConversionContext4Producer ccp = new ConversionContext4Producer(cce, cc.sourceElement.attributes, destinationElement.attributes);
