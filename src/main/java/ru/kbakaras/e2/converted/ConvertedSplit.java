@@ -2,6 +2,7 @@ package ru.kbakaras.e2.converted;
 
 import ru.kbakaras.e2.conversion.ConversionKind;
 import ru.kbakaras.e2.message.E2AttributeValue;
+import ru.kbakaras.e2.message.E2Element;
 import ru.kbakaras.e2.message.E2Exception4Write;
 import ru.kbakaras.e2.message.E2Reference;
 
@@ -11,8 +12,8 @@ import java.util.Map;
 public class ConvertedSplit extends Converted {
     private Map<String, E2AttributeValue> destinationEntity2value = new HashMap<>();
 
-    ConvertedSplit(ConversionKind kind) {
-        super(kind);
+    ConvertedSplit(E2Element source, ConversionKind kind) {
+        super(source, kind);
     }
 
     public void put(E2Reference reference) {

@@ -2,6 +2,7 @@ package ru.kbakaras.e2.converted;
 
 import ru.kbakaras.e2.conversion.ConversionKind;
 import ru.kbakaras.e2.message.E2AttributeValue;
+import ru.kbakaras.e2.message.E2Element;
 import ru.kbakaras.e2.message.E2Reference;
 
 /**
@@ -13,8 +14,8 @@ import ru.kbakaras.e2.message.E2Reference;
 public class ConvertedChoice extends Converted {
     private E2Reference value;
 
-    ConvertedChoice(ConversionKind kind) {
-        super(kind);
+    ConvertedChoice(E2Element source, ConversionKind kind) {
+        super(source, kind);
     }
 
     public void put(E2Reference reference) {

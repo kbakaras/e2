@@ -2,7 +2,6 @@ package ru.kbakaras.e2.conversion.context;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.kbakaras.e2.conversion.Converter4Payload;
 import ru.kbakaras.e2.converted.Converted;
 import ru.kbakaras.e2.message.E2Attribute;
 import ru.kbakaras.e2.message.E2AttributeValue;
@@ -65,35 +64,37 @@ public class Conversion4Attribute extends Producer {
         return this;
     }
 
-    private E2AttributeValue applyConversion(E2AttributeValue value, Converter4Payload converter) {
-        if (value instanceof E2Scalar) {
-            return applyConversion((E2Scalar) value);
-        } else if (value instanceof E2Reference) {
-            return applyConversion((E2Reference) value, converter);
-        } else {
-            throw new E2Exception4Write("Unknown attribute value type!");
-        }
-    }
-    private E2AttributeValue applyConversion(E2Scalar value) {
-        return conversion != null ? conversion.apply(value) : value;
-    }
-    private E2AttributeValue applyConversion(E2Reference value, Converter4Payload converter) {
-        if (conversion != null) {
-            LOG.warn("Conversion is not applicable for reference-valued attributes! Conversion ignored.");
-        }
-        return converter.input.referencedElement(value)
-                .map(converter::convertElement)
-                .map(converted -> explicitEntity != null ? converted.get(explicitEntity) : converted.get())
-                .orElseThrow(() -> new E2Exception4Write("Possibly, explicitEntity is wrong, or you need to provide it!"));
-    }
-
     @Override
     void make(ConversionContext4Producer ccp) {
-        Optional<E2Attribute> src = ccp.sourceAttributes.get(sourceName);
-        if (src.isPresent()) {
-            applyConversion(src.get().attributeValue(), ccp.parent.parent.converter)
-                    .apply(ccp.destinationAttributes.add(destinationName));
+        Optional<E2AttributeValue> bar = ccp.sourceAttributes.get(sourceName)
+                .map(E2Attribute::attributeValue)
+                .flatMap(value -> {
+                    if (value instanceof E2Scalar) {
+                        return Optional.of(conversion != null ? conversion.apply((E2Scalar) value) : value);
 
+                    } else if (value instanceof E2Reference) {
+                        if (conversion != null) {
+                            LOG.warn("Conversion is not applicable for reference-valued attributes! Conversion ignored.");
+                        }
+
+                        return ccp.input().referencedElement((E2Reference) value)
+                                .map(ccp.converter()::convertElement)
+                                .filter(Converted::notIgnored)
+                                .map(converted -> {
+                                    E2AttributeValue av = explicitEntity != null ? converted.get(explicitEntity) : converted.get();
+                                    if (av == null) {
+                                        throw new E2Exception4Write("Possibly, explicitEntity is wrong, or you need to provide it!");
+                                    }
+                                    return av;
+                                });
+
+                    } else {
+                        throw new E2Exception4Write("Unknown attribute value type!");
+                    }
+                });
+
+        if (bar.isPresent()) {
+            bar.get().apply(ccp.destinationAttributes.add(destinationName));
         } else if (defaultValue != null) {
             ccp.destinationAttributes.add(destinationName).setValue(defaultValue);
         }

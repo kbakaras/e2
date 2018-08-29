@@ -1,5 +1,6 @@
 package ru.kbakaras.e2.conversion.context;
 
+import ru.kbakaras.e2.conversion.Converter4Payload;
 import ru.kbakaras.e2.message.E2Attributes;
 import ru.kbakaras.e2.message.E2Payload;
 
@@ -19,5 +20,12 @@ public class ConversionContext4Producer {
      */
     public E2Payload input() {
         return parent.parent.converter.input;
+    }
+
+    /**
+     * Shortcut to parent.parent.converter
+     */
+    public Converter4Payload converter() {
+        return parent.parent.converter;
     }
 }

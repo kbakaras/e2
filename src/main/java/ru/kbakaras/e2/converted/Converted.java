@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.kbakaras.e2.conversion.ConversionKind;
 import ru.kbakaras.e2.message.E2AttributeValue;
+import ru.kbakaras.e2.message.E2Element;
 import ru.kbakaras.e2.message.E2Exception4Write;
 import ru.kbakaras.e2.message.E2Reference;
 import ru.kbakaras.e2.message.E2Scalar;
@@ -22,11 +23,14 @@ import ru.kbakaras.e2.message.E2Scalar;
 public abstract class Converted {
     protected static final Logger LOG = LoggerFactory.getLogger(Converted.class);
 
+    public final E2Element source;
     public final ConversionKind kind;
 
     private boolean virgin = true;
+    private boolean ignore = false;
 
-    Converted(ConversionKind kind) {
+    Converted(E2Element source, ConversionKind kind) {
+        this.source = source;
         this.kind = kind;
     }
 
@@ -48,6 +52,11 @@ public abstract class Converted {
         virgin = false;
     }
 
+    public void ignore() {
+        ignore = true;
+        virgin = false;
+    }
+
     protected void put(E2Reference reference) {
         throw new E2Exception4Write("Converted 'Reference' is not acceptable result for conversion of kind '" + kind + "'!");
     }
@@ -62,19 +71,21 @@ public abstract class Converted {
         if (!virgin) {
             return getValue(explicitEntity);
         } else {
-            throw new E2Exception4Write("Unable to get converted value! Conversion is not done yet.");
+            throw new E2Exception4Write(
+                    "Unable to get converted value! Conversion is not done yet for element:\n" +
+                            "\t" + source.toString());
         }
     }
 
     abstract protected E2AttributeValue getValue(String destinationEntity);
 
-    public static Converted create(ConversionKind kind) {
+    public static Converted create(E2Element source, ConversionKind kind) {
         switch (kind) {
-            case Simple: return new ConvertedSimple(kind);
-            case Choice: return new ConvertedChoice(kind);
-            case Split:  return new ConvertedSplit(kind);
-            case Merge:  return new ConvertedMerge(kind);
-            case Scalar: return new ConvertedScalar(kind);
+            case Simple: return new ConvertedSimple(source, kind);
+            case Choice: return new ConvertedChoice(source, kind);
+            case Split:  return new ConvertedSplit(source, kind);
+            case Merge:  return new ConvertedMerge(source, kind);
+            case Scalar: return new ConvertedScalar(source, kind);
 
             default: throw new IllegalArgumentException("Conversion kind '" + kind + "' is not supported yet!");
         }
@@ -82,5 +93,9 @@ public abstract class Converted {
 
     protected static void warnPutIgnored() {
         LOG.warn("Converted-object already holds result! All subsequent puts are ignored.");
+    }
+
+    public boolean notIgnored() {
+        return !ignore;
     }
 }

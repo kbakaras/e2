@@ -12,7 +12,7 @@ public class ConvertedCache {
 
     public void init(E2Element element, ConversionKind kind) {
         converted.get(element.entityName()).put(
-                element.getUid(), Converted.create(kind));
+                element.getUid(), Converted.create(element, kind));
     }
 
     public boolean isConverting(E2Element element) {
