@@ -57,6 +57,17 @@ public class Poller4Delivery implements InitializingBean, DisposableBean {
         }
     }
 
+    synchronized public void resume() {
+        if (timer == null) {
+            queue4DeliveryRepository.getFirstByProcessedIsFalseAndStuckIsTrueOrderByTimestampAsc()
+                    .ifPresent(queue -> {
+                        queue.setStuck(false);
+                        queue4DeliveryRepository.save(queue);
+                    });
+            start();
+        }
+    }
+
     private void process() {
         if (lock.tryLock()) {
             try {

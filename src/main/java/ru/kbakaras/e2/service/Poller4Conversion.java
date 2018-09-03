@@ -134,6 +134,7 @@ public class Poller4Conversion implements InitializingBean, DisposableBean {
                 if (!convertedUpdate.output.entities().isEmpty()) {
                     Queue4Delivery queue = new Queue4Delivery();
                     queue.setMessage(((E2Update) convertedUpdate.output).xml().asXML());
+                    queue.setSize(queue.getMessage().length());
                     queue.setTimestamp(timestampService.get());
                     queue.setSourceMessageId(sourceMessageId);
                     queue.setDestination(destination);

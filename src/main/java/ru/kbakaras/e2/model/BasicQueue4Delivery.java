@@ -33,6 +33,12 @@ public abstract class BasicQueue4Delivery extends ProperEntity {
     @Column(nullable = false, columnDefinition = "int DEFAULT 0")
     private int attempt;
 
+    /**
+     * Размер сообщения в байтах
+     */
+    @Column(nullable = false, columnDefinition = "bigint DEFAULT 0")
+    private long size;
+
     public Instant getTimestamp() {
         return timestamp;
     }
@@ -87,5 +93,12 @@ public abstract class BasicQueue4Delivery extends ProperEntity {
     }
     public void incAttempt() {
         this.attempt++;
+    }
+
+    public long getSize() {
+        return size;
+    }
+    public void setSize(long size) {
+        this.size = size;
     }
 }
