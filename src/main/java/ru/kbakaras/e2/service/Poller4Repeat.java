@@ -4,8 +4,6 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Service;
 import ru.kbakaras.e2.model.Error4Repeat;
 import ru.kbakaras.e2.model.Queue4Repeat;
@@ -16,18 +14,10 @@ import ru.kbakaras.sugar.utils.ExceptionUtils;
 
 import javax.annotation.Resource;
 import java.util.Optional;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Supplier;
 
 @Service
-public class Poller4Repeat implements InitializingBean, DisposableBean {
+public class Poller4Repeat extends BasicPoller<Queue4Repeat> {
     private static final Logger LOG = LoggerFactory.getLogger(Poller4Repeat.class);
-
-    private Timer timer;
-    private final Lock lock = new ReentrantLock();
 
     private boolean stopOnStuck = true;
 
@@ -35,61 +25,16 @@ public class Poller4Repeat implements InitializingBean, DisposableBean {
     @Resource private Error4RepeatRepository error4RepeatRepository;
 
     @Override
-    public void destroy() throws Exception {
-        timer.cancel();
+    protected Optional<Queue4Repeat> next() {
+        if (stopOnStuck) {
+            return queue4RepeatRepository.getFirstByProcessedIsFalseOrderByTimestampAsc();
+        } else {
+            return queue4RepeatRepository.getFirstByProcessedIsFalseAndStuckIsFalseOrderByTimestampAsc();
+        }
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
-        start();
-    }
-
-    synchronized public void start() {
-        if (timer == null) {
-            LOG.info("Starting repeat queue...");
-            timer = new Timer("Poller4Repeat");
-            timer.scheduleAtFixedRate(new TimerTask() {
-                @Override
-                public void run() {
-                    process();
-                }
-            }, 0, 10000);
-        }
-    }
-
-    private void process() {
-        if (lock.tryLock()) {
-            try {
-                LOG.trace("Checking queue for repeat...");
-
-                Supplier<Optional<Queue4Repeat>> supplier = stopOnStuck ?
-                        queue4RepeatRepository::getFirstByProcessedIsFalseOrderByTimestampAsc :
-                        queue4RepeatRepository::getFirstByProcessedIsFalseAndStuckIsFalseOrderByTimestampAsc;
-
-                Optional<Queue4Repeat> found;
-                while ((found = supplier.get()).isPresent()) {
-                    if (!found.get().isStuck()) {
-                        deliver(found.get());
-
-                    } else {
-                        if (timer != null) {
-                            LOG.warn("Message stuck! Stopping repeat queue.");
-                            timer.cancel();
-                            timer = null;
-                        } else {
-                            LOG.warn("Message stuck!");
-                        }
-                        break;
-                    }
-                }
-
-            } finally {
-                lock.unlock();
-            }
-        }
-    }
-
-    private void deliver(Queue4Repeat queue) {
+    protected void process(Queue4Repeat queue) {
         try {
             Element update = DocumentHelper.parseText(queue.getMessage()).getRootElement();
             SystemInstance destination = queue.getDestination();

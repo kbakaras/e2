@@ -1,11 +1,8 @@
 package ru.kbakaras.e2.service;
 
-import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Service;
 import ru.kbakaras.e2.conversion.Converter4Payload;
 import ru.kbakaras.e2.message.E2Element;
@@ -25,68 +22,43 @@ import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.UUID;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 @Service
-public class Poller4Conversion implements InitializingBean, DisposableBean {
+public class Poller4Conversion extends BasicPoller<Queue4Conversion> {
     private static final Logger LOG = LoggerFactory.getLogger(Poller4Conversion.class);
 
-    private Timer timer;
-    private final Lock lock = new ReentrantLock();
-
-    @Resource private SystemInstanceRepository systemInstanceRepository;
+    @Resource private SystemInstanceRepository   systemInstanceRepository;
     @Resource private Queue4ConversionRepository queue4ConversionRepository;
-    @Resource private Queue4DeliveryRepository queue4DeliveryRepository;
-    @Resource private RouteUpdateRepository    routeUpdateRepository;
-    @Resource private ConversionRegistry       conversionRegistry;
-    @Resource private TimestampService         timestampService;
+    @Resource private Queue4DeliveryRepository   queue4DeliveryRepository;
+    @Resource private RouteUpdateRepository      routeUpdateRepository;
+    @Resource private ConversionRegistry         conversionRegistry;
+    @Resource private TimestampService           timestampService;
 
     @Override
-    public void destroy() {
-        timer.cancel();
+    protected Optional<Queue4Conversion> next() {
+        return queue4ConversionRepository.getFirstByProcessedIsFalseOrderByTimestampAsc();
     }
 
     @Override
-    public void afterPropertiesSet() {
-        timer = new Timer("Poller4Conversion");
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                process();
-            }
-        }, 0, 10000);
-    }
-
-    public void process() {
-        if (lock.tryLock()) {
-            try {
-                Optional<Queue4Conversion> found;
-                while ((found = queue4ConversionRepository.getFirstByProcessedIsFalseOrderByTimestampAsc()).isPresent()) {
-                    Queue4Conversion queue = found.get();
-                    convert(new E2Update(
+    protected void process(Queue4Conversion queue) {
+        try {
+            convert(new E2Update(
                             DocumentHelper.parseText(queue.getMessage()).getRootElement()),
-                            queue.getId()
-                    );
-                    queue.setProcessed(true);
-                    queue4ConversionRepository.save(queue);
-                }
-            } catch (DocumentException e) {
-                throw new RuntimeException(e);
-            } finally {
-                lock.unlock();
-            }
-        }
-    }
+                    queue.getId()
+            );
+            queue.setDelivered(true);
+            queue.setProcessed(true);
 
-    private List<SystemInstance> getDestinations(SystemInstance sourceSystem, String sourceEntityName) {
-        return routeUpdateRepository.getBySourceAndSourceEntityName(sourceSystem, sourceEntityName).stream()
-                .map(RouteUpdate::getDestination)
-                .collect(Collectors.toList());
+        } catch (Throwable e) {
+            LOG.error("Conversion error!", e);
+
+            queue.incAttempt();
+            queue.setStuck(true);
+        }
+
+        queue4ConversionRepository.save(queue);
     }
 
     /**
@@ -149,5 +121,11 @@ public class Poller4Conversion implements InitializingBean, DisposableBean {
         } else {
             LOG.info("Message with id {} produced no results.", sourceMessageId);
         }
+    }
+
+    private List<SystemInstance> getDestinations(SystemInstance sourceSystem, String sourceEntityName) {
+        return routeUpdateRepository.getBySourceAndSourceEntityName(sourceSystem, sourceEntityName).stream()
+                .map(RouteUpdate::getDestination)
+                .collect(Collectors.toList());
     }
 }

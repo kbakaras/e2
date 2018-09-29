@@ -4,8 +4,6 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Service;
 import ru.kbakaras.e2.model.Error4Delivery;
 import ru.kbakaras.e2.model.Queue4Delivery;
@@ -16,49 +14,18 @@ import ru.kbakaras.sugar.utils.ExceptionUtils;
 
 import javax.annotation.Resource;
 import java.util.Optional;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Supplier;
 
 @Service
-public class Poller4Delivery implements InitializingBean, DisposableBean {
+public class Poller4Delivery extends BasicPoller<Queue4Delivery> {
     private static final Logger LOG = LoggerFactory.getLogger(Poller4Delivery.class);
-
-    private Timer timer;
-    private final Lock lock = new ReentrantLock();
 
     private boolean stopOnStuck = true;
 
     @Resource private Queue4DeliveryRepository queue4DeliveryRepository;
     @Resource private Error4DeliveryRepository error4DeliveryRepository;
 
-    @Override
-    public void destroy() throws Exception {
-        timer.cancel();
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        start();
-    }
-
-    synchronized public void start() {
-        if (timer == null) {
-            LOG.info("Starting delivery queue...");
-            timer = new Timer("Poller4Delivery");
-            timer.scheduleAtFixedRate(new TimerTask() {
-                @Override
-                public void run() {
-                    process();
-                }
-            }, 0, 10000);
-        }
-    }
-
     synchronized public void resume() {
-        if (timer == null) {
+        if (!isPolling()) {
             queue4DeliveryRepository.getFirstByProcessedIsFalseAndStuckIsTrueOrderByTimestampAsc()
                     .ifPresent(queue -> {
                         queue.setStuck(false);
@@ -68,39 +35,17 @@ public class Poller4Delivery implements InitializingBean, DisposableBean {
         }
     }
 
-    private void process() {
-        if (lock.tryLock()) {
-            try {
-                LOG.trace("Checking queue for delivery...");
-
-                Supplier<Optional<Queue4Delivery>> supplier = stopOnStuck ?
-                        queue4DeliveryRepository::getFirstByProcessedIsFalseOrderByTimestampAsc :
-                        queue4DeliveryRepository::getFirstByProcessedIsFalseAndStuckIsFalseOrderByTimestampAsc;
-
-                Optional<Queue4Delivery> found;
-                while ((found = supplier.get()).isPresent()) {
-                    if (!found.get().isStuck()) {
-                        deliver(found.get());
-
-                    } else {
-                        if (timer != null) {
-                            LOG.warn("Message stuck! Stopping delivery queue.");
-                            timer.cancel();
-                            timer = null;
-                        } else {
-                            LOG.warn("Message stuck!");
-                        }
-                        break;
-                    }
-                }
-
-            } finally {
-                lock.unlock();
-            }
+    @Override
+    protected Optional<Queue4Delivery> next() {
+        if (stopOnStuck) {
+            return queue4DeliveryRepository.getFirstByProcessedIsFalseOrderByTimestampAsc();
+        } else {
+            return queue4DeliveryRepository.getFirstByProcessedIsFalseAndStuckIsFalseOrderByTimestampAsc();
         }
     }
 
-    private void deliver(Queue4Delivery queue) {
+    @Override
+    protected void process(Queue4Delivery queue) {
         try {
             Element update = DocumentHelper.parseText(queue.getMessage()).getRootElement();
             SystemInstance destination = queue.getDestination();
