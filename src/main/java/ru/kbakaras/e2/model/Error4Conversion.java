@@ -5,15 +5,15 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "error4repeat")
-public class Error4Repeat extends BasicError {
+@Table(name = "error4conversion")
+public class Error4Conversion extends BasicError {
     @ManyToOne
-    private Queue4Repeat queue;
+    private Queue4Conversion queue;
 
-    public Queue4Repeat getQueue() {
+    public Queue4Conversion getQueue() {
         return queue;
     }
-    public void setQueue(Queue4Repeat queue) {
+    public void setQueue(Queue4Conversion queue) {
         this.queue = queue;
     }
 }

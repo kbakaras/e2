@@ -6,7 +6,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "error4delivery")
-public class Error4Delivery extends BasicError4Delivery {
+public class Error4Delivery extends BasicError {
     @ManyToOne
     private Queue4Delivery queue;
 

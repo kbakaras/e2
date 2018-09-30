@@ -8,15 +8,10 @@ import ru.kbakaras.e2.conversion.Converter4Payload;
 import ru.kbakaras.e2.message.E2Element;
 import ru.kbakaras.e2.message.E2Entity;
 import ru.kbakaras.e2.message.E2Update;
-import ru.kbakaras.e2.model.Queue4Conversion;
-import ru.kbakaras.e2.model.Queue4Delivery;
-import ru.kbakaras.e2.model.RouteUpdate;
-import ru.kbakaras.e2.model.SystemInstance;
-import ru.kbakaras.e2.repositories.Queue4ConversionRepository;
-import ru.kbakaras.e2.repositories.Queue4DeliveryRepository;
-import ru.kbakaras.e2.repositories.RouteUpdateRepository;
-import ru.kbakaras.e2.repositories.SystemInstanceRepository;
+import ru.kbakaras.e2.model.*;
+import ru.kbakaras.e2.repositories.*;
 import ru.kbakaras.sugar.lazy.MapCache;
+import ru.kbakaras.sugar.utils.ExceptionUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -31,6 +26,7 @@ public class Poller4Conversion extends BasicPoller<Queue4Conversion> {
 
     @Resource private SystemInstanceRepository   systemInstanceRepository;
     @Resource private Queue4ConversionRepository queue4ConversionRepository;
+    @Resource private Error4ConversionRepository error4ConversionRepository;
     @Resource private Queue4DeliveryRepository   queue4DeliveryRepository;
     @Resource private RouteUpdateRepository      routeUpdateRepository;
     @Resource private ConversionRegistry         conversionRegistry;
@@ -52,10 +48,16 @@ public class Poller4Conversion extends BasicPoller<Queue4Conversion> {
             queue.setProcessed(true);
 
         } catch (Throwable e) {
-            LOG.error("Conversion error!", e);
-
             queue.incAttempt();
             queue.setStuck(true);
+
+            Error4Conversion error = new Error4Conversion();
+            error.setQueue(queue);
+            error.setError(ExceptionUtils.getMessage(e));
+            error.setStackTrace(ExceptionUtils.getStackTrace(e));
+            error4ConversionRepository.save(error);
+
+            LOG.error("Conversion error!{}", error);
         }
 
         queue4ConversionRepository.save(queue);

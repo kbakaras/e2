@@ -7,7 +7,7 @@ import javax.persistence.MappedSuperclass;
 import java.time.Instant;
 
 @MappedSuperclass
-public abstract class BasicError4Delivery extends ProperEntity {
+public abstract class BasicError extends ProperEntity {
     @Column(columnDefinition = "text")
     private String error;
 
@@ -16,7 +16,7 @@ public abstract class BasicError4Delivery extends ProperEntity {
 
     private Instant timestamp;
 
-    public BasicError4Delivery() {
+    public BasicError() {
         timestamp = Instant.now();
     }
 
@@ -36,5 +36,12 @@ public abstract class BasicError4Delivery extends ProperEntity {
 
     public Instant getTimestamp() {
         return timestamp;
+    }
+
+    @Override
+    public String toString() {
+        return  "\n____________________________________________________________________\n" +
+                this.getClass().getSimpleName() + " (" + getId() + ")\n" + stackTrace +
+                "\n____________________________________________________________________";
     }
 }
