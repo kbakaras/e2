@@ -55,8 +55,6 @@ public class Poller4Delivery extends BasicPoller<Queue4Delivery> {
             queue.setProcessed(true);
 
         } catch (Throwable e) {
-            LOG.error("Update delivery error!");
-
             queue.incAttempt();
             if (queue.getAttempt() >= ATTEMPT_MAX) {
                 queue.setStuck(true);
@@ -68,7 +66,7 @@ public class Poller4Delivery extends BasicPoller<Queue4Delivery> {
             error.setStackTrace(ExceptionUtils.getStackTrace(e));
             error4DeliveryRepository.save(error);
 
-            LOG.error(error.getError());
+            LOG.error("Update delivery error!{}", error);
         }
 
         queue4DeliveryRepository.save(queue);
