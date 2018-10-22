@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface Queue4DeliveryRepository extends JpaRepository<Queue4Delivery, UUID> {
+public interface Queue4DeliveryRepository extends JpaRepository<Queue4Delivery, UUID>, QueueManage {
     Optional<Queue4Delivery> getFirstByProcessedIsFalseAndStuckIsFalseOrderByTimestampAsc();
     Optional<Queue4Delivery> getFirstByProcessedIsFalseOrderByTimestampAsc();
 
