@@ -17,8 +17,9 @@ import java.util.Map;
 public class ConversionRegistry {
     private MapCache<Class<? extends SystemType>,
             MapCache<Class<? extends SystemType>,
-                                Map<String, Class<? extends Conversion>>>> mc = MapCache.of(
-                            source -> MapCache.of(destination -> new HashMap<>()));
+                    Map<String, Class<? extends Conversion>>>> mc = MapCache.of(
+                            source -> MapCache.of(destination -> new HashMap<>())
+    );
 
     @SuppressWarnings("unchecked")
     public ConversionRegistry(String basePackage) {
@@ -33,8 +34,11 @@ public class ConversionRegistry {
                 });
     }
 
-    @SuppressWarnings("unchecked")
     public Map<String, Class<? extends Conversion>> get(SystemType source, SystemType destination) {
         return mc.get(source.getClass()).get(destination.getClass());
+    }
+
+    public Map<String, Class<? extends Conversion>> get(Class<? extends SystemType> sourceClass, Class<? extends SystemType> destinationClass) {
+        return mc.get(sourceClass).get(destinationClass);
     }
 }
