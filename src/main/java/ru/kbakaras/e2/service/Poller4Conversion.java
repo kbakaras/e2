@@ -53,7 +53,7 @@ public class Poller4Conversion extends BasicPoller<Queue4Conversion> {
                             DocumentHelper.parseText(queue.getMessage()).getRootElement()),
                     queue.getId()
             );
-            queue.setDelivered(true);
+            queue.setDelivered();
             queue.setProcessed(true);
 
         } catch (Throwable e) {

@@ -20,6 +20,8 @@ public abstract class BasicQueue extends ProperEntity {
     @Column(nullable = false, columnDefinition = "boolean DEFAULT False")
     private boolean delivered;
 
+    private Instant deliveredTimestamp;
+
     @Column(nullable = false, columnDefinition = "boolean DEFAULT False")
     private boolean stuck;
 
@@ -53,11 +55,15 @@ public abstract class BasicQueue extends ProperEntity {
         this.processed = processed;
     }
 
-    public boolean isDelivered() {
-        return delivered;
+    public Instant getDeliveredTimestamp() {
+        return deliveredTimestamp;
     }
-    public void setDelivered(boolean delivered) {
-        this.delivered = delivered;
+    public void setDeliveredTimestamp(Instant deliveredTimestamp) {
+        this.deliveredTimestamp = deliveredTimestamp;
+    }
+    public void setDelivered() {
+        this.delivered = true;
+        this.deliveredTimestamp = Instant.now();
     }
 
     public boolean isStuck() {

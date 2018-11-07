@@ -41,7 +41,7 @@ public class Poller4Repeat extends BasicPoller<Queue4Repeat> {
             SystemInstance destination = queue.getDestination();
 
             destination.update(destination.getType().convertRequest(update));
-            queue.setDelivered(true);
+            queue.setDelivered();
             queue.setProcessed(true);
 
         } catch (Throwable e) {
