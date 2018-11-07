@@ -20,6 +20,8 @@ public class RouteRequest extends ProperEntity implements IReg<UUID> {
 
     private String requestorEntityName;
 
+    protected RouteRequest() {}
+
     public SystemInstance getRequestor() {
         return requestor;
     }

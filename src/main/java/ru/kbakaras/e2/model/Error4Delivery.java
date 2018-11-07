@@ -10,6 +10,8 @@ public class Error4Delivery extends BasicError {
     @ManyToOne
     private Queue4Delivery queue;
 
+    protected Error4Delivery() {}
+
     public Queue4Delivery getQueue() {
         return queue;
     }

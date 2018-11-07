@@ -20,6 +20,8 @@ public class RouteUpdate extends ProperEntity implements IReg<UUID> {
 
     private String sourceEntityName;
 
+    protected RouteUpdate() {}
+
     public SystemInstance getSource() {
         return source;
     }

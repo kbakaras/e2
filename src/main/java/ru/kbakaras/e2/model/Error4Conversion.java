@@ -10,6 +10,8 @@ public class Error4Conversion extends BasicError {
     @ManyToOne
     private Queue4Conversion queue;
 
+    protected Error4Conversion() {}
+
     public Queue4Conversion getQueue() {
         return queue;
     }

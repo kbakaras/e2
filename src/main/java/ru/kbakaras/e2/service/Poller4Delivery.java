@@ -10,6 +10,7 @@ import ru.kbakaras.e2.model.Queue4Delivery;
 import ru.kbakaras.e2.model.SystemInstance;
 import ru.kbakaras.e2.repositories.Error4DeliveryRepository;
 import ru.kbakaras.e2.repositories.Queue4DeliveryRepository;
+import ru.kbakaras.jpa.BaseEntity;
 import ru.kbakaras.sugar.utils.ExceptionUtils;
 
 import javax.annotation.Resource;
@@ -60,7 +61,7 @@ public class Poller4Delivery extends BasicPoller<Queue4Delivery> {
                 queue.setStuck(true);
             }
 
-            Error4Delivery error = new Error4Delivery();
+            Error4Delivery error = BaseEntity.newElement(Error4Delivery.class);
             error.setQueue(queue);
             error.setError(ExceptionUtils.getMessage(e));
             error.setStackTrace(ExceptionUtils.getStackTrace(e));

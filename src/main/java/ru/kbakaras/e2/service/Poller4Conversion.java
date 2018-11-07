@@ -8,8 +8,17 @@ import ru.kbakaras.e2.conversion.Converter4Payload;
 import ru.kbakaras.e2.message.E2Element;
 import ru.kbakaras.e2.message.E2Entity;
 import ru.kbakaras.e2.message.E2Update;
-import ru.kbakaras.e2.model.*;
-import ru.kbakaras.e2.repositories.*;
+import ru.kbakaras.e2.model.Error4Conversion;
+import ru.kbakaras.e2.model.Queue4Conversion;
+import ru.kbakaras.e2.model.Queue4Delivery;
+import ru.kbakaras.e2.model.RouteUpdate;
+import ru.kbakaras.e2.model.SystemInstance;
+import ru.kbakaras.e2.repositories.Error4ConversionRepository;
+import ru.kbakaras.e2.repositories.Queue4ConversionRepository;
+import ru.kbakaras.e2.repositories.Queue4DeliveryRepository;
+import ru.kbakaras.e2.repositories.RouteUpdateRepository;
+import ru.kbakaras.e2.repositories.SystemInstanceRepository;
+import ru.kbakaras.jpa.BaseEntity;
 import ru.kbakaras.sugar.lazy.MapCache;
 import ru.kbakaras.sugar.utils.ExceptionUtils;
 
@@ -51,7 +60,7 @@ public class Poller4Conversion extends BasicPoller<Queue4Conversion> {
             queue.incAttempt();
             queue.setStuck(true);
 
-            Error4Conversion error = new Error4Conversion();
+            Error4Conversion error = BaseEntity.newElement(Error4Conversion.class);
             error.setQueue(queue);
             error.setError(ExceptionUtils.getMessage(e));
             error.setStackTrace(ExceptionUtils.getStackTrace(e));
@@ -106,7 +115,7 @@ public class Poller4Conversion extends BasicPoller<Queue4Conversion> {
         if (!results.isEmpty()) {
             results.forEach((destination, convertedUpdate) -> {
                 if (!convertedUpdate.output.entities().isEmpty()) {
-                    Queue4Delivery queue = new Queue4Delivery();
+                    Queue4Delivery queue = BaseEntity.newElement(Queue4Delivery.class);
                     queue.setMessage(((E2Update) convertedUpdate.output).xml().asXML());
                     queue.setSize(queue.getMessage().length());
                     queue.setTimestamp(timestampService.get());

@@ -5,4 +5,6 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "queue4conversion")
-public class Queue4Conversion extends BasicQueue {}
+public class Queue4Conversion extends BasicQueue {
+    protected Queue4Conversion() {}
+}

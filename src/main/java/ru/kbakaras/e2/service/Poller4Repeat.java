@@ -10,6 +10,7 @@ import ru.kbakaras.e2.model.Queue4Repeat;
 import ru.kbakaras.e2.model.SystemInstance;
 import ru.kbakaras.e2.repositories.Error4RepeatRepository;
 import ru.kbakaras.e2.repositories.Queue4RepeatRepository;
+import ru.kbakaras.jpa.BaseEntity;
 import ru.kbakaras.sugar.utils.ExceptionUtils;
 
 import javax.annotation.Resource;
@@ -51,7 +52,7 @@ public class Poller4Repeat extends BasicPoller<Queue4Repeat> {
                 queue.setStuck(true);
             }
 
-            Error4Repeat error = new Error4Repeat();
+            Error4Repeat error = BaseEntity.newElement(Error4Repeat.class);
             error.setQueue(queue);
             error.setError(ExceptionUtils.getMessage(e));
             error.setStackTrace(ExceptionUtils.getStackTrace(e));
