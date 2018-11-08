@@ -17,9 +17,6 @@ public abstract class BasicQueue extends ProperEntity {
     @Column(nullable = false, columnDefinition = "boolean DEFAULT False")
     private boolean processed;
 
-    @Column(nullable = false, columnDefinition = "boolean DEFAULT False")
-    private boolean delivered;
-
     private Instant deliveredTimestamp;
 
     @Column(nullable = false, columnDefinition = "boolean DEFAULT False")
@@ -62,7 +59,6 @@ public abstract class BasicQueue extends ProperEntity {
         this.deliveredTimestamp = deliveredTimestamp;
     }
     public void setDelivered() {
-        this.delivered = true;
         this.deliveredTimestamp = Instant.now();
     }
 

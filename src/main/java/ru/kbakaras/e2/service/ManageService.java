@@ -38,7 +38,7 @@ public class ManageService {
     private QueueStats createStats(QueueManage statsRepository, BasicPoller poller) {
         return new ru.kbakaras.e2.manage.QueueStats(
                 statsRepository.countByProcessedIsTrue(),
-                statsRepository.countByProcessedIsTrueAndDeliveredIsNotNull(),
+                statsRepository.countByProcessedIsTrueAndDeliveredTimestampIsNotNull(),
                 statsRepository.countByProcessedIsFalse(),
                 statsRepository.countByProcessedIsFalseAndStuckIsTrue(),
                 !poller.isPolling()
