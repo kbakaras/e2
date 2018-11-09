@@ -1,5 +1,6 @@
 package ru.kbakaras.e2.model;
 
+import ru.kbakaras.jpa.BaseEntity;
 import ru.kbakaras.jpa.ProperEntity;
 
 import javax.persistence.Column;
@@ -35,28 +36,26 @@ public class History4Delivery extends ProperEntity {
     public Queue4Delivery getQueue() {
         return queue;
     }
-    public void setQueue(Queue4Delivery queue) {
-        this.queue = queue;
-    }
 
     public Instant getTimestamp() {
         return timestamp;
-    }
-    public void setTimestamp(Instant timestamp) {
-        this.timestamp = timestamp;
     }
 
     public String getMessage() {
         return message;
     }
-    public void setMessage(String message) {
-        this.message = message;
-    }
 
     public long getSize() {
         return size;
     }
-    public void setSize(long size) {
-        this.size = size;
+
+    public static History4Delivery newElement(Queue4Delivery queue) {
+        History4Delivery element = BaseEntity.newElement(History4Delivery.class);
+        element.queue   = queue;
+        element.message = queue.getMessage();
+        element.size    = queue.getSize();
+
+        element.timestamp = Instant.now();
+        return element;
     }
 }

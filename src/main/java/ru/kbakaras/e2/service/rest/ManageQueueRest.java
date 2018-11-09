@@ -1,9 +1,10 @@
 package ru.kbakaras.e2.service.rest;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
@@ -11,9 +12,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import ru.kbakaras.e2.manage.QueueStats;
 import ru.kbakaras.e2.model.BasicError;
 import ru.kbakaras.e2.model.BasicQueue;
-import ru.kbakaras.e2.model.Error4Delivery;
+import ru.kbakaras.e2.model.History4Delivery;
 import ru.kbakaras.e2.model.Queue4Conversion;
 import ru.kbakaras.e2.model.Queue4Delivery;
 import ru.kbakaras.e2.model.Queue4Repeat;
@@ -24,8 +26,10 @@ import ru.kbakaras.e2.repositories.Queue4ConversionRepository;
 import ru.kbakaras.e2.repositories.Queue4DeliveryRepository;
 import ru.kbakaras.e2.repositories.Queue4RepeatRepository;
 import ru.kbakaras.e2.repositories.QueueManage;
-import ru.kbakaras.e2.service.ManageService;
+import ru.kbakaras.e2.service.BasicPoller;
+import ru.kbakaras.e2.service.Poller4Conversion;
 import ru.kbakaras.e2.service.Poller4Delivery;
+import ru.kbakaras.e2.service.Poller4Repeat;
 
 import javax.annotation.Resource;
 import java.io.IOException;
@@ -40,8 +44,11 @@ import java.util.function.Function;
         method = RequestMethod.POST,
         path = "manage/Queue")
 public class ManageQueueRest {
-    @Resource private ManageService manageService;
+    private static final Logger LOG = LoggerFactory.getLogger(ManageQueueRest.class);
+
     @Resource private Poller4Delivery poller4Delivery;
+    @Resource private Poller4Conversion poller4Conversion;
+    @Resource private Poller4Repeat poller4Repeat;
 
     @Resource private Queue4DeliveryRepository   queue4DeliveryRepository;
     @Resource private Queue4ConversionRepository queue4ConversionRepository;
@@ -56,58 +63,33 @@ public class ManageQueueRest {
     @RequestMapping(path = "stats")
     public ObjectNode stats(String value) {
         return objectMapper.createObjectNode()
-                .putPOJO("conversion", manageService.getConversionStats())
-                .putPOJO("delivery",   manageService.getDeliveryStats())
-                .putPOJO("repeat",     manageService.getRepeatStats());
+                .putPOJO("conversion", getConversionStats())
+                .putPOJO("delivery",   getDeliveryStats())
+                .putPOJO("repeat",     getRepeatStats());
     }
 
-    @RequestMapping(path = "error")
-    public ObjectNode error(@RequestBody ObjectNode request) {
-        ObjectNode response = objectMapper.createObjectNode();
-
-        boolean stuck = request.get("stuck").asBoolean();
-        if (stuck) {
-            Error4Delivery error = manageService.getErrorStuck();
-            if (error != null) {
-                try {
-                    response.put("error", error.getError());
-                    response.put("stackTrace", error.getStackTrace());
-                    response.put("timestamp", objectMapper.writeValueAsString(error.getTimestamp()));
-                } catch (JsonProcessingException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-        return response;
+    public QueueStats getConversionStats() {
+        return createStats(queue4ConversionRepository, poller4Conversion);
     }
 
-    @RequestMapping(path = "message")
-    public ObjectNode message(@RequestBody ObjectNode request) {
-        ObjectNode response = objectMapper.createObjectNode();
-
-        boolean stuck = request.get("stuck").asBoolean();
-        if (stuck) {
-            queue4DeliveryRepository.getFirstByProcessedIsFalseAndStuckIsTrueOrderByTimestampAsc().ifPresent(msg -> {
-                boolean source = request.get("source").asBoolean();
-
-                try {
-                    if (source) {
-                        Queue4Conversion msgSource = queue4ConversionRepository.getOne(msg.getSourceMessageId());
-                        response.put("message",   msgSource.getMessage());
-                        response.put("timestamp", objectMapper.writeValueAsString(msgSource.getTimestamp()));
-                    } else {
-                        response.put("message",   msg.getMessage());
-                        response.put("timestamp", objectMapper.writeValueAsString(msg.getTimestamp()));
-                    }
-
-                } catch (JsonProcessingException e) {
-                    throw new RuntimeException(e);
-                }
-            });
-        }
-
-        return response;
+    public QueueStats getDeliveryStats() {
+        return createStats(queue4DeliveryRepository, poller4Delivery);
     }
+
+    public QueueStats getRepeatStats() {
+        return createStats(queue4RepeatRepository, poller4Repeat);
+    }
+
+    private QueueStats createStats(QueueManage statsRepository, BasicPoller poller) {
+        return new ru.kbakaras.e2.manage.QueueStats(
+                statsRepository.countByProcessedIsTrue(),
+                statsRepository.countByProcessedIsTrueAndDeliveredTimestampIsNotNull(),
+                statsRepository.countByProcessedIsFalse(),
+                statsRepository.countByProcessedIsFalseAndStuckIsTrue(),
+                !poller.isPolling()
+        );
+    }
+
 
     @RequestMapping(path = "resume")
     public void resume(@RequestBody ObjectNode request) {
@@ -117,17 +99,60 @@ public class ManageQueueRest {
         }
     }
 
+
+    @RequestMapping(path = "process")
+    public ObjectNode process(@RequestBody ObjectNode request) {
+        String queueName = request.get("queue").textValue();
+
+        BasicQueue queue;
+
+        if (QUEUE_Delivery.equals(queueName)) {
+            queue = poller4Delivery.processOne();
+        } else if (QUEUE_Conversion.equals(queueName)) {
+            queue = poller4Conversion.processOne();
+        } else if (QUEUE_Repeat.equals(queueName)) {
+            queue = poller4Repeat.processOne();
+        } else {
+            throw new IllegalArgumentException("Queue must be specified!");
+        }
+
+        if (queue.isProcessed()) {
+            return objectMapper.createObjectNode()
+                    .put("result", RESULT_SUCCESS)
+                    .put("id", queue.getId().toString());
+
+        } else {
+            ObjectNode response = objectMapper.createObjectNode()
+                    .put("result", RESULT_ERROR)
+                    .put("id", queue.getId().toString());
+
+            if (QUEUE_Delivery.equals(queueName)) {
+                error4DeliveryRepository.getFirstByQueueOrderByTimestampDesc((Queue4Delivery) queue)
+                        .ifPresent(error -> response.put("error", error.getError()));
+            } else if (QUEUE_Conversion.equals(queueName)) {
+                error4ConversionRepository.getFirstByQueueOrderByTimestampDesc((Queue4Conversion) queue)
+                        .ifPresent(error -> response.put("error", error.getError()));
+            } else if (QUEUE_Repeat.equals(queueName)) {
+                error4RepeatRepository.getFirstByQueueOrderByTimestampDesc((Queue4Repeat) queue)
+                        .ifPresent(error -> response.put("error", error.getError()));
+            }
+
+            return response;
+        }
+    }
+
+
     @RequestMapping(path = "list")
     public ObjectNode list(@RequestBody ObjectNode request) {
         ObjectNode response = objectMapper.createObjectNode();
 
         QueueManage queueManage;
         String queueName = request.get("queue").textValue();
-        if ("delivery".equals(queueName)) {
+        if (QUEUE_Delivery.equals(queueName)) {
             queueManage = queue4DeliveryRepository;
-        } else if ("conversion".equals(queueName)) {
+        } else if (QUEUE_Conversion.equals(queueName)) {
             queueManage = queue4ConversionRepository;
-        } else if ("repeat".equals(queueName)) {
+        } else if (QUEUE_Repeat.equals(queueName)) {
             queueManage = queue4RepeatRepository;
         } else {
             throw new IllegalArgumentException("Queue must be specified!");
@@ -160,14 +185,7 @@ public class ManageQueueRest {
     public ObjectNode read(@RequestBody ObjectNode request) {
         ObjectNode response = objectMapper.createObjectNode();
 
-        UUID id;
-
-        try {
-            id = objectMapper.readValue(request.get("id").textValue(), UUID.class);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
+        UUID id = getId(request);
 
         String field = null;
         boolean fieldMessage = false;
@@ -255,4 +273,48 @@ public class ManageQueueRest {
 
         return response;
     }
+
+    @RequestMapping(path = "reconvert")
+    public ObjectNode reconvert(@RequestBody ObjectNode request) {
+        try {
+            UUID id = getId(request);
+            Queue4Delivery queue = queue4DeliveryRepository.findById(id).orElseThrow(
+                    () -> new ManageQueueException("Message (" + id + ") not found in delivery queue!"));
+
+            if (queue.isProcessed()) {
+                throw new ManageQueueException("Message (" + id + ") is already processed!");
+            }
+
+            History4Delivery history = poller4Delivery.reconvert(queue);
+
+            return objectMapper.createObjectNode()
+                    .put("result", RESULT_SUCCESS)
+                    .put("historyId",        history.getId().toString())
+                    .put("historyTimestamp", history.getTimestamp().toString())
+                    .put("newMessage",       history.getQueue().getMessage());
+
+        } catch (ManageQueueException e) {
+            LOG.error(e.getMessage());
+
+            return objectMapper.createObjectNode()
+                    .put("result", RESULT_ERROR)
+                    .put("error", e.getMessage());
+
+        }
+    }
+
+    private UUID getId(ObjectNode request) {
+        try {
+            return objectMapper.readValue(request.get("id").textValue(), UUID.class);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static final String QUEUE_Delivery   = "delivery";
+    private static final String QUEUE_Conversion = "conversion";
+    private static final String QUEUE_Repeat     = "repeat";
+
+    private static final String RESULT_SUCCESS = "SUCCESS";
+    private static final String RESULT_ERROR   = "ERROR";
 }

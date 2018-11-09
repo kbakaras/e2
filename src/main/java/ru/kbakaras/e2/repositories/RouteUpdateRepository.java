@@ -14,4 +14,6 @@ public interface RouteUpdateRepository extends
 
     List<RouteUpdate> getBySourceAndDestination(SystemInstance source, SystemInstance destination);
     List<RouteUpdate> getBySourceAndSourceEntityName(SystemInstance source, String sourceEntityName);
+
+    boolean existsBySourceAndDestinationAndSourceEntityName(SystemInstance source, SystemInstance destination, String sourceEntityName);
 }

@@ -60,6 +60,7 @@ public abstract class BasicQueue extends ProperEntity {
     }
     public void setDelivered() {
         this.deliveredTimestamp = Instant.now();
+        this.stuck = false;
     }
 
     public boolean isStuck() {

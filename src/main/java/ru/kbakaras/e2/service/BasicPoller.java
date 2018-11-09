@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import ru.kbakaras.e2.model.BasicQueue;
+import ru.kbakaras.e2.service.rest.ManageQueueException;
 
 import java.util.Optional;
 import java.util.Timer;
@@ -31,7 +32,7 @@ public abstract class BasicPoller<Q extends BasicQueue> implements InitializingB
 
     synchronized public void start() {
         if (timer == null) {
-            String pollerName = this.getClass().getSimpleName();
+            String pollerName = getPollerName();
             LOG.info("Starting {}...", pollerName);
             timer = new Timer(pollerName);
             timer.scheduleAtFixedRate(new TimerTask() {
@@ -50,6 +51,16 @@ public abstract class BasicPoller<Q extends BasicQueue> implements InitializingB
     protected abstract void process(Q message);
     protected abstract Optional<Q> next();
 
+    /**
+     * Метод вызывается таймером обработчика очереди. Выполняет попытку обработать
+     * первое сообщение очереди, если оно не отмечено как застрявшее (stuck).<br/>
+     * Если же попадается застрявшее сообщение, метод останавливает таймер, очередь
+     * перестаёт обрабатывать сообщения.<br/><br/>
+     * Клиентский код также может вызвать этот метод. Как правило, при помещении
+     * следующего сообщения в очередь, чтобы не ждать срабатывания по таймеру. Это,
+     * в каком-то смысле, оптимизация для случая, когда очередь пуста и есть
+     * возможность обработать новое сообщение сразу.
+     */
     public final void processPoll() {
         if (lock.tryLock()) {
             try {
@@ -80,5 +91,29 @@ public abstract class BasicPoller<Q extends BasicQueue> implements InitializingB
                 lock.unlock();
             }
         }
+    }
+
+    /**
+     * Метод выполняет обработку
+     */
+    synchronized public Q processOne() {
+        if (isPolling()) {
+            if (isPolling()) {
+                throw new ManageQueueException(
+                        "Poller is active! It's not possible to forcibly process.");
+            }
+        }
+
+        Q queue = next().orElseThrow(
+                () -> new ManageQueueException(String.format(
+                        "Next message not foound in [%s]!", getPollerName())));
+
+        process(queue);
+
+        return queue;
+    }
+
+    protected String getPollerName() {
+        return this.getClass().getSimpleName();
     }
 }
