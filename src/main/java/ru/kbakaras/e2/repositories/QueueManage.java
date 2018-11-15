@@ -13,4 +13,6 @@ public interface QueueManage {
 
     List<BasicQueue> getByProcessedIsFalseAndStuckIsTrueOrderByTimestampAsc(Pageable pageable);
     List<BasicQueue> getByProcessedIsFalseOrderByTimestampAsc(Pageable pageable);
+
+    List<BasicQueue> getByProcessedIsTrueOrderByTimestampDesc(Pageable pageable);
 }

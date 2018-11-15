@@ -17,6 +17,7 @@ import ru.kbakaras.e2.model.SystemInstance;
 import ru.kbakaras.e2.repositories.Error4DeliveryRepository;
 import ru.kbakaras.e2.repositories.Queue4ConversionRepository;
 import ru.kbakaras.e2.repositories.Queue4DeliveryRepository;
+import ru.kbakaras.e2.repositories.QueueManage;
 import ru.kbakaras.e2.repositories.RouteUpdateRepository;
 import ru.kbakaras.e2.repositories.SystemInstanceRepository;
 import ru.kbakaras.e2.service.rest.ManageQueueException;
@@ -118,6 +119,11 @@ public class Poller4Delivery extends BasicPoller<Queue4Delivery> {
         } else {
             return queue4DeliveryRepository.getFirstByProcessedIsFalseAndStuckIsFalseOrderByTimestampAsc();
         }
+    }
+
+    @Override
+    protected QueueManage getQueueManager() {
+        return queue4DeliveryRepository;
     }
 
     @Override

@@ -4,9 +4,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.repository.CrudRepository;
 import ru.kbakaras.e2.model.BasicQueue;
+import ru.kbakaras.e2.repositories.QueueManage;
 import ru.kbakaras.e2.service.rest.ManageQueueException;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -22,7 +26,7 @@ public abstract class BasicPoller<Q extends BasicQueue> implements InitializingB
 
     @Override
     public void destroy() {
-        timer.cancel();
+        stop();
     }
 
     @Override
@@ -44,12 +48,20 @@ public abstract class BasicPoller<Q extends BasicQueue> implements InitializingB
         }
     }
 
+    synchronized public void stop() {
+        timer.cancel();
+        timer = null;
+        LOG.info("{} STOPPED", this.getClass().getSimpleName());
+    }
+
     public boolean isPolling() {
         return timer != null;
     }
 
     protected abstract void process(Q message);
     protected abstract Optional<Q> next();
+
+    protected abstract QueueManage getQueueManager();
 
     /**
      * Метод вызывается таймером обработчика очереди. Выполняет попытку обработать
@@ -76,8 +88,7 @@ public abstract class BasicPoller<Q extends BasicQueue> implements InitializingB
                     } else {
                         if (timer != null) {
                             LOG.warn("Message stuck! Stopping queue {}", found.get().getClass().getSimpleName());
-                            timer.cancel();
-                            timer = null;
+                            stop();
 
                         } else {
                             LOG.warn("Message stuck on queue {}!", found.get().getClass().getSimpleName());
@@ -94,23 +105,48 @@ public abstract class BasicPoller<Q extends BasicQueue> implements InitializingB
     }
 
     /**
-     * Метод выполняет обработку
+     * Метод выполняет обработку одного сообщения в остановленной очереди
      */
     synchronized public Q processOne() {
         if (isPolling()) {
-            if (isPolling()) {
-                throw new ManageQueueException(
-                        "Poller is active! It's not possible to forcibly process.");
-            }
+            throw new ManageQueueException(
+                    "Poller is active! It's not possible to forcibly process.");
         }
 
         Q queue = next().orElseThrow(
                 () -> new ManageQueueException(String.format(
-                        "Next message not foound in [%s]!", getPollerName())));
+                        "Next message not found in [%s]!", getPollerName())));
 
         process(queue);
 
         return queue;
+    }
+
+    /**
+     * Метод выполняет отмену обработки одного последнего сообщения в остановленной очереди
+     */
+    synchronized public Q revertOne() {
+        if (isPolling()) {
+            throw new ManageQueueException(
+                    "Poller is active! It's not possible to forcibly process.");
+        }
+
+        QueueManage repository = getQueueManager();
+
+        List<BasicQueue> queueList = repository.getByProcessedIsTrueOrderByTimestampDesc(PageRequest.of(0, 1));
+
+        if (queueList.isEmpty()) {
+            throw new ManageQueueException(String.format(
+                    "Last processed message not found in [%s]!", getPollerName()));
+        }
+
+        BasicQueue queue = queueList.get(0);
+
+        queue.setDeliveredTimestamp(null);
+        queue.setProcessed(false);
+        ((CrudRepository) repository).save(queue);
+
+        return (Q) queue;
     }
 
     protected String getPollerName() {

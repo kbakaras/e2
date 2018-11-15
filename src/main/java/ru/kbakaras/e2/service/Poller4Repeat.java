@@ -10,6 +10,7 @@ import ru.kbakaras.e2.model.Queue4Repeat;
 import ru.kbakaras.e2.model.SystemInstance;
 import ru.kbakaras.e2.repositories.Error4RepeatRepository;
 import ru.kbakaras.e2.repositories.Queue4RepeatRepository;
+import ru.kbakaras.e2.repositories.QueueManage;
 import ru.kbakaras.jpa.BaseEntity;
 import ru.kbakaras.sugar.utils.ExceptionUtils;
 
@@ -32,6 +33,11 @@ public class Poller4Repeat extends BasicPoller<Queue4Repeat> {
         } else {
             return queue4RepeatRepository.getFirstByProcessedIsFalseAndStuckIsFalseOrderByTimestampAsc();
         }
+    }
+
+    @Override
+    protected QueueManage getQueueManager() {
+        return queue4RepeatRepository;
     }
 
     @Override

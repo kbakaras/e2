@@ -16,6 +16,7 @@ import ru.kbakaras.e2.model.SystemInstance;
 import ru.kbakaras.e2.repositories.Error4ConversionRepository;
 import ru.kbakaras.e2.repositories.Queue4ConversionRepository;
 import ru.kbakaras.e2.repositories.Queue4DeliveryRepository;
+import ru.kbakaras.e2.repositories.QueueManage;
 import ru.kbakaras.e2.repositories.RouteUpdateRepository;
 import ru.kbakaras.e2.repositories.SystemInstanceRepository;
 import ru.kbakaras.jpa.BaseEntity;
@@ -44,6 +45,11 @@ public class Poller4Conversion extends BasicPoller<Queue4Conversion> {
     @Override
     protected Optional<Queue4Conversion> next() {
         return queue4ConversionRepository.getFirstByProcessedIsFalseOrderByTimestampAsc();
+    }
+
+    @Override
+    protected QueueManage getQueueManager() {
+        return queue4ConversionRepository;
     }
 
     @Override

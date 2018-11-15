@@ -91,12 +91,62 @@ public class ManageQueueRest {
     }
 
 
-    @RequestMapping(path = "resume")
-    public void resume(@RequestBody ObjectNode request) {
+    @RequestMapping(path = "stop")
+    public ObjectNode stop(@RequestBody ObjectNode request) {
         String queueName = request.get("queue").asText();
-        if ("delivery".equals(queueName)) {
-            poller4Delivery.resume();
+        if (QUEUE_Delivery.equals(queueName)) {
+            poller4Delivery.stop();
+        } else if (QUEUE_Conversion.equals(queueName)) {
+            poller4Conversion.stop();
+        } else if (QUEUE_Repeat.equals(queueName)) {
+            poller4Repeat.stop();
         }
+
+        return objectMapper.createObjectNode();
+    }
+
+    @RequestMapping(path = "revert")
+    public ObjectNode revert(@RequestBody ObjectNode request) {
+        BasicPoller<?> poller;
+
+        String queueName = request.get("queue").asText();
+        if (QUEUE_Delivery.equals(queueName)) {
+            poller = poller4Delivery;
+        } else if (QUEUE_Conversion.equals(queueName)) {
+            poller = poller4Conversion;
+        } else if (QUEUE_Repeat.equals(queueName)) {
+            poller = poller4Repeat;
+        } else {
+            throw new ManageQueueException(String.format("Queue %s is not found!", queueName));
+        }
+
+        try {
+            BasicQueue queue = poller.revertOne();
+            return objectMapper.createObjectNode()
+                    .put("result", RESULT_SUCCESS)
+                    .put("messageId", queue.getId().toString());
+
+        } catch (ManageQueueException e) {
+            LOG.error(e.getMessage());
+
+            return objectMapper.createObjectNode()
+                    .put("result", RESULT_ERROR)
+                    .put("error", e.getMessage());
+        }
+    }
+
+    @RequestMapping(path = "resume")
+    public ObjectNode resume(@RequestBody ObjectNode request) {
+        String queueName = request.get("queue").asText();
+        if (QUEUE_Delivery.equals(queueName)) {
+            poller4Delivery.resume();
+        } else if (QUEUE_Conversion.equals(queueName)) {
+            //poller4Conversion.resume();
+        } else if (QUEUE_Repeat.equals(queueName)) {
+            //poller4Repeat.resume();
+        }
+
+        return objectMapper.createObjectNode();
     }
 
 
@@ -165,6 +215,10 @@ public class ManageQueueRest {
                 ? queueManage.getByProcessedIsFalseAndStuckIsTrueOrderByTimestampAsc(pageable)
                 : queueManage.getByProcessedIsFalseOrderByTimestampAsc(pageable);
 
+        if (request.get("processed").asBoolean()) {
+            list.addAll(queueManage.getByProcessedIsTrueOrderByTimestampDesc(pageable));
+        }
+
         ArrayNode listNode = objectMapper.createArrayNode();
         response.set("list", listNode);
 
@@ -175,6 +229,8 @@ public class ManageQueueRest {
                     .put("size",      queue.getSize())
                     .put("attempt",   queue.getAttempt())
                     .put("stuck",     queue.isStuck())
+                    .put("processed", queue.isProcessed())
+                    .put("delivered", queue.getDeliveredTimestamp().toString())
             );
         }
 
