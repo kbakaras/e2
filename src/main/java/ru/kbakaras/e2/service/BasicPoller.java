@@ -125,6 +125,7 @@ public abstract class BasicPoller<Q extends BasicQueue> implements InitializingB
     /**
      * Метод выполняет отмену обработки одного последнего сообщения в остановленной очереди
      */
+    @SuppressWarnings("unchecked")
     synchronized public Q revertOne() {
         if (isPolling()) {
             throw new ManageQueueException(

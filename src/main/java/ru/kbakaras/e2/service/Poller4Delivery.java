@@ -21,6 +21,7 @@ import ru.kbakaras.e2.repositories.QueueManage;
 import ru.kbakaras.e2.repositories.RouteUpdateRepository;
 import ru.kbakaras.e2.repositories.SystemInstanceRepository;
 import ru.kbakaras.e2.service.rest.ManageQueueException;
+import ru.kbakaras.e2.service.rest.ManageQueueSkipException;
 import ru.kbakaras.jpa.BaseEntity;
 import ru.kbakaras.sugar.utils.ExceptionUtils;
 
@@ -83,7 +84,7 @@ public class Poller4Delivery extends BasicPoller<Queue4Delivery> {
         String newMessage = destinationMessage.xml().asXML();
 
         if (queue.getMessage().equals(newMessage)) {
-            throw new ManageQueueException(String.format(
+            throw new ManageQueueSkipException(String.format(
                     "Original message with id (%s) is equal to reconverted!",
                     sourceQueue.getId()
             ));

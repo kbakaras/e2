@@ -33,6 +33,7 @@ import ru.kbakaras.e2.service.Poller4Repeat;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -230,7 +231,7 @@ public class ManageQueueRest {
                     .put("attempt",   queue.getAttempt())
                     .put("stuck",     queue.isStuck())
                     .put("processed", queue.isProcessed())
-                    .put("delivered", queue.getDeliveredTimestamp().toString())
+                    .put("delivered", Optional.ofNullable(queue.getDeliveredTimestamp()).map(Instant::toString).orElse(null))
             );
         }
 
@@ -349,6 +350,13 @@ public class ManageQueueRest {
                     .put("historyTimestamp", history.getTimestamp().toString())
                     .put("newMessage",       history.getQueue().getMessage());
 
+        } catch (ManageQueueSkipException e) {
+            LOG.error(e.getMessage());
+
+            return objectMapper.createObjectNode()
+                    .put("result", RESULT_SKIPPED)
+                    .put("error", e.getMessage());
+
         } catch (ManageQueueException e) {
             LOG.error(e.getMessage());
 
@@ -372,5 +380,6 @@ public class ManageQueueRest {
     private static final String QUEUE_Repeat     = "repeat";
 
     private static final String RESULT_SUCCESS = "SUCCESS";
+    private static final String RESULT_SKIPPED = "SKIPPED";
     private static final String RESULT_ERROR   = "ERROR";
 }
