@@ -1,5 +1,7 @@
 package ru.kbakaras.e2.conversion.context;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.kbakaras.e2.message.E2Element;
 import ru.kbakaras.e2.message.E2Entity;
 import ru.kbakaras.e2.message.E2Exception4Write;
@@ -13,6 +15,8 @@ import java.util.function.Function;
  * и табличными частями) на основании контекста конверсии.
  */
 public class Conversion4Element {
+    private static final Logger LOG = LoggerFactory.getLogger(Conversion4Element.class);
+
     private String entityName;
     private Consumer<E2Entity> entityInitializer;
     private String elementUid;
@@ -82,6 +86,8 @@ public class Conversion4Element {
             throw new E2Exception4Write("Empty entity is not allowed!");
         }
 
+        LOG.debug("{} Producing -------------------------------", entityName);
+
         E2Entity entity = cc.converter.output.createEntity(
                 entityName,
                 entityInitializer);
@@ -100,9 +106,13 @@ public class Conversion4Element {
             destinationElement.setDeleted(deletedFunction.apply(cce));
         }
 
+        LOG.debug("{} Applying automatic attribute conversions:", entityName);
         attributes.makeAuto(ccp);
+        LOG.debug("{} Applying automatic table conversions:", entityName);
         tables.makeAuto(ccp);
+        LOG.debug("{} Applying other producers:", entityName);
         producers.make(ccp);
+        LOG.debug("{} -----------------------------------------", entityName);
 
         return destinationElement;
     }

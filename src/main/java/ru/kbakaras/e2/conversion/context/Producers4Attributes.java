@@ -59,8 +59,9 @@ public class Producers4Attributes {
             ccp.sourceAttributes.stream()
                     .map(E2Attribute::attributeName)
                     .filter(sourceName -> !skip.contains(sourceName))
-                    .forEach(sourceName -> new Conversion4Attribute(sourceName, sourceName)
-                            .make(ccp));
+                    .forEach(sourceName ->
+                        new Conversion4Attribute(sourceName, sourceName).make(ccp)
+                    );
         }
     }
 
@@ -72,9 +73,16 @@ public class Producers4Attributes {
             this.destinationName = destinationName;
         }
 
+        /**
+         * Создаёт стандартную конверсию для данного выходного атрибута, указав имя входного
+         * атрибута. Входной атриюут автоматически помещается в набор skip и не будет использоваться
+         * при выполнения автоматической конверсии "нетронутых" атрибутов.
+         * @param sourceName Имя исходного атрибута
+         */
         public Conversion4Attribute take(String sourceName) {
             Conversion4Attribute ca = new Conversion4Attribute(sourceName, destinationName);
             producers.add(ca);
+            skip.add(sourceName);
             return ca;
         }
 

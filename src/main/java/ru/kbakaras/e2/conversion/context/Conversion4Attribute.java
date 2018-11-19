@@ -66,6 +66,8 @@ public class Conversion4Attribute extends Producer {
 
     @Override
     void make(ConversionContext4Producer ccp) {
+        LOG.debug("Applying attribute conversion {} --> {}", sourceName, destinationName);
+
         Optional<E2AttributeValue> bar = ccp.sourceAttributes.get(sourceName)
                 .map(E2Attribute::attributeValue)
                 .flatMap(value -> {
