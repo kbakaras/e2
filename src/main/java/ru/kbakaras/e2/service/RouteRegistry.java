@@ -1,5 +1,6 @@
 package ru.kbakaras.e2.service;
 
+import org.springframework.stereotype.Service;
 import ru.kbakaras.e2.model.RouteRequest;
 import ru.kbakaras.e2.model.SystemInstance;
 import ru.kbakaras.e2.repositories.RouteRequestRepository;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Service
 public class RouteRegistry {
     @Resource
     private RouteRequestRepository routeRequestRepository;
