@@ -17,15 +17,17 @@ public class Conversion4Attribute extends Producer {
 
     private String sourceName;
     private String destinationName;
+    private Function<ConversionContext4Producer, E2Attribute> attributeCreator;
 
     private String explicitEntity;
     private Function<E2Scalar, E2Scalar> conversion;
 
     private String defaultValue;
 
-    Conversion4Attribute(String sourceName, String destinationName) {
+    Conversion4Attribute(String sourceName, String destinationName, Function<ConversionContext4Producer, E2Attribute> attributeCreator) {
         this.sourceName = sourceName;
         this.destinationName = destinationName;
+        this.attributeCreator = attributeCreator;
     }
 
     public Conversion4Attribute convert(Function<E2Scalar, E2Scalar> conversion) {
@@ -96,9 +98,9 @@ public class Conversion4Attribute extends Producer {
                 });
 
         if (bar.isPresent()) {
-            bar.get().apply(ccp.destinationAttributes.add(destinationName));
+            bar.get().apply(attributeCreator.apply(ccp));
         } else if (defaultValue != null) {
-            ccp.destinationAttributes.add(destinationName).setValue(defaultValue);
+            attributeCreator.apply(ccp).setValue(defaultValue);
         }
     }
 }

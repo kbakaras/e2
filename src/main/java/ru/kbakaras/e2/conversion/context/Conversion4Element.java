@@ -24,6 +24,7 @@ public class Conversion4Element {
     private Boolean changed;
     private Boolean deleted;
     private Function<ConversionContext4Element, Boolean> deletedFunction;
+    private boolean synth;
 
     private Producers producers = new Producers();
 
@@ -68,6 +69,11 @@ public class Conversion4Element {
         return this;
     }
 
+    public Conversion4Element synth(boolean synth) {
+        this.synth = synth;
+        return this;
+    }
+
 
     public Producers4Attributes.Producer4Attribute attributes(String attributeName) {
         return attributes.attribute(attributeName);
@@ -95,7 +101,8 @@ public class Conversion4Element {
         E2Element destinationElement = entity
                 .addElement(elementUid != null ? elementUid : cc.sourceElement.getUid())
                 .setChanged(changed    != null ? changed    : cc.sourceElement.isChanged())
-                .setDeleted(deleted    != null ? deleted    : cc.sourceElement.isDeleted());
+                .setDeleted(deleted    != null ? deleted    : cc.sourceElement.isDeleted())
+                .setSynth(synth);
 
         resultSetter.accept(destinationElement);
 

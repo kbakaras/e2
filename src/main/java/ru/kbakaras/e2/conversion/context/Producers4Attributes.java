@@ -60,7 +60,10 @@ public class Producers4Attributes {
                     .map(E2Attribute::attributeName)
                     .filter(sourceName -> !skip.contains(sourceName))
                     .forEach(sourceName ->
-                        new Conversion4Attribute(sourceName, sourceName).make(ccp)
+                        new Conversion4Attribute(
+                                sourceName, sourceName,
+                                ccp_ -> ccp_.destinationAttributes.add(sourceName)
+                        ).make(ccp)
                     );
         }
     }
@@ -68,9 +71,15 @@ public class Producers4Attributes {
 
     public class Producer4Attribute {
         private String destinationName;
+        private boolean id = false;
 
         Producer4Attribute(String destinationName) {
             this.destinationName = destinationName;
+        }
+
+        public Producer4Attribute id(boolean id) {
+            this.id = id;
+            return this;
         }
 
         /**
@@ -80,7 +89,7 @@ public class Producers4Attributes {
          * @param sourceName Имя исходного атрибута
          */
         public Conversion4Attribute take(String sourceName) {
-            Conversion4Attribute ca = new Conversion4Attribute(sourceName, destinationName);
+            Conversion4Attribute ca = new Conversion4Attribute(sourceName, destinationName, this::createAttribute);
             producers.add(ca);
             skip.add(sourceName);
             return ca;
@@ -97,7 +106,7 @@ public class Producers4Attributes {
             producers.add(new Producer() {
                 @Override
                 void make(ConversionContext4Producer ccp) {
-                    producer.accept(ccp, Lazy.of(() -> ccp.destinationAttributes.add(destinationName)));
+                    producer.accept(ccp, Lazy.of(() -> createAttribute(ccp)));
                 }
             });
         }
@@ -106,7 +115,7 @@ public class Producers4Attributes {
             producers.add(new Producer() {
                 @Override
                 void make(ConversionContext4Producer ccp) {
-                    ccp.destinationAttributes.add(destinationName).setValue(value);
+                    createAttribute(ccp).setValue(value);
                 }
             });
         }
@@ -115,9 +124,13 @@ public class Producers4Attributes {
             producers.add(new Producer() {
                 @Override
                 void make(ConversionContext4Producer ccp) {
-                    value.apply(ccp.destinationAttributes.add(destinationName));
+                    value.apply(createAttribute(ccp));
                 }
             });
+        }
+
+        private E2Attribute createAttribute(ConversionContext4Producer ccp) {
+            return ccp.destinationAttributes.add(destinationName).setId(id);
         }
     }
 }

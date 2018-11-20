@@ -47,8 +47,8 @@ public class ConversionContext {
      * элемента нужно породить не только результирующий элемент, но и побочный.
      * @param conversion4Element
      */
-    public void addDestination(Conversion4Element conversion4Element) {
-        conversion4Element.make(this, this::addDestination);
+    public E2Element addDestination(Conversion4Element conversion4Element) {
+        return conversion4Element.make(this, this::addDestination);
     }
 
     /**
@@ -58,8 +58,8 @@ public class ConversionContext {
      * вызываться должен именно этот метод.
      * @param conversion4Element
      */
-    public void addResult(Conversion4Element conversion4Element) {
-        conversion4Element.make(this, this::setResult);
+    public E2Element addResult(Conversion4Element conversion4Element) {
+        return conversion4Element.make(this, this::setResult);
     }
 
     /**
