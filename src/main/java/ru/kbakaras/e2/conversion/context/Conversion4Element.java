@@ -18,7 +18,6 @@ public class Conversion4Element {
     private static final Logger LOG = LoggerFactory.getLogger(Conversion4Element.class);
 
     private String entityName;
-    private Consumer<E2Entity> entityInitializer;
     private String elementUid;
 
     private Boolean changed;
@@ -34,17 +33,6 @@ public class Conversion4Element {
 
     public Conversion4Element entity(String entityName) {
         this.entityName = entityName;
-        return this;
-    }
-
-    public Conversion4Element entity(Consumer<E2Entity> entityInitializer) {
-        this.entityInitializer = entityInitializer;
-        return this;
-    }
-
-    public Conversion4Element entity(String entityName, Consumer<E2Entity> entityInitializer) {
-        this.entityName = entityName;
-        this.entityInitializer = entityInitializer;
         return this;
     }
 
@@ -94,9 +82,7 @@ public class Conversion4Element {
 
         LOG.debug("{} Producing -------------------------------", entityName);
 
-        E2Entity entity = cc.converter.output.createEntity(
-                entityName,
-                entityInitializer);
+        E2Entity entity = cc.converter.output.createEntity(entityName);
 
         E2Element destinationElement = entity
                 .addElement(elementUid != null ? elementUid : cc.sourceElement.getUid())
