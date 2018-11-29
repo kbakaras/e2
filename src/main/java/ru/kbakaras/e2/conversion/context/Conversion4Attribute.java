@@ -22,8 +22,6 @@ public class Conversion4Attribute extends Producer {
     private String explicitEntity;
     private Function<E2Scalar, E2Scalar> conversion;
 
-    private String defaultValue;
-
     Conversion4Attribute(String sourceName, String destinationName, Function<ConversionContext4Producer, E2Attribute> attributeCreator) {
         this.sourceName = sourceName;
         this.destinationName = destinationName;
@@ -61,16 +59,12 @@ public class Conversion4Attribute extends Producer {
         return this;
     }
 
-    public Conversion4Attribute defaultValue(String defaultValue) {
-        this.defaultValue = defaultValue;
-        return this;
-    }
 
     @Override
     void make(ConversionContext4Producer ccp) {
         LOG.debug("Applying attribute conversion {} --> {}", sourceName, destinationName);
 
-        Optional<E2AttributeValue> bar = ccp.sourceAttributes.get(sourceName)
+        ccp.sourceAttributes.get(sourceName)
                 .map(E2Attribute::attributeValue)
                 .flatMap(value -> {
                     if (value instanceof E2Scalar) {
@@ -95,12 +89,7 @@ public class Conversion4Attribute extends Producer {
                     } else {
                         throw new E2Exception4Write("Unknown attribute value type!");
                     }
-                });
-
-        if (bar.isPresent()) {
-            bar.get().apply(attributeCreator.apply(ccp));
-        } else if (defaultValue != null) {
-            attributeCreator.apply(ccp).setValue(defaultValue);
-        }
+                })
+                .ifPresent(value -> value.apply(attributeCreator.apply(ccp)));
     }
 }

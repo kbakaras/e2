@@ -2,6 +2,7 @@ package ru.kbakaras.e2.conversion.context;
 
 import ru.kbakaras.e2.message.E2Attribute;
 import ru.kbakaras.e2.message.E2AttributeValue;
+import ru.kbakaras.e2.message.E2Scalar;
 import ru.kbakaras.sugar.lazy.Lazy;
 
 import java.util.Arrays;
@@ -71,16 +72,30 @@ public class Producers4Attributes {
 
     public class Producer4Attribute {
         private String destinationName;
+        private E2Attribute destinationAttribute;
+
         private boolean id = false;
+        private E2AttributeValue defaultValue;
 
         Producer4Attribute(String destinationName) {
             this.destinationName = destinationName;
         }
 
+        /**
+         * Метод позволяет задать, будет ли создаваемый атрибут иметь признак, что он является
+         * идентифицирующим. Обращение к данному методу не приводит к обязательному созданию
+         * реквизита, но если реквизит будет создан, признак ему будет назначен.
+         */
         public Producer4Attribute id(boolean id) {
             this.id = id;
             return this;
         }
+
+        public Producer4Attribute defaultValue(String value) {
+            this.defaultValue = new E2Scalar(value);
+            return this;
+        }
+
 
         /**
          * Создаёт стандартную конверсию для данного выходного атрибута, указав имя входного
@@ -90,7 +105,7 @@ public class Producers4Attributes {
          */
         public Conversion4Attribute take(String sourceName) {
             Conversion4Attribute ca = new Conversion4Attribute(sourceName, destinationName, this::createAttribute);
-            producers.add(ca);
+            addProducer(ca);
             skip.add(sourceName);
             return ca;
         }
@@ -103,7 +118,7 @@ public class Producers4Attributes {
          * @param producer Консьюмер, который будет создавать атрибут
          */
         public void produce(BiConsumer<ConversionContext4Producer, Lazy<E2Attribute>> producer) {
-            producers.add(new Producer() {
+            addProducer(new Producer() {
                 @Override
                 void make(ConversionContext4Producer ccp) {
                     producer.accept(ccp, Lazy.of(() -> createAttribute(ccp)));
@@ -129,8 +144,27 @@ public class Producers4Attributes {
             });
         }
 
+        /**
+         * Ссылка на метод передаётся в функции, производящие атрибут. Метод создаёт атрибут
+         * с заданным именем и выполняет необходимую базовую настройку. Если метод будет вызван,
+         * он в том числе сохранит ссылку на созданный атрибут в данном классе.
+         */
         private E2Attribute createAttribute(ConversionContext4Producer ccp) {
-            return ccp.destinationAttributes.add(destinationName).setId(id);
+            this.destinationAttribute = ccp.destinationAttributes.add(destinationName).setId(id);
+            return destinationAttribute;
+        }
+
+        private void addProducer(Producer producer) {
+            producers.add(new Producer() {
+                @Override
+                void make(ConversionContext4Producer ccp) {
+                    producer.make(ccp);
+
+                    if (destinationAttribute == null && defaultValue != null) {
+                        defaultValue.apply(createAttribute(ccp));
+                    }
+                }
+            });
         }
     }
 }
