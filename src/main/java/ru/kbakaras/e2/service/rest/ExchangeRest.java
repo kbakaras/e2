@@ -147,15 +147,17 @@ public class ExchangeRest implements InitializingBean {
                     E2SystemResponse inSystemResponse =
                             donorResponse.system.getType().convertResponse(donorResponse.response).systemResponse();
 
-                    updateSystemName(donorResponse.system, inSystemResponse.responseSystemName());
+                    if (inSystemResponse != null) {
+                        updateSystemName(donorResponse.system, inSystemResponse.responseSystemName());
 
-                    new Converter4Payload(
-                            inSystemResponse,
-                            outResponse.addSystemResponse(
-                                    donorResponse.system.getId().toString(),
-                                    donorResponse.system.getName()),
-                            conversionRegistry.get(donorResponse.system.getType(), sourceSystem.getType())
-                    ).convertChanged();
+                        new Converter4Payload(
+                                inSystemResponse,
+                                outResponse.addSystemResponse(
+                                        donorResponse.system.getId().toString(),
+                                        donorResponse.system.getName()),
+                                conversionRegistry.get(donorResponse.system.getType(), sourceSystem.getType())
+                        ).convertChanged();
+                    }
 
                 } else {
                     outResponse.addSystemError(
