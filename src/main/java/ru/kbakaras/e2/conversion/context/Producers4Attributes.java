@@ -1,6 +1,7 @@
 package ru.kbakaras.e2.conversion.context;
 
 import ru.kbakaras.e2.message.E2Attribute;
+import ru.kbakaras.e2.message.E2AttributeUse;
 import ru.kbakaras.e2.message.E2AttributeValue;
 import ru.kbakaras.e2.message.E2Scalar;
 import ru.kbakaras.sugar.lazy.Lazy;
@@ -75,6 +76,7 @@ public class Producers4Attributes {
         private E2Attribute destinationAttribute;
 
         private boolean id = false;
+        private E2AttributeUse use;
         private E2AttributeValue defaultValue;
 
         Producer4Attribute(String destinationName) {
@@ -88,6 +90,11 @@ public class Producers4Attributes {
          */
         public Producer4Attribute id(boolean id) {
             this.id = id;
+            return this;
+        }
+
+        public Producer4Attribute use(E2AttributeUse use) {
+            this.use = use;
             return this;
         }
 
@@ -150,7 +157,8 @@ public class Producers4Attributes {
          * он в том числе сохранит ссылку на созданный атрибут в данном классе.
          */
         private E2Attribute createAttribute(ConversionContext4Producer ccp) {
-            this.destinationAttribute = ccp.destinationAttributes.add(destinationName).setId(id);
+            this.destinationAttribute = ccp.destinationAttributes.add(destinationName)
+                    .setId(id).setUse(use);
             return destinationAttribute;
         }
 

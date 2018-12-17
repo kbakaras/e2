@@ -3,6 +3,7 @@ package ru.kbakaras.e2.conversion.context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.kbakaras.e2.message.E2Element;
+import ru.kbakaras.e2.message.E2ElementUse;
 import ru.kbakaras.e2.message.E2Entity;
 import ru.kbakaras.e2.message.E2Exception4Write;
 
@@ -24,6 +25,7 @@ public class Conversion4Element {
     private Boolean deleted;
     private Function<ConversionContext4Element, Boolean> deletedFunction;
     private boolean synth;
+    private E2ElementUse use;
 
     private Producers producers = new Producers();
 
@@ -62,6 +64,11 @@ public class Conversion4Element {
         return this;
     }
 
+    public Conversion4Element use(E2ElementUse use) {
+        this.use = use;
+        return this;
+    }
+
 
     public Producers4Attributes.Producer4Attribute attributes(String attributeName) {
         return attributes.attribute(attributeName);
@@ -88,7 +95,8 @@ public class Conversion4Element {
                 .addElement(elementUid != null ? elementUid : cc.sourceElement.getUid())
                 .setChanged(changed    != null ? changed    : cc.sourceElement.isChanged())
                 .setDeleted(deleted    != null ? deleted    : cc.sourceElement.isDeleted())
-                .setSynth(synth);
+                .setSynth(synth)
+                .setUse(use);
 
         resultSetter.accept(destinationElement);
 
