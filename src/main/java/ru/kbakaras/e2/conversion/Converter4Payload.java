@@ -5,6 +5,7 @@ import ru.kbakaras.e2.converted.Converted;
 import ru.kbakaras.e2.message.E2Element;
 import ru.kbakaras.e2.message.E2Payload;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.Map;
@@ -27,6 +28,7 @@ public class Converter4Payload {
     private Stack<ConversionContext> contextStack = new Stack<>();
 
     private ConvertedCache convertedCache = new ConvertedCache();
+    private Map<Class<? extends SynthCache>, SynthCache> synthCache = new HashMap<>();
 
     public Converter4Payload(E2Payload input, E2Payload output, Map<String, Class<? extends Conversion>> conversionMap) {
         this.input = input;
@@ -76,5 +78,24 @@ public class Converter4Payload {
     public void convertChanged() {
         input.entities().forEach(
                 entity -> entity.elementsChanged().forEach(this::convertElement));
+    }
+
+
+    @SuppressWarnings("unchecked")
+    public <S extends SynthCache> S getSynthCache(Class<S> clazz) {
+        S sc = (S) synthCache.get(clazz);
+
+        if (sc == null) {
+            try {
+                sc = clazz.newInstance();
+                sc.setConverter(this);
+                synthCache.put(clazz, sc);
+
+            } catch (InstantiationException | IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        return sc;
     }
 }
