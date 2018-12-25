@@ -2,6 +2,7 @@ package ru.kbakaras.e2.conversion.context;
 
 import ru.kbakaras.e2.conversion.Conversion;
 import ru.kbakaras.e2.conversion.Converter4Payload;
+import ru.kbakaras.e2.conversion.Dereferencer;
 import ru.kbakaras.e2.converted.Converted;
 import ru.kbakaras.e2.message.E2Attribute;
 import ru.kbakaras.e2.message.E2Element;
@@ -113,6 +114,12 @@ public class ConversionContext {
             }
         }
         return null;
+    }
+
+
+    public Optional<E2Element> sourceDereference(String... attributeNames) {
+        return new Dereferencer(converter.input, sourceElement)
+                .dereference(attributeNames);
     }
 
 }
