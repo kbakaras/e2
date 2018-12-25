@@ -6,6 +6,7 @@ import ru.kbakaras.e2.conversion.Dereferencer;
 import ru.kbakaras.e2.converted.Converted;
 import ru.kbakaras.e2.message.E2Attribute;
 import ru.kbakaras.e2.message.E2Element;
+import ru.kbakaras.e2.message.E2Exception4Read;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -120,6 +121,11 @@ public class ConversionContext {
     public Optional<E2Element> sourceDereference(String... attributeNames) {
         return new Dereferencer(converter.input, sourceElement)
                 .dereference(attributeNames);
+    }
+    public E2Element sourceDereferenceMandatory(String... attributeNames) {
+        return new Dereferencer(converter.input, sourceElement)
+                .dereference(attributeNames)
+                .orElseThrow(() -> new E2Exception4Read("Unable to deference mandatory attribute!"));
     }
 
 }
