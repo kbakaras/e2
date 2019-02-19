@@ -32,6 +32,7 @@ import ru.kbakaras.e2.service.BasicPoller;
 import ru.kbakaras.e2.service.Poller4Conversion;
 import ru.kbakaras.e2.service.Poller4Delivery;
 import ru.kbakaras.e2.service.Poller4Repeat;
+import ru.kbakaras.e2.service.TimestampService;
 import ru.kbakaras.jpa.BaseEntity;
 
 import javax.annotation.Resource;
@@ -63,6 +64,7 @@ public class ManageQueueRest {
     @Resource private Error4RepeatRepository     error4RepeatRepository;
 
     @Resource private SystemInstanceRepository   systemInstanceRepository;
+    @Resource private TimestampService           timestampService;
 
     @Resource private ObjectMapper objectMapper;
 
@@ -394,6 +396,7 @@ public class ManageQueueRest {
             UUID systemId = new E2Update(queueConversion.getMessage()).systemUid();
 
             Queue4Repeat queueRepeat = BaseEntity.newElement(Queue4Repeat.class);
+            queueRepeat.setTimestamp(timestampService.get());
             queueRepeat.setMessage(queueConversion.getMessage());
             queueRepeat.setSize(queueConversion.getSize());
             queueRepeat.setSourceMessageId(id);
