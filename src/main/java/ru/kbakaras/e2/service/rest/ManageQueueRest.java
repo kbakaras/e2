@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import ru.kbakaras.e2.manage.QueueStats;
+import ru.kbakaras.e2.message.E2Update;
 import ru.kbakaras.e2.model.BasicError;
 import ru.kbakaras.e2.model.BasicQueue;
 import ru.kbakaras.e2.model.History4Delivery;
@@ -26,10 +27,12 @@ import ru.kbakaras.e2.repositories.Queue4ConversionRepository;
 import ru.kbakaras.e2.repositories.Queue4DeliveryRepository;
 import ru.kbakaras.e2.repositories.Queue4RepeatRepository;
 import ru.kbakaras.e2.repositories.QueueManage;
+import ru.kbakaras.e2.repositories.SystemInstanceRepository;
 import ru.kbakaras.e2.service.BasicPoller;
 import ru.kbakaras.e2.service.Poller4Conversion;
 import ru.kbakaras.e2.service.Poller4Delivery;
 import ru.kbakaras.e2.service.Poller4Repeat;
+import ru.kbakaras.jpa.BaseEntity;
 
 import javax.annotation.Resource;
 import java.io.IOException;
@@ -58,6 +61,8 @@ public class ManageQueueRest {
     @Resource private Error4DeliveryRepository   error4DeliveryRepository;
     @Resource private Error4ConversionRepository error4ConversionRepository;
     @Resource private Error4RepeatRepository     error4RepeatRepository;
+
+    @Resource private SystemInstanceRepository   systemInstanceRepository;
 
     @Resource private ObjectMapper objectMapper;
 
@@ -365,6 +370,74 @@ public class ManageQueueRest {
                     .put("error", e.getMessage());
 
         }
+    }
+
+    @RequestMapping(path = "repeat")
+    public ObjectNode repeat(@RequestBody ObjectNode request) {
+        UUID id = getId(request);
+
+        try {
+            Queue4Delivery queueDelivery = queue4DeliveryRepository.findById(id).orElse(null);
+            if (queueDelivery != null) {
+                if (queueDelivery.isProcessed()) {
+                    throw new ManageQueueSkipException("Message (" + id + ") is already processed!");
+                }
+
+                id = queueDelivery.getSourceMessageId();
+            }
+
+            Queue4Conversion queueConversion = queue4ConversionRepository.findById(id).orElse(null);
+            if (queueConversion == null) {
+                throw new ManageQueueException("Message (" + id + ") is not found in queues: delivery, conversion!");
+            }
+
+            UUID systemId = new E2Update(queueConversion.getMessage()).systemUid();
+
+            Queue4Repeat queueRepeat = BaseEntity.newElement(Queue4Repeat.class);
+            queueRepeat.setMessage(queueConversion.getMessage());
+            queueRepeat.setSize(queueConversion.getSize());
+            queueRepeat.setSourceMessageId(id);
+            queueRepeat.setDestination(
+                    systemInstanceRepository
+                            .findById(systemId)
+                            .orElseThrow(() -> new ManageQueueException("System (" + systemId + ") not found!"))
+            );
+            queue4RepeatRepository.save(queueRepeat);
+
+            if (!queueConversion.isProcessed()) {
+                queueConversion.setProcessed(true);
+                queueConversion.setStuck(false);
+                queue4ConversionRepository.save(queueConversion);
+            }
+
+            List<Queue4Delivery> list = queue4DeliveryRepository.findBySourceMessageId(id);
+            for (Queue4Delivery qd: list) {
+                if (!qd.isProcessed()) {
+                    qd.setProcessed(true);
+                    qd.setStuck(false);
+                    queue4DeliveryRepository.save(qd);
+                }
+            }
+
+            return objectMapper.createObjectNode()
+                    .put("result", RESULT_SUCCESS);
+
+        } catch (ManageQueueSkipException e) {
+            LOG.error(e.getMessage());
+
+            return objectMapper.createObjectNode()
+                    .put("result", RESULT_SKIPPED)
+                    .put("error", e.getMessage());
+
+        } catch (ManageQueueException e) {
+            LOG.error(e.getMessage());
+
+            return objectMapper.createObjectNode()
+                    .put("result", RESULT_ERROR)
+                    .put("error", e.getMessage());
+
+        }
+
     }
 
     private UUID getId(ObjectNode request) {
