@@ -3,19 +3,15 @@ package ru.kbakaras.e2.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Service;
 import ru.kbakaras.e2.model.SystemType;
 import ru.kbakaras.e2.repositories.SystemTypeRepository;
 
 import javax.annotation.Resource;
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
-import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 @Service
 public class SystemTypeRegistry implements InitializingBean {
@@ -31,7 +27,7 @@ public class SystemTypeRegistry implements InitializingBean {
     @SuppressWarnings({"ConstantConditions", "unchecked"})
     @Override
     public void afterPropertiesSet() {
-        emf.getMetamodel().getEntities().forEach(entityType -> {
+        /*emf.getMetamodel().getEntities().forEach(entityType -> {
             Class<?> clazz = entityType.getJavaType();
             if (SystemType.class.isAssignableFrom(clazz) && !Modifier.isAbstract(clazz.getModifiers())) {
                 DiscriminatorValue dv = AnnotationUtils.findAnnotation(clazz, DiscriminatorValue.class);
@@ -55,11 +51,11 @@ public class SystemTypeRegistry implements InitializingBean {
                     LOG.warn("Discriminator value not found for SystemType: {}. SYSTEM TYPE IGNORED!", clazz.getName());
                 }
             }
-        });
+        });*/
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends SystemType> T get(Class<T> clazz) {
+    public <T extends SystemType> T get1(Class<T> clazz) {
         return (T) map.get(clazz);
     }
 }

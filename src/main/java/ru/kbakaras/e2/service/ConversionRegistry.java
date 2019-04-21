@@ -2,6 +2,7 @@ package ru.kbakaras.e2.service;
 
 import ru.kbakaras.e2.conversion.Conversion;
 import ru.kbakaras.e2.conversion.PayloadConversionBind;
+import ru.kbakaras.e2.model.SystemAccessor;
 import ru.kbakaras.e2.model.SystemType;
 import ru.kbakaras.sugar.lazy.MapCache;
 import ru.kbakaras.sugar.spring.PackageResolver;
@@ -40,5 +41,9 @@ public class ConversionRegistry {
 
     public Map<String, Class<? extends Conversion>> get(Class<? extends SystemType> sourceClass, Class<? extends SystemType> destinationClass) {
         return mc.get(sourceClass).get(destinationClass);
+    }
+
+    public Map<String, Class<? extends Conversion>> get(SystemAccessor sourceAccessor, SystemAccessor destinationAccessor) {
+        return get(sourceAccessor.systemType, destinationAccessor.systemType);
     }
 }

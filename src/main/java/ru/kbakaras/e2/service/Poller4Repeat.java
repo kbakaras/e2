@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import ru.kbakaras.e2.model.Error4Repeat;
 import ru.kbakaras.e2.model.Queue4Repeat;
-import ru.kbakaras.e2.model.SystemInstance;
+import ru.kbakaras.e2.model.SystemAccessor;
 import ru.kbakaras.e2.repositories.Error4RepeatRepository;
 import ru.kbakaras.e2.repositories.Queue4RepeatRepository;
 import ru.kbakaras.e2.repositories.QueueManage;
@@ -25,6 +25,7 @@ public class Poller4Repeat extends BasicPoller<Queue4Repeat> {
 
     @Resource private Queue4RepeatRepository queue4RepeatRepository;
     @Resource private Error4RepeatRepository error4RepeatRepository;
+    @Resource private AccessorRegistry       accessorRegistry;
 
     @Override
     protected Optional<Queue4Repeat> next() {
@@ -44,9 +45,9 @@ public class Poller4Repeat extends BasicPoller<Queue4Repeat> {
     protected void process(Queue4Repeat queue) {
         try {
             Element update = DocumentHelper.parseText(queue.getMessage()).getRootElement();
-            SystemInstance destination = queue.getDestination();
+            SystemAccessor accessor = accessorRegistry.get(queue.getDestination());
 
-            destination.update(destination.getType().convertRequest(update));
+            accessor.update(accessor.convertRequest(update));
             queue.setDelivered();
             queue.setProcessed(true);
 
