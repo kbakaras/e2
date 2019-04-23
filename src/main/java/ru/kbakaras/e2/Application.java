@@ -6,8 +6,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import ru.kbakaras.e2.service.ConversionRegistry;
 
 @EnableWebMvc
 @SpringBootApplication
@@ -25,15 +27,16 @@ public class Application implements WebMvcConfigurer, ApplicationContextAware {
         return new Element4jHttpMessageConverter();
     }
 
-    @Bean
-    public ConversionRegistry conversionRegistry() {
-        return new ConversionRegistry("ru.glance.agr.conversion");
-    }
 
     @Override
     public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
         converters.add(element4jHttpMessageConverter());
     }*/
+
+    @Bean
+    public ConversionRegistry conversionRegistry() {
+        return new ConversionRegistry("ru.glance.agr.conversion");
+    }
 
     public static void main(String[] args) {
         SpringApplication application = new SpringApplication(Application.class);

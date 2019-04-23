@@ -5,9 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Service;
 import ru.kbakaras.e2.model.SystemType;
-import ru.kbakaras.e2.repositories.SystemTypeRepository;
 
-import javax.annotation.Resource;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
 import java.util.HashMap;
@@ -19,8 +17,6 @@ public class SystemTypeRegistry implements InitializingBean {
 
     @PersistenceUnit
     private EntityManagerFactory emf;
-    @Resource
-    private SystemTypeRepository repository;
 
     private Map<Class<? extends SystemType>, SystemType> map = new HashMap<>();
 
