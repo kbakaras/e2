@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = '2.0.2.RELEASE'
+        springBootVersion = '2.1.4.RELEASE'
     }
     repositories {
         mavenCentral()
@@ -54,6 +54,10 @@ dependencies {
     //implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '+'
     implementation group: 'org.dom4j', name: 'dom4j',     version: '2.1.0'
     implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+
+    compile group: 'io.springfox', name: 'springfox-swagger2',   version: '2.9.2'
+
+    //compile group: 'com.googlecode.cqengine', name: 'cqengine', version: '3.2.0'
 
     def withoutLogBinding = {
         exclude group: 'org.slf4j', module: 'slf4j-log4j12'

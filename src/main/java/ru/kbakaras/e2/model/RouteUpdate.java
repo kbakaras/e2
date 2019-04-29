@@ -4,14 +4,10 @@ import ru.kbakaras.jpa.ProperEntity;
 import ru.kbakaras.jpa.Regset;
 import ru.kbakaras.sugar.entity.IReg;
 
-import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 import java.util.List;
 import java.util.UUID;
 
-@Entity
-@Table(name = "route_update")
 public class RouteUpdate extends ProperEntity implements IReg<UUID> {
     @ManyToOne
     private SystemInstance source;

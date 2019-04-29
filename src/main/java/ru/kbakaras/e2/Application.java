@@ -8,10 +8,17 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import ru.kbakaras.e2.service.ConversionRegistry;
+import springfox.documentation.builders.PathSelectors;
+import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @EnableWebMvc
+@EnableSwagger2
 @SpringBootApplication
 //@SpringBootApplication(scanBasePackages = "ru.glance.agr.rest, ru.glance.agr.service, ru.kbakaras.e2.service")
 //@Import(DbBeanConfig.class)
@@ -33,19 +40,39 @@ public class Application implements WebMvcConfigurer, ApplicationContextAware {
         converters.add(element4jHttpMessageConverter());
     }*/
 
+
+
+    @Bean
+    public Docket apiDocket() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .select()
+                .apis(RequestHandlerSelectors.any())
+                .paths(PathSelectors.any())
+                .build();
+    }
+
+
     @Bean
     public ConversionRegistry conversionRegistry() {
         return new ConversionRegistry("ru.glance.agr.conversion");
     }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        factory = applicationContext;
+    }
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry
+                .addResourceHandler("/swagger/**")
+                .addResourceLocations("classpath:/swagger/");
+    }
+
 
     public static void main(String[] args) {
         SpringApplication application = new SpringApplication(Application.class);
         //application.addListeners((ApplicationListener<ApplicationStartedEvent>) event -> Application.factory = event.getApplicationContext());
         application.run(args);
 	}
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        factory = applicationContext;
-    }
 }
