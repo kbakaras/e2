@@ -21,6 +21,9 @@ import java.util.Stack;
  * <li>На каждое выходное сообщение нужен один объект-конвертор.</li>
  */
 public class Converter4Payload {
+
+    //TODO Сюда нужно запоминать целевую систему
+
     public final E2Payload input;
     public final E2Payload output;
 
@@ -98,4 +101,5 @@ public class Converter4Payload {
 
         return sc;
     }
+
 }

@@ -8,6 +8,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "system_instance")
 public abstract class SystemInstance extends ProperEntity {
+
     private String name;
 
 
@@ -22,4 +23,5 @@ public abstract class SystemInstance extends ProperEntity {
     public String toString() {
         return getName();
     }
+
 }

@@ -9,6 +9,7 @@ import ru.kbakaras.e2.conversion.Converter4Payload;
 import ru.kbakaras.e2.message.E2Element;
 import ru.kbakaras.e2.message.E2Entity;
 import ru.kbakaras.e2.message.E2Update;
+import ru.kbakaras.e2.model.Configuration4E2;
 import ru.kbakaras.e2.model.Error4Conversion;
 import ru.kbakaras.e2.model.Queue4Conversion;
 import ru.kbakaras.e2.model.Queue4Delivery;
@@ -39,6 +40,8 @@ public class Poller4Conversion extends BasicPoller<Queue4Conversion> {
     @Resource private ConversionRegistry         conversionRegistry;
     @Resource private AccessorRegistry           accessorRegistry;
     @Resource private TimestampService           timestampService;
+
+    @Resource private ConfigurationManager configurationManager;
 
 
     /**
@@ -106,7 +109,11 @@ public class Poller4Conversion extends BasicPoller<Queue4Conversion> {
      * @param sourceMessageId Уникальный идентификатор входного сообщения в очереди на конвертацию.
      */
     private void convert(E2Update update, UUID sourceMessageId) {
-        SystemAccessor sourceAccessor = accessorRegistry.get(update.systemUid());
+        Configuration4E2 conf = configurationManager.getConfiguration();
+
+        //SystemAccessor sourceAccessor = accessorRegistry.get(update.systemUid());
+        SystemAccessor sourceAccessor = conf.getSystemAccessor(update.systemUid());
+
         // TODO: updateSystemName(sourceSystem, update.systemName());
 
         LOG.info("Converting message {} from system {}:", sourceMessageId, sourceAccessor.systemInstance);
@@ -133,7 +140,8 @@ public class Poller4Conversion extends BasicPoller<Queue4Conversion> {
             List<E2Element> elementsChanged = entity.elementsChanged();
             if (!elementsChanged.isEmpty()) {
                 for (SystemAccessor destinationAccessor: routeRegistry.getUpdateDestinations(sourceAccessor, entity.entityName())) {
-                    elementsChanged.forEach(converters.get(destinationAccessor)::convertElement);
+                    Converter4Payload converter = converters.get(destinationAccessor);
+                    elementsChanged.forEach(converter::convertElement);
                 }
             }
         }

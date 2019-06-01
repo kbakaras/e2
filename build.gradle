@@ -19,6 +19,7 @@ version '1.0.0-SNAPSHOT'
 sourceCompatibility = 1.8
 
 repositories {
+    mavenLocal()
     maven {
         url "http://apps-srv-1/nexus/content/repositories/kbakaras"
     }
@@ -39,6 +40,7 @@ dependencyManagement {
 
 dependencies {
     implementation group: 'ru.kbakaras.e2',    name: 'e2-message',   version: '0.4.0-SNAPSHOT', changing: true
+    implementation group: 'ru.kbakaras.e2',    name: 'e2-core',      version: '0.1.0-SNAPSHOT', changing: true
 
     implementation group: 'ru.kbakaras.sugar', name: 'sugar',        version: '1.3.1-SNAPSHOT', changing: true
     implementation group: 'ru.kbakaras.sugar', name: 'sugar-jpa',    version: '0.1.0-SNAPSHOT', changing: true
