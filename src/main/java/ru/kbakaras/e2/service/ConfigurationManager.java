@@ -5,7 +5,10 @@ import org.springframework.stereotype.Service;
 import ru.kbakaras.e2.conversion.Conversion;
 import ru.kbakaras.e2.core.RouteConfigurer;
 import ru.kbakaras.e2.core.conversion.PayloadConversionBind;
+import ru.kbakaras.e2.core.model.SystemInstanceBase;
 import ru.kbakaras.e2.model.Configuration4E2;
+import ru.kbakaras.e2.model.Configuration4E2.RouteMap;
+import ru.kbakaras.e2.model.Configuration4E2.Source2Destinations4Conversions;
 import ru.kbakaras.e2.model.SystemType;
 import ru.kbakaras.sugar.lazy.MapCache;
 import ru.kbakaras.sugar.spring.PackageResolver;
@@ -17,6 +20,7 @@ import java.net.URLClassLoader;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.jar.JarFile;
 
 /**
@@ -43,9 +47,7 @@ public class ConfigurationManager implements InitializingBean {
         try {
             String jarPath = "/home/kbakaras/projects/idea/glance/e2-common/build/libs/e2-common-1.0-SNAPSHOT.jar";
 
-            URL[] classLoaderUrls = new URL[]{new URL("file://" + jarPath)};
-
-            URLClassLoader urlClassLoader = new URLClassLoader(classLoaderUrls);
+            URLClassLoader configurationClassLoader = new URLClassLoader(new URL[]{new URL("file://" + jarPath)});
 
             String basePackage;
             Class<? extends RouteConfigurer> clazz;
@@ -53,7 +55,7 @@ public class ConfigurationManager implements InitializingBean {
             try (JarFile jf = new JarFile(jarPath)) {
                 String mainClass = jf.getManifest().getMainAttributes().getValue(RouteConfigurer.CONFIGURER_CLASS);
 
-                clazz = (Class<? extends RouteConfigurer>) urlClassLoader.loadClass(mainClass);
+                clazz = (Class<? extends RouteConfigurer>) configurationClassLoader.loadClass(mainClass);
                 basePackage = jf.getManifest().getMainAttributes().getValue(RouteConfigurer.CONVERSION_PACKAGE);
 
             } catch (IOException e) {
@@ -61,47 +63,82 @@ public class ConfigurationManager implements InitializingBean {
             }
 
 
-            MapCache<Class<? extends SystemType>, MapCache<Class<? extends SystemType>,
-                    Map<String, Class<? extends Conversion>>>> mc = MapCache.of(
-                            source -> MapCache.of(destination -> new HashMap<>())
+            RouteMap updateRoutes  = new RouteMap();
+            RouteMap requestRoutes = new RouteMap();
+
+
+            clazz.newInstance().setupRoutes(
+                    (from, to, entities) -> configureRoutes(updateRoutes,  from, to, entities),
+                    (from, to, entities) -> configureRoutes(requestRoutes, from, to, entities)
             );
 
-            PackageResolver resolver = new PackageResolver(urlClassLoader);
-            resolver.forEach(basePackage, PayloadConversionBind.class, (bindClass, props) -> {
 
-                @SuppressWarnings("unchecked")
-                Class<? extends SystemType> sourceType = (Class<? extends SystemType>) props.get("sourceType");
+            this.configuration = new Configuration4E2(
+                    configureConversions(configurationClassLoader, basePackage),
+                    updateRoutes, requestRoutes
+            );
 
-                @SuppressWarnings("unchecked")
-                Class<? extends SystemType> destinationType = (Class<? extends SystemType>) props.get("destinationType");
-
-                mc.get(sourceType).get(destinationType)
-                        .put((String) props.get("sourceEntity"), bindClass);
-
-            });
-
-            Map<Class<? extends SystemType>, Map<Class<? extends SystemType>, Map<String, Class<? extends Conversion>>>> sources = new HashMap<>();
-
-            for (Map.Entry<Class<? extends SystemType>, MapCache<Class<? extends SystemType>, Map<String, Class<? extends Conversion>>>> entrySource: mc) {
-
-                Map<Class<? extends SystemType>, Map<String, Class<? extends Conversion>>> destinations = new HashMap<>();
-                sources.put(entrySource.getKey(), destinations);
-                
-                for (Map.Entry<Class<? extends SystemType>, Map<String, Class<? extends Conversion>>> entryDestination: entrySource.getValue()) {
-
-                    Map<String, Class<? extends Conversion>> conversions =
-                            Collections.unmodifiableMap(entryDestination.getValue());
-                    destinations.put(entryDestination.getKey(), conversions);
-                    
-                }
-            }
-
-            this.configuration = new Configuration4E2(sources);
-
-        } catch (MalformedURLException | ClassNotFoundException e) {
+        } catch (MalformedURLException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }
+
+    private void configureRoutes(RouteMap routeMap, SystemInstanceBase from, SystemInstanceBase to, String...entities) {
+
+        Map<String, UUID> map = routeMap.get(from.systemId);
+        if (map == null) {
+            routeMap.put(from.getId(), map = new HashMap<>());
+        }
+
+        for (String entity: entities) {
+            map.put(entity, to.systemId);
+        }
+
+    }
+
+    @SuppressWarnings("unchecked")
+    private Source2Destinations4Conversions configureConversions(ClassLoader classLoader, String basePackage) {
+
+        MapCache<Class<? extends SystemType>, MapCache<Class<? extends SystemType>,
+                Map<String, Class<? extends Conversion>>>> mc = MapCache.of(
+                source -> MapCache.of(destination -> new HashMap<>())
+        );
+
+        PackageResolver resolver = new PackageResolver(classLoader);
+        resolver.forEach(basePackage, PayloadConversionBind.class, (bindClass, props) -> {
+
+            @SuppressWarnings("unchecked")
+            Class<? extends SystemType> sourceType = (Class<? extends SystemType>) props.get("sourceType");
+
+            @SuppressWarnings("unchecked")
+            Class<? extends SystemType> destinationType = (Class<? extends SystemType>) props.get("destinationType");
+
+            mc.get(sourceType).get(destinationType)
+                    .put((String) props.get("sourceEntity"), bindClass);
+
+        });
+
+        Source2Destinations4Conversions source2Destinations = new Source2Destinations4Conversions();
+
+        for (Map.Entry<Class<? extends SystemType>, MapCache<Class<? extends SystemType>, Map<String, Class<? extends Conversion>>>> entrySource: mc) {
+
+            Configuration4E2.Destination2Conversions destination2Conversions = new Configuration4E2.Destination2Conversions();
+            source2Destinations.put(entrySource.getKey(), destination2Conversions);
+
+            for (Map.Entry<Class<? extends SystemType>, Map<String, Class<? extends Conversion>>> entryDestination: entrySource.getValue()) {
+
+                Map<String, Class<? extends Conversion>> conversions =
+                        Collections.unmodifiableMap(entryDestination.getValue());
+                destination2Conversions.put(entryDestination.getKey(), conversions);
+
+            }
+        }
+
+        return source2Destinations;
+
+    }
+
+
 
     public Configuration4E2 getConfiguration() {
         return configuration;
