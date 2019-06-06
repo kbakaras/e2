@@ -3,6 +3,8 @@ package ru.kbakaras.e2.model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.kbakaras.e2.conversion.Conversion;
+import ru.kbakaras.e2.conversion.Conversions;
+import ru.kbakaras.e2.core.model.SystemConnection;
 import ru.kbakaras.e2.service.ConfigurationManager;
 
 import java.util.HashMap;
@@ -20,14 +22,49 @@ public class Configuration4E2 {
     private RouteMap updateRoutes;
     private RouteMap requestRoutes;
 
+    private Map<UUID, SystemInstance> instances;
+    private Map<UUID, SystemConnection> connections;
 
-    public Configuration4E2(Source2Destinations4Conversions conversionClasses, RouteMap updateRoutes, RouteMap requestRoutes) {
+
+    public Configuration4E2(Source2Destinations4Conversions conversionClasses,
+                            RouteMap updateRoutes, RouteMap requestRoutes,
+                            Map<UUID, SystemInstance> instances,
+                            Map<UUID, SystemConnection> connections) {
+
         this.conversionClasses = conversionClasses;
-        this.updateRoutes = updateRoutes;
-        this.requestRoutes = requestRoutes;
+        this.updateRoutes      = updateRoutes;
+        this.requestRoutes     = requestRoutes;
+        this.instances         = instances;
+        this.connections       = connections;
+
     }
 
 
+    public SystemInstance getSystemInstance(UUID systemUid) {
+
+        return instances.get(systemUid);
+
+    }
+
+    public SystemConnection getSystemConnection(UUID systemUid) {
+
+        return connections.get(systemUid);
+
+    }
+
+
+    public Conversions getConversions(SystemInstance source, SystemInstance destination) {
+
+        return new Conversions(
+                conversionClasses
+                        .get(getSystemConnection(source.getId()).systemType)
+                        .get(getSystemConnection(destination.getId()).systemType)
+        );
+
+    }
+
+
+    @Deprecated
     public SystemAccessor getSystemAccessor(UUID systemUid) {
         return null;
     }

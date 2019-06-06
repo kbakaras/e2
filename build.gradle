@@ -53,7 +53,7 @@ dependencies {
 
     runtime('org.postgresql:postgresql')
 
-    //implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '+'
+    implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '+'
     implementation group: 'org.dom4j', name: 'dom4j',     version: '2.1.0'
     implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
 

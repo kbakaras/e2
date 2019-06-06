@@ -33,6 +33,7 @@ public class Converter4Payload {
     private ConvertedCache convertedCache = new ConvertedCache();
     private Map<Class<? extends SynthCache>, SynthCache> synthCache = new HashMap<>();
 
+
     public Converter4Payload(E2Payload input, E2Payload output, Map<String, Class<? extends Conversion>> conversionMap) {
         this.input = input;
         this.output = output;
@@ -43,6 +44,7 @@ public class Converter4Payload {
         this.output = output;
         this.conversions = conversions;
     }
+
 
     public Converted convertElement(E2Element element) {
         if (!convertedCache.isConverting(element)) {

@@ -7,7 +7,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "system_instance")
-public abstract class SystemInstance extends ProperEntity {
+public class SystemInstance extends ProperEntity {
 
     private String name;
 

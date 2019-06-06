@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.kbakaras.e2.conversion.Conversion;
 import ru.kbakaras.e2.core.RouteConfigurer;
 import ru.kbakaras.e2.core.conversion.PayloadConversionBind;
-import ru.kbakaras.e2.core.model.SystemInstanceBase;
+import ru.kbakaras.e2.core.model.SystemConnection;
 import ru.kbakaras.e2.model.Configuration4E2;
 import ru.kbakaras.e2.model.Configuration4E2.RouteMap;
 import ru.kbakaras.e2.model.Configuration4E2.Source2Destinations4Conversions;
@@ -39,8 +39,10 @@ public class ConfigurationManager implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
+
         updateConfiguration();
     }
+
 
     @SuppressWarnings("unchecked")
     public void updateConfiguration() {
@@ -83,7 +85,7 @@ public class ConfigurationManager implements InitializingBean {
         }
     }
 
-    private void configureRoutes(RouteMap routeMap, SystemInstanceBase from, SystemInstanceBase to, String...entities) {
+    private void configureRoutes(RouteMap routeMap, SystemConnection from, SystemConnection to, String...entities) {
 
         Map<String, UUID> map = routeMap.get(from.systemId);
         if (map == null) {
