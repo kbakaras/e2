@@ -13,7 +13,6 @@ import ru.kbakaras.e2.model.Configuration4E2;
 import ru.kbakaras.e2.model.Error4Conversion;
 import ru.kbakaras.e2.model.Queue4Conversion;
 import ru.kbakaras.e2.model.Queue4Delivery;
-import ru.kbakaras.e2.model.SystemAccessor;
 import ru.kbakaras.e2.model.SystemInstance;
 import ru.kbakaras.e2.repositories.Error4ConversionRepository;
 import ru.kbakaras.e2.repositories.Queue4ConversionRepository;
@@ -110,27 +109,28 @@ public class Poller4Conversion extends BasicPoller<Queue4Conversion> {
      * @param sourceMessageId Уникальный идентификатор входного сообщения в очереди на конвертацию.
      */
     private void convert(E2Update update, UUID sourceMessageId) {
+
         Configuration4E2 conf = configurationManager.getConfiguration();
 
         //SystemAccessor sourceAccessor = accessorRegistry.get(update.systemUid());
-        SystemAccessor sourceAccessor = conf.getSystemAccessor(update.systemUid());
-        SystemInstance sourceInstance = conf.getSystemInstance(update.systemUid());
+        //SystemAccessor sourceAccessor = conf.getSystemAccessor(update.systemUid());
 
-        // TODO: updateSystemName(sourceSystem, update.systemName());
+        UUID   sourceId   = update.systemUid();
+        String sourceName = conf.getSystemInstance(sourceId).getName();
 
-        LOG.info("Converting message {} from system {}:", sourceMessageId, sourceAccessor.systemInstance);
+        LOG.info("Converting message {} from system {}:", sourceMessageId, sourceName);
 
         /*
           Кэш накапливает результаты конвертации исходного сообщения для каждой
           результирующей системы, по мере необходимости.
          */
-        MapCache<SystemInstance, Converter4Payload> converters = MapCache.of(
-                destinationInstance -> new Converter4Payload(
+        MapCache<UUID, Converter4Payload> converters = MapCache.of(
+                destinationId -> new Converter4Payload(
                         update,
                         new E2Update()
-                                .setSystemUid(sourceInstance.getId().toString())
-                                .setSystemName(sourceInstance.getName()),
-                        conf.getConversions(sourceInstance, destinationInstance)
+                                .setSystemUid(sourceId)
+                                .setSystemName(sourceName),
+                        conf.getConversions(sourceId, destinationId)
                 )
         );
 
@@ -142,15 +142,15 @@ public class Poller4Conversion extends BasicPoller<Queue4Conversion> {
         for (E2Entity entity: update.entities()) {
             List<E2Element> elementsChanged = entity.elementsChanged();
             if (!elementsChanged.isEmpty()) {
-                for (SystemAccessor destinationAccessor: routeRegistry.getUpdateDestinations(sourceAccessor, entity.entityName())) {
-                    Converter4Payload converter = converters.get(destinationAccessor);
+                for (UUID destinationId: conf.getUpdateDestinations(sourceId, entity.entityName())) {
+                    Converter4Payload converter = converters.get(destinationId);
                     elementsChanged.forEach(converter::convertElement);
                 }
             }
         }
 
 
-        Map<SystemAccessor, Converter4Payload> results = converters.getMap();
+        Map<UUID, Converter4Payload> results = converters.getMap();
         if (results.isEmpty()) {
             LOG.info("Message with id {} produced no results.", sourceMessageId);
             return;
@@ -161,7 +161,9 @@ public class Poller4Conversion extends BasicPoller<Queue4Conversion> {
           Обработка результатов. Полученные в результате конвертации сообщения
           помещаются в очередь для отправки.
          */
-        results.forEach((destinationAccessor, convertedUpdate) -> {
+        results.forEach((destinationId, convertedUpdate) -> {
+
+            SystemInstance destinationInstance = conf.getSystemInstance(destinationId);
 
             if (!convertedUpdate.output.entities().isEmpty()) {
                 Queue4Delivery queue = BaseEntity.newElement(Queue4Delivery.class);
@@ -169,12 +171,12 @@ public class Poller4Conversion extends BasicPoller<Queue4Conversion> {
                 queue.setSize(queue.getMessage().length());
                 queue.setTimestamp(timestampService.get());
                 queue.setSourceMessageId(sourceMessageId);
-                queue.setDestination(destinationAccessor.systemInstance);
+                queue.setDestination(destinationInstance);
                 queue4DeliveryRepository.save(queue);
 
             } else {
                 LOG.info("Message with id {} produced result with no entities for destination {}.",
-                        sourceMessageId, destinationAccessor.systemInstance);
+                        sourceMessageId, destinationInstance);
             }
 
         });

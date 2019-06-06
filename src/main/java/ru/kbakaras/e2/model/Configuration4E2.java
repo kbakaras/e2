@@ -9,6 +9,7 @@ import ru.kbakaras.e2.service.ConfigurationManager;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -53,13 +54,20 @@ public class Configuration4E2 {
     }
 
 
-    public Conversions getConversions(SystemInstance source, SystemInstance destination) {
+    public Conversions getConversions(UUID sourceId, UUID destinationId) {
 
         return new Conversions(
                 conversionClasses
-                        .get(getSystemConnection(source.getId()).systemType)
-                        .get(getSystemConnection(destination.getId()).systemType)
+                        .get(getSystemConnection(sourceId).systemType)
+                        .get(getSystemConnection(destinationId).systemType)
         );
+
+    }
+
+
+    public Set<UUID> getUpdateDestinations(UUID sourceId, String entityName) {
+
+        return updateRoutes.get(sourceId).get(entityName);
 
     }
 
@@ -83,6 +91,6 @@ public class Configuration4E2 {
     public static class Destination2Conversions extends HashMap<Class<? extends SystemType>, Map<String, Class<? extends Conversion>>> {}
     public static class Source2Destinations4Conversions extends HashMap<Class<? extends SystemType>, Destination2Conversions> {}
 
-    public static class RouteMap extends HashMap<UUID, Map<String, UUID>> {};
+    public static class RouteMap extends HashMap<UUID, Map<String, Set<UUID>>> {}
 
 }

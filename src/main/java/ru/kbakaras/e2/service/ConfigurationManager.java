@@ -19,7 +19,9 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.jar.JarFile;
 
@@ -87,13 +89,20 @@ public class ConfigurationManager implements InitializingBean {
 
     private void configureRoutes(RouteMap routeMap, SystemConnection from, SystemConnection to, String...entities) {
 
-        Map<String, UUID> map = routeMap.get(from.systemId);
+        Map<String, Set<UUID>> map = routeMap.get(from.systemId);
         if (map == null) {
             routeMap.put(from.getId(), map = new HashMap<>());
         }
 
         for (String entity: entities) {
-            map.put(entity, to.systemId);
+
+            Set<UUID> set = map.get(entity);
+            if (set == null) {
+                map.put(entity, set = new HashSet<>());
+            }
+
+            set.add(to.systemId);
+
         }
 
     }
