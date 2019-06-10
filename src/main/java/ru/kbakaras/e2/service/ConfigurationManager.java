@@ -9,14 +9,20 @@ import ru.kbakaras.e2.core.model.SystemConnection;
 import ru.kbakaras.e2.model.Configuration4E2;
 import ru.kbakaras.e2.model.Configuration4E2.RouteMap;
 import ru.kbakaras.e2.model.Configuration4E2.Source2Destinations4Conversions;
+import ru.kbakaras.e2.model.ConfigurationException4E2;
+import ru.kbakaras.e2.model.SystemInstance;
 import ru.kbakaras.e2.model.SystemType;
+import ru.kbakaras.e2.repositories.SystemInstanceRepository;
+import ru.kbakaras.jpa.ProperEntity;
 import ru.kbakaras.sugar.lazy.MapCache;
 import ru.kbakaras.sugar.spring.PackageResolver;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -37,6 +43,9 @@ import java.util.jar.JarFile;
 public class ConfigurationManager implements InitializingBean {
 
     volatile private Configuration4E2 configuration;
+
+    @Resource
+    private SystemInstanceRepository systemRepository;
 
 
     @Override
@@ -70,16 +79,19 @@ public class ConfigurationManager implements InitializingBean {
             RouteMap updateRoutes  = new RouteMap();
             RouteMap requestRoutes = new RouteMap();
 
+            Map<UUID, SystemInstance>   instances   = new HashMap<>();
+            Map<UUID, SystemConnection> connections = new HashMap<>();
 
             clazz.newInstance().setupRoutes(
-                    (from, to, entities) -> configureRoutes(updateRoutes,  from, to, entities),
-                    (from, to, entities) -> configureRoutes(requestRoutes, from, to, entities)
+                    (from, to, entities) -> configureRoutes(updateRoutes,  instances, connections, from, to, entities),
+                    (from, to, entities) -> configureRoutes(requestRoutes, instances, connections, from, to, entities)
             );
 
 
             this.configuration = new Configuration4E2(
                     configureConversions(configurationClassLoader, basePackage),
-                    updateRoutes, requestRoutes
+                    updateRoutes, requestRoutes,
+                    instances, connections
             );
 
         } catch (MalformedURLException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
@@ -87,7 +99,32 @@ public class ConfigurationManager implements InitializingBean {
         }
     }
 
-    private void configureRoutes(RouteMap routeMap, SystemConnection from, SystemConnection to, String...entities) {
+    private void configureRoutes(RouteMap routeMap,
+                                 Map<UUID, SystemInstance> instances, Map<UUID, SystemConnection> connections,
+                                 SystemConnection from, SystemConnection to, String...entities) {
+
+        SystemConnection connection = connections.get(from.getId());
+        if (connection == null) {
+            connections.put(from.getId(), from);
+
+        } else if (connection != from) {
+            throw new ConfigurationException4E2(MessageFormat.format(
+                    "Other connection with same id ({1}) already registered!", from.getId()
+            ));
+        }
+
+        SystemInstance instance = instances.get(from.getId());
+        if (instance == null) {
+            instance = systemRepository.findById(from.getId())
+                    .orElseGet(() -> {
+                        SystemInstance newInstance = ProperEntity.newElement(SystemInstance.class);
+                        newInstance.setName(from.systemName);
+                        newInstance.setId(from.getId());
+                        return newInstance;
+                    });
+            instances.put(instance.getId(), instance);
+        }
+
 
         Map<String, Set<UUID>> map = routeMap.get(from.systemId);
         if (map == null) {
@@ -96,11 +133,7 @@ public class ConfigurationManager implements InitializingBean {
 
         for (String entity: entities) {
 
-            Set<UUID> set = map.get(entity);
-            if (set == null) {
-                map.put(entity, set = new HashSet<>());
-            }
-
+            Set<UUID> set = map.computeIfAbsent(entity, k -> new HashSet<>());
             set.add(to.systemId);
 
         }
