@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.jar.JarFile;
@@ -99,31 +100,47 @@ public class ConfigurationManager implements InitializingBean {
         }
     }
 
+    private void registerSystem(Map<UUID, SystemInstance> instances, Map<UUID, SystemConnection> connections,
+                                SystemConnection systemConnection) {
+
+        SystemConnection connection = connections.get(systemConnection.getId());
+        if (connection == null) {
+            connections.put(systemConnection.getId(), systemConnection);
+
+        } else if (connection != systemConnection) {
+            throw new ConfigurationException4E2(MessageFormat.format(
+                    "Other connection with same id ({1}) already registered!", systemConnection.getId()
+            ));
+        }
+
+
+        SystemInstance instance = instances.get(systemConnection.getId());
+
+        if (instance == null) {
+            instance = systemRepository.findById(systemConnection.getId())
+                    .orElseGet(() -> {
+                        SystemInstance newInstance = ProperEntity.newElement(SystemInstance.class);
+                        newInstance.setName(systemConnection.systemName);
+                        newInstance.setId(systemConnection.getId());
+                        return systemRepository.save(newInstance);
+                    });
+            instances.put(instance.getId(), instance);
+        }
+
+        if (!Objects.equals(instance.getName(), systemConnection.getName())) {
+            instance.setName(systemConnection.getName());
+            instance = systemRepository.save(instance);
+            instances.put(instance.getId(), instance);
+        }
+
+    }
+
     private void configureRoutes(RouteMap routeMap,
                                  Map<UUID, SystemInstance> instances, Map<UUID, SystemConnection> connections,
                                  SystemConnection from, SystemConnection to, String...entities) {
 
-        SystemConnection connection = connections.get(from.getId());
-        if (connection == null) {
-            connections.put(from.getId(), from);
-
-        } else if (connection != from) {
-            throw new ConfigurationException4E2(MessageFormat.format(
-                    "Other connection with same id ({1}) already registered!", from.getId()
-            ));
-        }
-
-        SystemInstance instance = instances.get(from.getId());
-        if (instance == null) {
-            instance = systemRepository.findById(from.getId())
-                    .orElseGet(() -> {
-                        SystemInstance newInstance = ProperEntity.newElement(SystemInstance.class);
-                        newInstance.setName(from.systemName);
-                        newInstance.setId(from.getId());
-                        return newInstance;
-                    });
-            instances.put(instance.getId(), instance);
-        }
+        registerSystem(instances, connections, from);
+        registerSystem(instances, connections, to);
 
 
         Map<String, Set<UUID>> map = routeMap.get(from.systemId);
