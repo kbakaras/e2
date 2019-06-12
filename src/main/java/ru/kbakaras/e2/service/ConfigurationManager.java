@@ -2,16 +2,16 @@ package ru.kbakaras.e2.service;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Service;
-import ru.kbakaras.e2.conversion.Conversion;
 import ru.kbakaras.e2.core.RouteConfigurer;
+import ru.kbakaras.e2.core.conversion.Conversion;
 import ru.kbakaras.e2.core.conversion.PayloadConversionBind;
 import ru.kbakaras.e2.core.model.SystemConnection;
+import ru.kbakaras.e2.core.model.SystemType;
 import ru.kbakaras.e2.model.Configuration4E2;
 import ru.kbakaras.e2.model.Configuration4E2.RouteMap;
 import ru.kbakaras.e2.model.Configuration4E2.Source2Destinations4Conversions;
 import ru.kbakaras.e2.model.ConfigurationException4E2;
 import ru.kbakaras.e2.model.SystemInstance;
-import ru.kbakaras.e2.model.SystemType;
 import ru.kbakaras.e2.repositories.SystemInstanceRepository;
 import ru.kbakaras.jpa.ProperEntity;
 import ru.kbakaras.sugar.lazy.MapCache;

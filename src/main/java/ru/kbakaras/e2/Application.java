@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import ru.kbakaras.e2.service.ConversionRegistry;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.spi.DocumentationType;
@@ -51,11 +50,6 @@ public class Application implements WebMvcConfigurer, ApplicationContextAware {
                 .build();
     }
 
-
-    @Bean
-    public ConversionRegistry conversionRegistry() {
-        return new ConversionRegistry("ru.glance.agr.conversion");
-    }
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {

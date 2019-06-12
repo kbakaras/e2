@@ -5,8 +5,7 @@ import ru.kbakaras.jpa.ProperEntity;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-@Entity
-@Table(name = "system_instance")
+@Entity @Table(name = "system_instance")
 public class SystemInstance extends ProperEntity {
 
     private String name;

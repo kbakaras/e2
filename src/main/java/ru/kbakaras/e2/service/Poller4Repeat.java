@@ -5,9 +5,10 @@ import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import ru.kbakaras.e2.core.model.SystemConnection;
+import ru.kbakaras.e2.model.Configuration4E2;
 import ru.kbakaras.e2.model.Error4Repeat;
 import ru.kbakaras.e2.model.Queue4Repeat;
-import ru.kbakaras.e2.model.SystemAccessor;
 import ru.kbakaras.e2.repositories.Error4RepeatRepository;
 import ru.kbakaras.e2.repositories.Queue4RepeatRepository;
 import ru.kbakaras.e2.repositories.QueueManage;
@@ -23,9 +24,11 @@ public class Poller4Repeat extends BasicPoller<Queue4Repeat> {
 
     private boolean stopOnStuck = true;
 
+    @Resource private ConfigurationManager configurationManager;
+
     @Resource private Queue4RepeatRepository queue4RepeatRepository;
     @Resource private Error4RepeatRepository error4RepeatRepository;
-    @Resource private AccessorRegistry       accessorRegistry;
+
 
     @Override
     protected Optional<Queue4Repeat> next() {
@@ -41,13 +44,18 @@ public class Poller4Repeat extends BasicPoller<Queue4Repeat> {
         return queue4RepeatRepository;
     }
 
+
     @Override
     protected void process(Queue4Repeat queue) {
+
+        Configuration4E2 conf = configurationManager.getConfiguration();
+
         try {
             Element update = DocumentHelper.parseText(queue.getMessage()).getRootElement();
-            SystemAccessor accessor = accessorRegistry.get(queue.getDestination());
 
-            accessor.update(accessor.convertRequest(update));
+            SystemConnection connection = conf.getSystemConnection(queue.getDestination().getId());
+
+            connection.update(connection.convertRequest(update));
             queue.setDelivered();
             queue.setProcessed(true);
 
@@ -69,7 +77,10 @@ public class Poller4Repeat extends BasicPoller<Queue4Repeat> {
         }
 
         queue4RepeatRepository.save(queue);
+
     }
 
+
     private static final int ATTEMPT_MAX = 3;
+
 }

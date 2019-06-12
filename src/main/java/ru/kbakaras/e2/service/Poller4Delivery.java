@@ -5,15 +5,16 @@ import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import ru.kbakaras.e2.conversion.Converter4Payload;
+import ru.kbakaras.e2.core.conversion.Converter4Payload;
+import ru.kbakaras.e2.core.model.SystemConnection;
 import ru.kbakaras.e2.message.E2Element;
 import ru.kbakaras.e2.message.E2Entity;
 import ru.kbakaras.e2.message.E2Update;
+import ru.kbakaras.e2.model.Configuration4E2;
 import ru.kbakaras.e2.model.Error4Delivery;
 import ru.kbakaras.e2.model.History4Delivery;
 import ru.kbakaras.e2.model.Queue4Conversion;
 import ru.kbakaras.e2.model.Queue4Delivery;
-import ru.kbakaras.e2.model.SystemAccessor;
 import ru.kbakaras.e2.repositories.Error4DeliveryRepository;
 import ru.kbakaras.e2.repositories.Queue4ConversionRepository;
 import ru.kbakaras.e2.repositories.Queue4DeliveryRepository;
@@ -26,6 +27,7 @@ import ru.kbakaras.sugar.utils.ExceptionUtils;
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Predicate;
 
 @Service
@@ -38,10 +40,10 @@ public class Poller4Delivery extends BasicPoller<Queue4Delivery> {
     @Resource private Error4DeliveryRepository   error4DeliveryRepository;
     @Resource private Queue4ConversionRepository queue4ConversionRepository;
 
-    @Resource private AccessorRegistry   accessorRegistry;
-    @Resource private ConversionRegistry conversionRegistry;
-    @Resource private RouteRegistry      routeRegistry;
+    @Resource private ConfigurationManager configurationManager;
+
     @Resource private HistoryService     historyService;
+
 
     synchronized public void resume() {
         if (!isPolling()) {
@@ -55,27 +57,52 @@ public class Poller4Delivery extends BasicPoller<Queue4Delivery> {
     }
 
     synchronized public History4Delivery reconvert(Queue4Delivery queue) {
+
         if (isPolling()) {
             throw new ManageQueueException(
                     "Delivery poller is active! It's not possible to reconvert.");
         }
 
+        Configuration4E2 conf = configurationManager.getConfiguration();
 
         Queue4Conversion sourceQueue = queue4ConversionRepository.getOne(queue.getSourceMessageId());
 
         E2Update sourceMessage = new E2Update(sourceQueue.getMessage());
-        SystemAccessor sourceAccessor = accessorRegistry.get(sourceMessage.systemUid());
-        SystemAccessor destinationAccessor = accessorRegistry.get(queue.getDestination());
+
+        UUID        sourceId   = sourceMessage.systemUid();
+        String      sourceName = conf.getSystemInstance(sourceId).getName();
+        UUID   destinationId   = queue.getDestination().getId();
+        String destinationName = conf.getSystemInstance(destinationId).getName();
 
         LOG.info("Reconverting message {} from system {} for system {}:",
-                sourceQueue.getId(), sourceAccessor, destinationAccessor);
+                sourceQueue.getId(), sourceName, destinationName);
 
-        E2Update destinationMessage = reconvert(sourceMessage, sourceAccessor, destinationAccessor);
+
+        Converter4Payload converter = new Converter4Payload(sourceMessage,
+                new E2Update()
+                        .setSystemUid(sourceId.toString())
+                        .setSystemName(sourceName),
+                conf.getConversions(sourceId, destinationId)
+        );
+
+
+        Predicate<E2Entity> routeExists = entity ->
+                conf.updateRouteExists(sourceId, destinationId, entity.entityName());
+
+        for (E2Entity entity: sourceMessage.entities()) {
+            List<E2Element> elementsChanged = entity.elementsChanged();
+            if (!elementsChanged.isEmpty() && routeExists.test(entity)) {
+                elementsChanged.forEach(converter::convertElement);
+            }
+        }
+
+
+        E2Update destinationMessage = (E2Update) converter.output;
 
         if (destinationMessage.entities().isEmpty()) {
             throw new ManageQueueException(String.format(
                     "Message with id (%s) produced result with no entities for destination [%s].",
-                    sourceQueue.getId(), destinationAccessor
+                    sourceQueue.getId(), destinationName
             ));
         }
 
@@ -89,37 +116,18 @@ public class Poller4Delivery extends BasicPoller<Queue4Delivery> {
         }
 
         return historyService.reconverted(queue, newMessage);
-    }
 
-    private E2Update reconvert(E2Update sourceMessage, SystemAccessor sourceAccessor, SystemAccessor destinationAccessor) {
-        Converter4Payload converter = new Converter4Payload(sourceMessage,
-                new E2Update()
-                        .setSystemUid(sourceAccessor.getId().toString())
-                        .setSystemName(sourceAccessor.systemInstance.getName()),
-                conversionRegistry.get(sourceAccessor, destinationAccessor)
-        );
-
-        Predicate<E2Entity> routeExists = entity ->
-            routeRegistry.isExistUpdateRoute(
-                    sourceAccessor, destinationAccessor, entity.entityName());
-
-        for (E2Entity entity: sourceMessage.entities()) {
-            List<E2Element> elementsChanged = entity.elementsChanged();
-            if (!elementsChanged.isEmpty() && routeExists.test(entity)) {
-                elementsChanged.forEach(converter::convertElement);
-            }
-        }
-
-        return (E2Update) converter.output;
     }
 
     @Override
     protected Optional<Queue4Delivery> next() {
+
         if (stopOnStuck) {
             return queue4DeliveryRepository.getFirstByProcessedIsFalseOrderByTimestampAsc();
         } else {
             return queue4DeliveryRepository.getFirstByProcessedIsFalseAndStuckIsFalseOrderByTimestampAsc();
         }
+
     }
 
     @Override
@@ -129,11 +137,14 @@ public class Poller4Delivery extends BasicPoller<Queue4Delivery> {
 
     @Override
     protected void process(Queue4Delivery queue) {
+
+        Configuration4E2 conf = configurationManager.getConfiguration();
+
         try {
             Element update = DocumentHelper.parseText(queue.getMessage()).getRootElement();
-            SystemAccessor accessor = accessorRegistry.get(queue.getDestination());
+            SystemConnection connection = conf.getSystemConnection(queue.getDestination().getId());
 
-            accessor.update(accessor.convertRequest(update));
+            connection.update(connection.convertRequest(update));
             queue.setDelivered();
             queue.setProcessed(true);
 
@@ -153,6 +164,7 @@ public class Poller4Delivery extends BasicPoller<Queue4Delivery> {
         }
 
         queue4DeliveryRepository.save(queue);
+
     }
 
     private static final int ATTEMPT_MAX = 3;

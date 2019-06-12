@@ -17,10 +17,10 @@
     <node id="n0">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="65.21440000000001" width="185.97568" x="225.97568" y="1742.5647000000017"/>
+          <y:Geometry height="65.21440000000001" width="185.97568" x="225.97568" y="2036.3151000000012"/>
           <y:Fill color="#C0C0C0" transparent="false"/>
           <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="65.21440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="5.6843418860808015E-14">Функционал</y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="65.21440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="-1.7053025658242404E-13">Функционал</y:NodeLabel>
           <y:Shape type="roundrectangle"/>
         </y:ShapeNode>
       </data>
@@ -28,7 +28,7 @@
     <node id="n1">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="65.21440000000001" width="185.97568" x="451.95136" y="1553.7520000000015"/>
+          <y:Geometry height="65.21440000000001" width="185.97568" x="451.95136" y="1847.5024000000014"/>
           <y:Fill color="#C0C0C0" transparent="false"/>
           <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="65.21440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="5.6843418860808015E-14">Сервер</y:NodeLabel>
@@ -39,7 +39,7 @@
     <node id="n2">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="65.21440000000001" width="185.97568" x="677.92704" y="1137.537200000001"/>
+          <y:Geometry height="65.21440000000001" width="185.97568" x="677.92704" y="1396.430400000001"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="65.21440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="5.6843418860808015E-14">Динамическое (горячее) обновление конфигурации</y:NodeLabel>
@@ -50,7 +50,7 @@
     <node id="n3">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="65.21440000000001" width="185.97568" x="903.90272" y="1001.9656000000002"/>
+          <y:Geometry height="65.21440000000001" width="185.97568" x="903.90272" y="1001.9656000000004"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="65.21440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="5.6843418860808015E-14">Объект конфигурации</y:NodeLabel>
@@ -61,8 +61,8 @@
     <node id="n4">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="65.21440000000001" width="185.97568" x="1129.8784" y="1044.5728000000004"/>
-          <y:Fill color="#FFCC00" transparent="false"/>
+          <y:Geometry height="65.21440000000001" width="185.97568" x="1129.8784" y="1044.5728000000006"/>
+          <y:Fill color="#99CC00" transparent="false"/>
           <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="65.21440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="5.6843418860808015E-14">Потокобезопасность</y:NodeLabel>
           <y:Shape type="roundrectangle"/>
@@ -83,10 +83,10 @@
     <node id="n6">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="65.21440000000001" width="185.97568" x="1355.85408" y="255.64320000000004"/>
+          <y:Geometry height="65.21440000000001" width="185.97568" x="1355.85408" y="255.64320000000006"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="65.21440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="0.0">Загрузка конфигурации при старте системы</y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="65.21440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="-2.8421709430404007E-14">Загрузка конфигурации при старте системы</y:NodeLabel>
           <y:Shape type="roundrectangle"/>
         </y:ShapeNode>
       </data>
@@ -105,10 +105,10 @@
     <node id="n8">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="65.21440000000001" width="185.97568" x="225.97568" y="2016.5918000000022"/>
+          <y:Geometry height="65.21440000000001" width="185.97568" x="225.97568" y="2310.342200000001"/>
           <y:Fill color="#C0C0C0" transparent="false"/>
           <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="65.21440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="5.6843418860808015E-14">Идеи</y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="65.21440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="-1.7053025658242404E-13">Идеи</y:NodeLabel>
           <y:Shape type="roundrectangle"/>
         </y:ShapeNode>
       </data>
@@ -116,7 +116,7 @@
     <node id="n9">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="65.21440000000001" width="185.97568" x="451.95136" y="2016.591800000002"/>
+          <y:Geometry height="65.21440000000001" width="185.97568" x="451.95136" y="2310.342200000001"/>
           <y:Fill color="#99CCFF" transparent="false"/>
           <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="65.21440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="-1.7053025658242404E-13">Модуль для подключения любых jdbc-баз в качестве систем для e2</y:NodeLabel>
@@ -127,7 +127,7 @@
     <node id="n10">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="90.21440000000001" width="185.97568" x="903.90272" y="1358.323200000001"/>
+          <y:Geometry height="90.21440000000001" width="185.97568" x="903.90272" y="1652.073600000001"/>
           <y:Fill color="#99CCFF" transparent="false"/>
           <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="90.21440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="5.6843418860808015E-14">Сохранять историю конфигураций в БД, в таблицах сообщений фиксировать версию, по которой обработано сообщение</y:NodeLabel>
@@ -139,9 +139,9 @@
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="76.21440000000001" width="185.97568" x="1129.8784" y="1215.0016000000007"/>
-          <y:Fill color="#FFCC00" transparent="false"/>
+          <y:Fill color="#99CC00" transparent="false"/>
           <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="76.21440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="5.6843418860808015E-14">Атомарность: входящее сообщение (или запрос) должно быть обработано отначала и до конца одной конфигурацией</y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="76.21440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="5.6843418860808015E-14">Атомарность: входящее сообщение (или запрос) должно быть обработано от начала и до конца одной конфигурацией</y:NodeLabel>
           <y:Shape type="roundrectangle"/>
         </y:ShapeNode>
       </data>
@@ -149,7 +149,7 @@
     <node id="n12">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="65.21440000000001" width="185.97568" x="677.92704" y="1553.7520000000013"/>
+          <y:Geometry height="65.21440000000001" width="185.97568" x="677.92704" y="1847.5024000000012"/>
           <y:Fill color="#99CCFF" transparent="false"/>
           <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="65.21440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="5.6843418860808015E-14">Докеризация</y:NodeLabel>
@@ -160,7 +160,7 @@
     <node id="n13">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="65.21440000000001" width="185.97568" x="903.90272" y="1553.7520000000013"/>
+          <y:Geometry height="65.21440000000001" width="185.97568" x="903.90272" y="1847.5024000000012"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="65.21440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="5.6843418860808015E-14">Откуда-то надо брать параметры подключения к БД</y:NodeLabel>
@@ -215,7 +215,7 @@
     <node id="n18">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="65.21440000000001" width="185.97568" x="903.90272" y="1273.1088000000009"/>
+          <y:Geometry height="65.21440000000001" width="185.97568" x="903.90272" y="1566.859200000001"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="65.21440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="5.6843418860808015E-14">e2-core
@@ -249,7 +249,7 @@
     <node id="n21">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="65.21440000000001" width="185.97568" x="225.97568" y="2229.627800000002"/>
+          <y:Geometry height="65.21440000000001" width="185.97568" x="225.97568" y="2523.3782000000006"/>
           <y:Fill color="#FF6666" transparent="false"/>
           <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="65.21440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="-1.7053025658242404E-13">Проблемы</y:NodeLabel>
@@ -260,7 +260,7 @@
     <node id="n22">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="65.21440000000001" width="185.97568" x="451.95136" y="2101.8062000000023"/>
+          <y:Geometry height="65.21440000000001" width="185.97568" x="451.95136" y="2395.556600000001"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="65.21440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="-1.7053025658242404E-13">При отправке на повтор сообщения оно проскакивает несмотря на 404</y:NodeLabel>
@@ -271,10 +271,10 @@
     <node id="n23">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="65.21440000000001" width="185.97568" x="0.0" y="2016.5918000000022"/>
+          <y:Geometry height="65.21440000000001" width="185.97568" x="0.0" y="2310.342200000001"/>
           <y:Fill color="#FFFFFF" transparent="false"/>
           <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="65.21440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="5.6843418860808015E-14">e2</y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="65.21440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="-1.7053025658242404E-13">e2</y:NodeLabel>
           <y:Shape type="roundrectangle"/>
         </y:ShapeNode>
       </data>
@@ -282,7 +282,7 @@
     <node id="n24">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="65.21440000000001" width="185.97568" x="451.95136" y="2187.020600000002"/>
+          <y:Geometry height="65.21440000000001" width="185.97568" x="451.95136" y="2480.7710000000006"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="65.21440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="-1.7053025658242404E-13">Нужно определиться относительно ответственности обработчиков очередей</y:NodeLabel>
@@ -293,7 +293,7 @@
     <node id="n25">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="65.21440000000001" width="185.97568" x="451.95136" y="2272.235000000002"/>
+          <y:Geometry height="65.21440000000001" width="185.97568" x="451.95136" y="2565.9854000000005"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="65.21440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="-1.7053025658242404E-13">Решить вопрос, что делать, если имя системы не совпадает</y:NodeLabel>
@@ -304,7 +304,7 @@
     <node id="n26">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="65.21440000000001" width="185.97568" x="903.90272" y="1468.537600000001"/>
+          <y:Geometry height="65.21440000000001" width="185.97568" x="903.90272" y="1762.2880000000011"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="65.21440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="5.6843418860808015E-14">rest-api для получения списка маршрутов</y:NodeLabel>
@@ -315,7 +315,7 @@
     <node id="n27">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="65.21440000000001" width="185.97568" x="677.92704" y="1468.5376000000012"/>
+          <y:Geometry height="65.21440000000001" width="185.97568" x="677.92704" y="1762.2880000000011"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="65.21440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="5.6843418860808015E-14">Интерфейс управления</y:NodeLabel>
@@ -370,7 +370,7 @@
     <node id="n32">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="103.96440000000001" width="185.97568" x="451.95136" y="2357.449400000002"/>
+          <y:Geometry height="103.96440000000001" width="185.97568" x="451.95136" y="2651.1998000000003"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="103.96440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="-1.7053025658242404E-13">Что делать, если в результате загрузки новой конфигурации изменяются параметры существующей системы (наименование)? А в это время ещё работает старая конфигурация</y:NodeLabel>
@@ -381,7 +381,7 @@
     <node id="n33">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="65.21440000000001" width="185.97568" x="677.92704" y="2376.824400000002"/>
+          <y:Geometry height="65.21440000000001" width="185.97568" x="677.92704" y="2670.5748000000003"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="65.21440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="-1.7053025658242404E-13">Возможно, реестр систем должен быть общий</y:NodeLabel>
@@ -414,10 +414,10 @@
     <node id="n36">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="65.21440000000001" width="185.97568" x="451.95136" y="1931.377400000002"/>
+          <y:Geometry height="65.21440000000001" width="185.97568" x="451.95136" y="2225.127800000001"/>
           <y:Fill color="#C0C0C0" transparent="false"/>
           <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="65.21440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="5.6843418860808015E-14">Сообщения e2</y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="65.21440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="-1.7053025658242404E-13">Сообщения e2</y:NodeLabel>
           <y:Shape type="roundrectangle"/>
         </y:ShapeNode>
       </data>
@@ -425,10 +425,10 @@
     <node id="n37">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="103.96440000000001" width="185.97568" x="677.92704" y="1912.0024000000017"/>
+          <y:Geometry height="103.96440000000001" width="185.97568" x="677.92704" y="2205.752800000001"/>
           <y:Fill color="#99CC00" transparent="false"/>
           <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="103.96440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="5.6843418860808015E-14">Название системы, передаваемое в сообщениях, никак не обрабатывается. Оно нужно только для облегчения опознавания сообщения человеком.</y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="103.96440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="-1.7053025658242404E-13">Название системы, передаваемое в сообщениях, никак не обрабатывается. Оно нужно только для облегчения опознавания сообщения человеком.</y:NodeLabel>
           <y:Shape type="roundrectangle"/>
         </y:ShapeNode>
       </data>
@@ -436,7 +436,7 @@
     <node id="n38">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="65.21440000000001" width="185.97568" x="677.92704" y="2272.235000000002"/>
+          <y:Geometry height="65.21440000000001" width="185.97568" x="677.92704" y="2565.9854000000005"/>
           <y:Fill color="#99CC00" transparent="false"/>
           <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="65.21440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="-1.7053025658242404E-13">Имя системы должно назначаться или обновляться только при загрузке конфигурации</y:NodeLabel>
@@ -458,7 +458,7 @@
     <node id="n40">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="65.21440000000001" width="185.97568" x="677.92704" y="1651.4664000000016"/>
+          <y:Geometry height="65.21440000000001" width="185.97568" x="677.92704" y="1945.2168000000013"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="65.21440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="5.6843418860808015E-14">updateRequest</y:NodeLabel>
@@ -469,7 +469,7 @@
     <node id="n41">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="90.21440000000001" width="185.97568" x="903.90272" y="1638.9664000000014"/>
+          <y:Geometry height="90.21440000000001" width="185.97568" x="903.90272" y="1932.7168000000013"/>
           <y:Fill color="#99CC00" transparent="false"/>
           <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="90.21440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="5.6843418860808015E-14">updateRequest при поступлении записывается в очередь. Записывается как есть, без разбора. Система-источник в таблице не упоминается.</y:NodeLabel>
@@ -480,10 +480,10 @@
     <node id="n42">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="65.21440000000001" width="185.97568" x="677.92704" y="1810.5380000000018"/>
+          <y:Geometry height="65.21440000000001" width="185.97568" x="677.92704" y="2104.2884000000013"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="65.21440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="5.6843418860808015E-14">Poller4Conversion</y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="65.21440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="-1.7053025658242404E-13">Poller4Conversion</y:NodeLabel>
           <y:Shape type="roundrectangle"/>
         </y:ShapeNode>
       </data>
@@ -491,10 +491,10 @@
     <node id="n43">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="90.21440000000001" width="185.97568" x="903.90272" y="1749.1808000000015"/>
+          <y:Geometry height="90.21440000000001" width="185.97568" x="903.90272" y="2042.9312000000014"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="90.21440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="5.6843418860808015E-14">Здесь не нужен доступ к системам. Нужны только идентификаторы, типы (для конверсий) и сущность в базе для записи в очередь на доставку.</y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="90.21440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="-1.7053025658242404E-13">Здесь не нужен доступ к системам. Нужны только идентификаторы, типы (для конверсий) и сущность в базе для записи в очередь на доставку.</y:NodeLabel>
           <y:Shape type="roundrectangle"/>
         </y:ShapeNode>
       </data>
@@ -535,10 +535,65 @@
     <node id="n47">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="65.21440000000001" width="185.97568" x="903.90272" y="1859.3952000000015"/>
+          <y:Geometry height="65.21440000000001" width="185.97568" x="903.90272" y="2153.145600000001"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="65.21440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="5.6843418860808015E-14">Что делать, если для взятого из очереди сообщения нет системы в конфигурации?</y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="65.21440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="-1.7053025658242404E-13">Что делать, если для взятого из очереди сообщения нет системы в конфигурации?</y:NodeLabel>
+          <y:Shape type="roundrectangle"/>
+        </y:ShapeNode>
+      </data>
+    </node>
+    <node id="n48">
+      <data key="d6">
+        <y:ShapeNode>
+          <y:Geometry height="65.21440000000001" width="185.97568" x="1129.8784" y="1566.859200000001"/>
+          <y:Fill color="#99CC00" transparent="false"/>
+          <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="65.21440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="5.6843418860808015E-14">Перенос классов, связанных с конвертацией в e2-core</y:NodeLabel>
+          <y:Shape type="roundrectangle"/>
+        </y:ShapeNode>
+      </data>
+    </node>
+    <node id="n49">
+      <data key="d6">
+        <y:ShapeNode>
+          <y:Geometry height="65.21440000000001" width="185.97568" x="903.90272" y="1396.430400000001"/>
+          <y:Fill color="#FFCC00" transparent="false"/>
+          <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="65.21440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="5.6843418860808015E-14">Адаптация всех механизмов к работе через объект конфигурации</y:NodeLabel>
+          <y:Shape type="roundrectangle"/>
+        </y:ShapeNode>
+      </data>
+    </node>
+    <node id="n50">
+      <data key="d6">
+        <y:ShapeNode>
+          <y:Geometry height="65.21440000000001" width="185.97568" x="1129.8784" y="1311.2160000000008"/>
+          <y:Fill color="#FFCC00" transparent="false"/>
+          <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="65.21440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="5.6843418860808015E-14">Poller4Repeat</y:NodeLabel>
+          <y:Shape type="roundrectangle"/>
+        </y:ShapeNode>
+      </data>
+    </node>
+    <node id="n51">
+      <data key="d6">
+        <y:ShapeNode>
+          <y:Geometry height="65.21440000000001" width="185.97568" x="1129.8784" y="1396.4304000000009"/>
+          <y:Fill color="#FFCC00" transparent="false"/>
+          <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="65.21440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="5.6843418860808015E-14">Processor4Request</y:NodeLabel>
+          <y:Shape type="roundrectangle"/>
+        </y:ShapeNode>
+      </data>
+    </node>
+    <node id="n52">
+      <data key="d6">
+        <y:ShapeNode>
+          <y:Geometry height="65.21440000000001" width="185.97568" x="1129.8784" y="1481.644800000001"/>
+          <y:Fill color="#FFCC00" transparent="false"/>
+          <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="65.21440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="5.6843418860808015E-14">Poller4Delivery</y:NodeLabel>
           <y:Shape type="roundrectangle"/>
         </y:ShapeNode>
       </data>
@@ -547,8 +602,8 @@
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="-0.0" tx="0.0" ty="-0.0">
-            <y:Point x="431.95136" y="1775.1719000000016"/>
-            <y:Point x="431.95136" y="1586.3592000000015"/>
+            <y:Point x="431.95136" y="2068.922300000001"/>
+            <y:Point x="431.95136" y="1880.1096000000014"/>
           </y:Path>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
@@ -560,8 +615,8 @@
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="-0.0" tx="0.0" ty="-0.0">
-            <y:Point x="657.92704" y="1586.3592000000015"/>
-            <y:Point x="657.92704" y="1170.1444000000008"/>
+            <y:Point x="657.92704" y="1880.1096000000014"/>
+            <y:Point x="657.92704" y="1429.037600000001"/>
           </y:Path>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
@@ -573,7 +628,7 @@
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="-0.0" tx="0.0" ty="-0.0">
-            <y:Point x="883.90272" y="1170.1444000000008"/>
+            <y:Point x="883.90272" y="1429.037600000001"/>
             <y:Point x="883.90272" y="1034.5728000000004"/>
           </y:Path>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
@@ -599,7 +654,7 @@
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="-0.0" tx="0.0" ty="-0.0">
-            <y:Point x="883.90272" y="1170.1444000000008"/>
+            <y:Point x="883.90272" y="1429.037600000001"/>
             <y:Point x="883.90272" y="309.55400000000014"/>
           </y:Path>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
@@ -648,8 +703,8 @@
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="-0.0" tx="0.0" ty="-0.0">
-            <y:Point x="883.90272" y="1170.1444000000008"/>
-            <y:Point x="883.90272" y="1403.4304000000009"/>
+            <y:Point x="883.90272" y="1429.037600000001"/>
+            <y:Point x="883.90272" y="1697.180800000001"/>
           </y:Path>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
@@ -743,8 +798,8 @@
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="-0.0" tx="0.0" ty="-0.0">
-            <y:Point x="883.90272" y="1170.1444000000008"/>
-            <y:Point x="883.90272" y="1305.7160000000008"/>
+            <y:Point x="883.90272" y="1429.037600000001"/>
+            <y:Point x="883.90272" y="1599.466400000001"/>
           </y:Path>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
@@ -779,8 +834,8 @@
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="-0.0" tx="0.0" ty="-0.0">
-            <y:Point x="431.95136" y="2262.235000000002"/>
-            <y:Point x="431.95136" y="2134.413400000002"/>
+            <y:Point x="431.95136" y="2555.9854000000005"/>
+            <y:Point x="431.95136" y="2428.1638000000007"/>
           </y:Path>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
@@ -792,8 +847,8 @@
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="-0.0" tx="0.0" ty="-0.0">
-            <y:Point x="205.97568" y="2049.1990000000023"/>
-            <y:Point x="205.97568" y="1775.1719000000016"/>
+            <y:Point x="205.97568" y="2342.949400000001"/>
+            <y:Point x="205.97568" y="2068.922300000001"/>
           </y:Path>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
@@ -815,8 +870,8 @@
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="-0.0" tx="0.0" ty="-0.0">
-            <y:Point x="205.97568" y="2049.1990000000023"/>
-            <y:Point x="205.97568" y="2262.235000000002"/>
+            <y:Point x="205.97568" y="2342.949400000001"/>
+            <y:Point x="205.97568" y="2555.9854000000005"/>
           </y:Path>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
@@ -828,8 +883,8 @@
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="-0.0" tx="0.0" ty="-0.0">
-            <y:Point x="431.95136" y="2262.235000000002"/>
-            <y:Point x="431.95136" y="2219.627800000002"/>
+            <y:Point x="431.95136" y="2555.9854000000005"/>
+            <y:Point x="431.95136" y="2513.3782000000006"/>
           </y:Path>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
@@ -841,8 +896,8 @@
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="-0.0" tx="0.0" ty="-0.0">
-            <y:Point x="431.95136" y="2262.235000000002"/>
-            <y:Point x="431.95136" y="2304.842200000002"/>
+            <y:Point x="431.95136" y="2555.9854000000005"/>
+            <y:Point x="431.95136" y="2598.5926000000004"/>
           </y:Path>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
@@ -854,8 +909,8 @@
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="-0.0" tx="0.0" ty="-0.0">
-            <y:Point x="657.92704" y="1586.3592000000015"/>
-            <y:Point x="657.92704" y="1501.1448000000012"/>
+            <y:Point x="657.92704" y="1880.1096000000014"/>
+            <y:Point x="657.92704" y="1794.895200000001"/>
           </y:Path>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
@@ -926,8 +981,8 @@
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="-0.0" tx="0.0" ty="-0.0">
-            <y:Point x="431.95136" y="2262.235000000002"/>
-            <y:Point x="431.95136" y="2409.4316000000017"/>
+            <y:Point x="431.95136" y="2555.9854000000005"/>
+            <y:Point x="431.95136" y="2703.1820000000002"/>
           </y:Path>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
@@ -972,8 +1027,8 @@
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="-0.0" tx="0.0" ty="-0.0">
-            <y:Point x="431.95136" y="1775.1719000000016"/>
-            <y:Point x="431.95136" y="1963.9846000000018"/>
+            <y:Point x="431.95136" y="2068.922300000001"/>
+            <y:Point x="431.95136" y="2257.735000000001"/>
           </y:Path>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
@@ -1018,8 +1073,8 @@
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="-0.0" tx="0.0" ty="-0.0">
-            <y:Point x="657.92704" y="1586.3592000000015"/>
-            <y:Point x="657.92704" y="1684.0736000000015"/>
+            <y:Point x="657.92704" y="1880.1096000000014"/>
+            <y:Point x="657.92704" y="1977.8240000000012"/>
           </y:Path>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
@@ -1041,8 +1096,8 @@
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="-0.0" tx="0.0" ty="-0.0">
-            <y:Point x="657.92704" y="1586.3592000000015"/>
-            <y:Point x="657.92704" y="1843.1452000000018"/>
+            <y:Point x="657.92704" y="1880.1096000000014"/>
+            <y:Point x="657.92704" y="2136.895600000001"/>
           </y:Path>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
@@ -1054,8 +1109,8 @@
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="-0.0" tx="0.0" ty="-0.0">
-            <y:Point x="883.90272" y="1843.1452000000018"/>
-            <y:Point x="883.90272" y="1794.2880000000014"/>
+            <y:Point x="883.90272" y="2136.895600000001"/>
+            <y:Point x="883.90272" y="2088.0384000000013"/>
           </y:Path>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
@@ -1106,8 +1161,69 @@
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="-0.0" tx="0.0" ty="-0.0">
-            <y:Point x="883.90272" y="1843.1452000000018"/>
-            <y:Point x="883.90272" y="1892.0024000000014"/>
+            <y:Point x="883.90272" y="2136.895600000001"/>
+            <y:Point x="883.90272" y="2185.752800000001"/>
+          </y:Path>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e47" source="n18" target="n48">
+      <data key="d9"/>
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="-0.0" tx="0.0" ty="-0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e48" source="n2" target="n49">
+      <data key="d9"/>
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="-0.0" tx="0.0" ty="-0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e49" source="n49" target="n50">
+      <data key="d9"/>
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="-0.0" tx="0.0" ty="-0.0">
+            <y:Point x="1109.8784" y="1429.037600000001"/>
+            <y:Point x="1109.8784" y="1343.8232000000007"/>
+          </y:Path>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e50" source="n49" target="n51">
+      <data key="d9"/>
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="-0.0" tx="0.0" ty="-0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e51" source="n49" target="n52">
+      <data key="d9"/>
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="-0.0" tx="0.0" ty="-0.0">
+            <y:Point x="1109.8784" y="1429.037600000001"/>
+            <y:Point x="1109.8784" y="1514.2520000000009"/>
           </y:Path>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="standard"/>

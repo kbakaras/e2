@@ -5,7 +5,7 @@ import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import ru.kbakaras.e2.conversion.Converter4Payload;
+import ru.kbakaras.e2.core.conversion.Converter4Payload;
 import ru.kbakaras.e2.message.E2Element;
 import ru.kbakaras.e2.message.E2Entity;
 import ru.kbakaras.e2.message.E2Update;
@@ -36,9 +36,6 @@ public class Poller4Conversion extends BasicPoller<Queue4Conversion> {
     @Resource private Error4ConversionRepository error4ConversionRepository;
     @Resource private Queue4DeliveryRepository   queue4DeliveryRepository;
 
-    @Resource private RouteRegistry              routeRegistry;
-    @Resource private ConversionRegistry         conversionRegistry;
-    @Resource private AccessorRegistry           accessorRegistry;
     @Resource private TimestampService           timestampService;
 
     @Resource private ConfigurationManager configurationManager;

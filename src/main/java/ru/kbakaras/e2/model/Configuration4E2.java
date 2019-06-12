@@ -2,12 +2,15 @@ package ru.kbakaras.e2.model;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.kbakaras.e2.conversion.Conversion;
-import ru.kbakaras.e2.conversion.Conversions;
+import ru.kbakaras.e2.core.conversion.Conversion;
+import ru.kbakaras.e2.core.conversion.Conversions;
 import ru.kbakaras.e2.core.model.SystemConnection;
+import ru.kbakaras.e2.core.model.SystemType;
 import ru.kbakaras.e2.service.ConfigurationManager;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -71,10 +74,22 @@ public class Configuration4E2 {
 
     }
 
+    public boolean updateRouteExists(UUID sourceId, UUID destinationId, String entityName) {
 
-    @Deprecated
-    public SystemAccessor getSystemAccessor(UUID systemUid) {
-        return null;
+        return updateRoutes.get(sourceId).get(entityName).contains(destinationId);
+
+    }
+
+    public Set<UUID> getRequestDestinations(UUID sourceId, String entityName, UUID[] destinationSystemUids) {
+
+        HashSet<UUID> result = new HashSet<>(Arrays.asList(destinationSystemUids));
+
+        if (destinationSystemUids.length > 0) {
+            result.retainAll(requestRoutes.get(sourceId).get(entityName));
+        }
+
+        return result;
+
     }
 
 
