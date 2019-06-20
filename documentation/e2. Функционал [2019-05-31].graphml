@@ -558,7 +558,7 @@
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="65.21440000000001" width="185.97568" x="903.90272" y="1396.430400000001"/>
-          <y:Fill color="#FFCC00" transparent="false"/>
+          <y:Fill color="#99CC00" transparent="false"/>
           <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="65.21440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="5.6843418860808015E-14">Адаптация всех механизмов к работе через объект конфигурации</y:NodeLabel>
           <y:Shape type="roundrectangle"/>
@@ -569,7 +569,7 @@
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="65.21440000000001" width="185.97568" x="1129.8784" y="1311.2160000000008"/>
-          <y:Fill color="#FFCC00" transparent="false"/>
+          <y:Fill color="#99CC00" transparent="false"/>
           <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="65.21440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="5.6843418860808015E-14">Poller4Repeat</y:NodeLabel>
           <y:Shape type="roundrectangle"/>
@@ -580,7 +580,7 @@
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="65.21440000000001" width="185.97568" x="1129.8784" y="1396.4304000000009"/>
-          <y:Fill color="#FFCC00" transparent="false"/>
+          <y:Fill color="#99CC00" transparent="false"/>
           <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="65.21440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="5.6843418860808015E-14">Processor4Request</y:NodeLabel>
           <y:Shape type="roundrectangle"/>
@@ -591,7 +591,7 @@
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="65.21440000000001" width="185.97568" x="1129.8784" y="1481.644800000001"/>
-          <y:Fill color="#FFCC00" transparent="false"/>
+          <y:Fill color="#99CC00" transparent="false"/>
           <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="65.21440000000001" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="185.97568" x="0.0" xml:space="preserve" y="5.6843418860808015E-14">Poller4Delivery</y:NodeLabel>
           <y:Shape type="roundrectangle"/>
