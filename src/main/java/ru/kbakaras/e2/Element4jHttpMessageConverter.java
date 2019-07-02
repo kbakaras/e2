@@ -7,13 +7,12 @@ import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.AbstractHttpMessageConverter;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
 
-@Component
+//@Component
 public class Element4jHttpMessageConverter extends AbstractHttpMessageConverter<Element> {
 	private SAXReader reader;
 

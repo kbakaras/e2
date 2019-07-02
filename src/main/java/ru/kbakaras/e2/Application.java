@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -15,6 +16,8 @@ import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+import java.util.List;
 
 @EnableWebMvc
 @EnableSwagger2
@@ -28,7 +31,7 @@ public class Application implements WebMvcConfigurer, ApplicationContextAware {
      * Конвертор объявлен бином в явном виде для того, чтобы при создании RestTemplate он добавлялся
      * в список стандартный конверторов. Этот же бин добавляется в список конверторов контекста WebMVC.
      */
-    /*@Bean
+    @Bean
     public Element4jHttpMessageConverter element4jHttpMessageConverter() {
         return new Element4jHttpMessageConverter();
     }
@@ -37,7 +40,7 @@ public class Application implements WebMvcConfigurer, ApplicationContextAware {
     @Override
     public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
         converters.add(element4jHttpMessageConverter());
-    }*/
+    }
 
 
 
