@@ -82,10 +82,10 @@ public class Configuration4E2 {
 
     public Set<UUID> getRequestDestinations(UUID sourceId, String entityName, UUID[] destinationSystemUids) {
 
-        HashSet<UUID> result = new HashSet<>(Arrays.asList(destinationSystemUids));
+        HashSet<UUID> result = new HashSet<>(requestRoutes.get(sourceId).get(entityName));
 
         if (destinationSystemUids.length > 0) {
-            result.retainAll(requestRoutes.get(sourceId).get(entityName));
+            result.retainAll(Arrays.asList(destinationSystemUids));
         }
 
         return result;
