@@ -1,5 +1,7 @@
 package ru.kbakaras.e2.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Service;
 import ru.kbakaras.e2.core.RouteConfigurer;
@@ -42,6 +44,8 @@ import java.util.jar.JarFile;
  */
 @Service
 public class ConfigurationManager implements InitializingBean {
+
+    private Logger log = LoggerFactory.getLogger(ConfigurationManager.class);
 
     volatile private Configuration4E2 configuration;
 
@@ -174,8 +178,11 @@ public class ConfigurationManager implements InitializingBean {
             @SuppressWarnings("unchecked")
             Class<? extends SystemType> destinationType = (Class<? extends SystemType>) props.get("destinationType");
 
-            mc.get(sourceType).get(destinationType)
-                    .put((String) props.get("sourceEntity"), bindClass);
+            String sourceEntity = (String) props.get("sourceEntity");
+
+            mc.get(sourceType).get(destinationType).put(sourceEntity, bindClass);
+
+            log.info("Конверсия {} --> {} :: [{}]", sourceType.getSimpleName(), destinationType.getSimpleName(), sourceEntity);
 
         });
 
