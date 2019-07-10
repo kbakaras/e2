@@ -63,7 +63,7 @@ public class ConfigurationManager implements InitializingBean {
     @SuppressWarnings("unchecked")
     public void updateConfiguration() {
         try {
-            String jarPath = "/home/kbakaras/projects/idea/glance/e2-common/build/libs/e2-common-1.0-SNAPSHOT.jar";
+            String jarPath = "/home/kbakaras/projects/idea/glance/glance-e2/build/libs/glance-e2-1.0-SNAPSHOT.jar";
 
             URLClassLoader configurationClassLoader = new URLClassLoader(new URL[]{new URL("file://" + jarPath)});
 
