@@ -12,7 +12,7 @@ import ru.kbakaras.e2.core.model.SystemType;
 import ru.kbakaras.e2.model.Configuration4E2;
 import ru.kbakaras.e2.model.Configuration4E2.RouteMap;
 import ru.kbakaras.e2.model.Configuration4E2.Source2Destinations4Conversions;
-import ru.kbakaras.e2.model.ConfigurationException4E2;
+import ru.kbakaras.e2.model.Configuration4E2Exception;
 import ru.kbakaras.e2.model.SystemInstance;
 import ru.kbakaras.e2.repositories.SystemInstanceRepository;
 import ru.kbakaras.jpa.ProperEntity;
@@ -112,7 +112,7 @@ public class ConfigurationManager implements InitializingBean {
             connections.put(systemConnection.getId(), systemConnection);
 
         } else if (connection != systemConnection) {
-            throw new ConfigurationException4E2(MessageFormat.format(
+            throw new Configuration4E2Exception(MessageFormat.format(
                     "Other connection with same id ({1}) already registered!", systemConnection.getId()
             ));
         }
