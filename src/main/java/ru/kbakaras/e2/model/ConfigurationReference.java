@@ -2,6 +2,7 @@ package ru.kbakaras.e2.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import ru.kbakaras.jpa.ProperEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,7 +14,7 @@ import java.time.Instant;
 @Entity
 @Table(name = "configuration_reference")
 @Getter @Setter
-public class ConfigurationReference {
+public class ConfigurationReference extends ProperEntity {
 
     @ManyToOne
     @JoinColumn(name = "configuration_info_id")

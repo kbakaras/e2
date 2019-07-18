@@ -3,6 +3,7 @@ package ru.kbakaras.e2.service.rest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
@@ -36,6 +37,8 @@ import ru.kbakaras.e2.service.TimestampService;
 import ru.kbakaras.jpa.BaseEntity;
 
 import javax.annotation.Resource;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
@@ -247,6 +250,7 @@ public class ManageQueueRest {
 
     @RequestMapping(path = "read")
     public ObjectNode read(@RequestBody ObjectNode request) {
+
         ObjectNode response = objectMapper.createObjectNode();
 
         UUID id = getId(request);
@@ -336,6 +340,7 @@ public class ManageQueueRest {
         }
 
         return response;
+
     }
 
     @RequestMapping(path = "reconvert")
@@ -443,6 +448,34 @@ public class ManageQueueRest {
 
     }
 
+
+    @RequestMapping(path = "config")
+    public ObjectNode config(@RequestBody ObjectNode request) {
+
+        ObjectNode response = objectMapper.createObjectNode();
+
+        try {
+
+            byte[] data = request.get("data").binaryValue();
+
+            FileOutputStream output = new FileOutputStream(new File("/home/kbakaras/config.jar"));
+            IOUtils.write(data, output);
+
+            return response;
+
+        } catch (IOException e) {
+
+            LOG.error(e.getMessage());
+
+            return objectMapper.createObjectNode()
+                    .put("result", RESULT_ERROR)
+                    .put("error", e.getMessage());
+
+        }
+
+    }
+
+
     private UUID getId(ObjectNode request) {
         try {
             return objectMapper.readValue(request.get("id").textValue(), UUID.class);
@@ -451,6 +484,7 @@ public class ManageQueueRest {
         }
     }
 
+
     private static final String QUEUE_Delivery   = "delivery";
     private static final String QUEUE_Conversion = "conversion";
     private static final String QUEUE_Repeat     = "repeat";
@@ -458,4 +492,5 @@ public class ManageQueueRest {
     private static final String RESULT_SUCCESS = "SUCCESS";
     private static final String RESULT_SKIPPED = "SKIPPED";
     private static final String RESULT_ERROR   = "ERROR";
+
 }
