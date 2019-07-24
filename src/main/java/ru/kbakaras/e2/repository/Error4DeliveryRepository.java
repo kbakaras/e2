@@ -1,4 +1,4 @@
-package ru.kbakaras.e2.repositories;
+package ru.kbakaras.e2.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import ru.kbakaras.e2.model.Error4Delivery;

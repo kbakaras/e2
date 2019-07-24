@@ -7,7 +7,7 @@ import ru.kbakaras.jpa.repository.SugarRepositoryExe;
 
 @Configuration
 @EnableJpaRepositories(
-        value = "ru.kbakaras.e2.repositories",
+        value = "ru.kbakaras.e2.repository",
         repositoryBaseClass = SugarRepositoryExe.class
 )
 @EntityScan(basePackages = {

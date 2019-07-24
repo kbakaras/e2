@@ -3,7 +3,6 @@ package ru.kbakaras.e2.service.rest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
@@ -21,15 +20,16 @@ import ru.kbakaras.e2.model.History4Delivery;
 import ru.kbakaras.e2.model.Queue4Conversion;
 import ru.kbakaras.e2.model.Queue4Delivery;
 import ru.kbakaras.e2.model.Queue4Repeat;
-import ru.kbakaras.e2.repositories.Error4ConversionRepository;
-import ru.kbakaras.e2.repositories.Error4DeliveryRepository;
-import ru.kbakaras.e2.repositories.Error4RepeatRepository;
-import ru.kbakaras.e2.repositories.Queue4ConversionRepository;
-import ru.kbakaras.e2.repositories.Queue4DeliveryRepository;
-import ru.kbakaras.e2.repositories.Queue4RepeatRepository;
-import ru.kbakaras.e2.repositories.QueueManage;
-import ru.kbakaras.e2.repositories.SystemInstanceRepository;
+import ru.kbakaras.e2.repository.Error4ConversionRepository;
+import ru.kbakaras.e2.repository.Error4DeliveryRepository;
+import ru.kbakaras.e2.repository.Error4RepeatRepository;
+import ru.kbakaras.e2.repository.Queue4ConversionRepository;
+import ru.kbakaras.e2.repository.Queue4DeliveryRepository;
+import ru.kbakaras.e2.repository.Queue4RepeatRepository;
+import ru.kbakaras.e2.repository.QueueManage;
+import ru.kbakaras.e2.repository.SystemInstanceRepository;
 import ru.kbakaras.e2.service.BasicPoller;
+import ru.kbakaras.e2.service.ConfigurationManager;
 import ru.kbakaras.e2.service.Poller4Conversion;
 import ru.kbakaras.e2.service.Poller4Delivery;
 import ru.kbakaras.e2.service.Poller4Repeat;
@@ -37,8 +37,6 @@ import ru.kbakaras.e2.service.TimestampService;
 import ru.kbakaras.jpa.BaseEntity;
 
 import javax.annotation.Resource;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
@@ -52,7 +50,9 @@ import java.util.function.Function;
         method = RequestMethod.POST,
         path = "manage/Queue")
 public class ManageQueueRest {
+
     private static final Logger LOG = LoggerFactory.getLogger(ManageQueueRest.class);
+
 
     @Resource private Poller4Delivery poller4Delivery;
     @Resource private Poller4Conversion poller4Conversion;
@@ -68,8 +68,10 @@ public class ManageQueueRest {
 
     @Resource private SystemInstanceRepository   systemInstanceRepository;
     @Resource private TimestampService           timestampService;
+    @Resource private ConfigurationManager       configurationManager;
 
     @Resource private ObjectMapper objectMapper;
+
 
     @RequestMapping(path = "stats")
     public ObjectNode stats(String value) {
@@ -456,10 +458,14 @@ public class ManageQueueRest {
 
         try {
 
-            byte[] data = request.get("data").binaryValue();
+            configurationManager.updateConfiguration(
+                    request.get("data").binaryValue(),
+                    request.get("fileName").textValue()
+            );
+            /*byte[] data = request.get("data").binaryValue();
 
             FileOutputStream output = new FileOutputStream(new File("/home/kbakaras/config.jar"));
-            IOUtils.write(data, output);
+            IOUtils.write(data, output);*/
 
             return response;
 

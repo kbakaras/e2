@@ -23,4 +23,11 @@ public class ConfigurationInfo extends ProperEntity {
     @Column(nullable = false)
     private Instant created;
 
+
+    @Override
+    protected void newElement() {
+        super.newElement();
+        created = Instant.now();
+    }
+
 }

@@ -29,4 +29,17 @@ public class ConfigurationReference extends ProperEntity {
     @Column(nullable = false)
     private Instant created;
 
+
+    @Override
+    protected void newElement() {
+        super.newElement();
+        created = Instant.now();
+    }
+
+
+    @Override
+    public String toString() {
+        return "Created on " + created.toString() + " (" + fileName + ")";
+    }
+
 }

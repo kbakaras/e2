@@ -7,7 +7,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.repository.CrudRepository;
 import ru.kbakaras.e2.model.BasicQueue;
-import ru.kbakaras.e2.repositories.QueueManage;
+import ru.kbakaras.e2.repository.QueueManage;
 import ru.kbakaras.e2.service.rest.ManageQueueException;
 
 import java.util.List;

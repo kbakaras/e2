@@ -9,9 +9,9 @@ import ru.kbakaras.e2.core.model.SystemConnection;
 import ru.kbakaras.e2.model.Configuration4E2;
 import ru.kbakaras.e2.model.Error4Repeat;
 import ru.kbakaras.e2.model.Queue4Repeat;
-import ru.kbakaras.e2.repositories.Error4RepeatRepository;
-import ru.kbakaras.e2.repositories.Queue4RepeatRepository;
-import ru.kbakaras.e2.repositories.QueueManage;
+import ru.kbakaras.e2.repository.Error4RepeatRepository;
+import ru.kbakaras.e2.repository.Queue4RepeatRepository;
+import ru.kbakaras.e2.repository.QueueManage;
 import ru.kbakaras.jpa.BaseEntity;
 import ru.kbakaras.sugar.utils.ExceptionUtils;
 

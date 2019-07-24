@@ -1,4 +1,4 @@
-package ru.kbakaras.e2.repositories;
+package ru.kbakaras.e2.repository;
 
 import ru.kbakaras.e2.model.SystemInstance;
 import ru.kbakaras.jpa.repository.SugarRepository;

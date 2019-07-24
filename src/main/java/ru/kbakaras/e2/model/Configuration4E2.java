@@ -1,17 +1,17 @@
 package ru.kbakaras.e2.model;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import ru.kbakaras.e2.core.conversion.Conversion;
 import ru.kbakaras.e2.core.conversion.Conversions;
 import ru.kbakaras.e2.core.model.SystemConnection;
 import ru.kbakaras.e2.core.model.SystemType;
-import ru.kbakaras.e2.service.ConfigurationManager;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -19,8 +19,11 @@ import java.util.UUID;
  * Класс инкапсулирует всю текущую конфигурацию e2. В нём содержатся маршруты,
  * конверсии и экземпляры систем. См. также {@link ru.kbakaras.e2.service.ConfigurationManager}.
  */
+@Slf4j
 public class Configuration4E2 {
-    private static final Logger LOG = LoggerFactory.getLogger(ConfigurationManager.class);
+
+    public final ConfigurationReference configurationReference;
+    private final File jarFile;
 
     private Source2Destinations4Conversions conversionClasses;
     private RouteMap updateRoutes;
@@ -33,13 +36,18 @@ public class Configuration4E2 {
     public Configuration4E2(Source2Destinations4Conversions conversionClasses,
                             RouteMap updateRoutes, RouteMap requestRoutes,
                             Map<UUID, SystemInstance> instances,
-                            Map<UUID, SystemConnection> connections) {
+                            Map<UUID, SystemConnection> connections,
+                            ConfigurationReference configurationReference,
+                            File jarFile) {
 
         this.conversionClasses = conversionClasses;
         this.updateRoutes      = updateRoutes;
         this.requestRoutes     = requestRoutes;
         this.instances         = instances;
         this.connections       = connections;
+
+        this.configurationReference = configurationReference;
+        this.jarFile = jarFile;
 
     }
 
@@ -59,30 +67,47 @@ public class Configuration4E2 {
 
     public Conversions getConversions(UUID sourceId, UUID destinationId) {
 
-        return new Conversions(
-                conversionClasses
-                        .get(getSystemConnection(sourceId).systemType)
-                        .get(getSystemConnection(destinationId).systemType)
-        );
+        SystemConnection sourceConnection = getSystemConnection(sourceId);
+        SystemConnection destinationConnection = getSystemConnection(destinationId);
+
+        if (sourceConnection != null && destinationConnection != null) {
+
+            return new Conversions(
+                    conversionClasses
+                            .get(sourceConnection.systemType)
+                            .get(destinationConnection.systemType)
+            );
+
+        }
+
+        return null;
 
     }
 
 
     public Set<UUID> getUpdateDestinations(UUID sourceId, String entityName) {
 
-        return updateRoutes.get(sourceId).get(entityName);
+        return Optional.ofNullable(updateRoutes.get(sourceId))
+                .map(map -> map.get(entityName))
+                .orElseGet(HashSet::new);
 
     }
 
     public boolean updateRouteExists(UUID sourceId, UUID destinationId, String entityName) {
 
-        return updateRoutes.get(sourceId).get(entityName).contains(destinationId);
+        return Optional.ofNullable(updateRoutes.get(sourceId))
+                .map(map -> map.get(entityName))
+                .filter(set -> set.contains(destinationId))
+                .isPresent();
 
     }
 
     public Set<UUID> getRequestDestinations(UUID sourceId, String entityName, UUID[] destinationSystemUids) {
 
-        HashSet<UUID> result = new HashSet<>(requestRoutes.get(sourceId).get(entityName));
+        HashSet<UUID> result = Optional.ofNullable(requestRoutes.get(sourceId))
+                .map(map -> map.get(entityName))
+                .map(HashSet::new)
+                .orElseGet(HashSet::new);
 
         if (destinationSystemUids.length > 0) {
             result.retainAll(Arrays.asList(destinationSystemUids));
@@ -96,7 +121,15 @@ public class Configuration4E2 {
     @Override
     protected void finalize() throws Throwable {
 
-        LOG.info("Garbage collection of " + this.toString());
+        if (configurationReference != null) {
+            log.info("Finalizing configuration {}", configurationReference);
+        }
+
+        if (jarFile != null && jarFile.exists()) {
+            if (jarFile.delete()) {
+                log.info("Deleted configuration file {}", jarFile);
+            }
+        }
 
         super.finalize();
 
