@@ -1,5 +1,6 @@
 package ru.kbakaras.e2.service.rest;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -136,15 +137,15 @@ public class ManageQueueRest {
         try {
             BasicQueue queue = poller.revertOne();
             return objectMapper.createObjectNode()
-                    .put("result", RESULT_SUCCESS)
+                    .put(RESULT, RESULT_SUCCESS)
                     .put("messageId", queue.getId().toString());
 
         } catch (ManageQueueException e) {
             LOG.error(e.getMessage());
 
             return objectMapper.createObjectNode()
-                    .put("result", RESULT_ERROR)
-                    .put("error", e.getMessage());
+                    .put(RESULT, RESULT_ERROR)
+                    .put(ERROR, e.getMessage());
         }
     }
 
@@ -181,23 +182,23 @@ public class ManageQueueRest {
 
         if (queue.isProcessed()) {
             return objectMapper.createObjectNode()
-                    .put("result", RESULT_SUCCESS)
+                    .put(RESULT, RESULT_SUCCESS)
                     .put("id", queue.getId().toString());
 
         } else {
             ObjectNode response = objectMapper.createObjectNode()
-                    .put("result", RESULT_ERROR)
+                    .put(RESULT, RESULT_ERROR)
                     .put("id", queue.getId().toString());
 
             if (QUEUE_Delivery.equals(queueName)) {
                 error4DeliveryRepository.getFirstByQueueOrderByTimestampDesc((Queue4Delivery) queue)
-                        .ifPresent(error -> response.put("error", error.getError()));
+                        .ifPresent(error -> response.put(ERROR, error.getError()));
             } else if (QUEUE_Conversion.equals(queueName)) {
                 error4ConversionRepository.getFirstByQueueOrderByTimestampDesc((Queue4Conversion) queue)
-                        .ifPresent(error -> response.put("error", error.getError()));
+                        .ifPresent(error -> response.put(ERROR, error.getError()));
             } else if (QUEUE_Repeat.equals(queueName)) {
                 error4RepeatRepository.getFirstByQueueOrderByTimestampDesc((Queue4Repeat) queue)
-                        .ifPresent(error -> response.put("error", error.getError()));
+                        .ifPresent(error -> response.put(ERROR, error.getError()));
             }
 
             return response;
@@ -265,7 +266,7 @@ public class ManageQueueRest {
         if (request.get("field") != null) {
             field = request.get("field").textValue();
 
-            boolean fieldError = "error".equals(field);
+            boolean fieldError = ERROR.equals(field);
             boolean fieldStackTrace = "stackTrace".equals(field);
             if (fieldError || fieldStackTrace) {
                 getErrorField = error ->
@@ -359,7 +360,7 @@ public class ManageQueueRest {
             History4Delivery history = poller4Delivery.reconvert(queue);
 
             return objectMapper.createObjectNode()
-                    .put("result", RESULT_SUCCESS)
+                    .put(RESULT, RESULT_SUCCESS)
                     .put("historyId",        history.getId().toString())
                     .put("historyTimestamp", history.getTimestamp().toString())
                     .put("newMessage",       history.getQueue().getMessage());
@@ -368,15 +369,15 @@ public class ManageQueueRest {
             LOG.error(e.getMessage());
 
             return objectMapper.createObjectNode()
-                    .put("result", RESULT_SKIPPED)
-                    .put("error", e.getMessage());
+                    .put(RESULT, RESULT_SKIPPED)
+                    .put(ERROR, e.getMessage());
 
         } catch (ManageQueueException e) {
             LOG.error(e.getMessage());
 
             return objectMapper.createObjectNode()
-                    .put("result", RESULT_ERROR)
-                    .put("error", e.getMessage());
+                    .put(RESULT, RESULT_ERROR)
+                    .put(ERROR, e.getMessage());
 
         }
     }
@@ -430,21 +431,21 @@ public class ManageQueueRest {
             }
 
             return objectMapper.createObjectNode()
-                    .put("result", RESULT_SUCCESS);
+                    .put(RESULT, RESULT_SUCCESS);
 
         } catch (ManageQueueSkipException e) {
             LOG.error(e.getMessage());
 
             return objectMapper.createObjectNode()
-                    .put("result", RESULT_SKIPPED)
-                    .put("error", e.getMessage());
+                    .put(RESULT, RESULT_SKIPPED)
+                    .put(ERROR, e.getMessage());
 
         } catch (ManageQueueException e) {
             LOG.error(e.getMessage());
 
             return objectMapper.createObjectNode()
-                    .put("result", RESULT_ERROR)
-                    .put("error", e.getMessage());
+                    .put(RESULT, RESULT_ERROR)
+                    .put(ERROR, e.getMessage());
 
         }
 
@@ -458,24 +459,34 @@ public class ManageQueueRest {
 
         try {
 
-            configurationManager.updateConfiguration(
-                    request.get("data").binaryValue(),
-                    request.get("fileName").textValue()
-            );
-            /*byte[] data = request.get("data").binaryValue();
+            Optional<String> fileName = Optional.ofNullable(request.get("fileName")).map(JsonNode::textValue);
 
-            FileOutputStream output = new FileOutputStream(new File("/home/kbakaras/config.jar"));
-            IOUtils.write(data, output);*/
+            if (fileName.isPresent()) {
+
+                boolean updated = configurationManager.updateConfiguration(
+                        request.get("data").binaryValue(),
+                        fileName.get()
+                );
+
+                response.put(RESULT, updated ? RESULT_SUCCESS : RESULT_SKIPPED);
+                response.put("configuration", configurationManager.getConfiguration().configurationReference.toString());
+
+            } else {
+
+                response.put(RESULT, RESULT_INFO);
+                response.put("configuration", configurationManager.getConfiguration().configurationReference.toString());
+
+            }
 
             return response;
 
-        } catch (IOException e) {
+        } catch (Exception e) {
 
             LOG.error(e.getMessage());
 
             return objectMapper.createObjectNode()
-                    .put("result", RESULT_ERROR)
-                    .put("error", e.getMessage());
+                    .put(RESULT, RESULT_ERROR)
+                    .put(ERROR, e.getMessage());
 
         }
 
@@ -495,8 +506,12 @@ public class ManageQueueRest {
     private static final String QUEUE_Conversion = "conversion";
     private static final String QUEUE_Repeat     = "repeat";
 
+    private static final String RESULT_INFO    = "INFO";
     private static final String RESULT_SUCCESS = "SUCCESS";
     private static final String RESULT_SKIPPED = "SKIPPED";
     private static final String RESULT_ERROR   = "ERROR";
+
+    private static final String RESULT = "result";
+    private static final String ERROR  = "error";
 
 }

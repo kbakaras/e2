@@ -115,15 +115,16 @@ public class ConfigurationManager implements InitializingBean {
      * Выполняет загрузку в базу и применяет к текущему процессу новую конфигурацию, если она отличается
      * от текущей используемой.
      *
-     * @return null, если новая конфигурация применена. Если же новая конфигурация оказалась эквивалентна
-     * текущей, возвращается текущая конфигурация (конкретно, объект класса {@link ConfigurationReference}).
+     * @return true, если новая конфигурация применена. Если же новая конфигурация оказалась эквивалентна
+     * текущей, возвращается false.
      */
     @Transactional(propagation = Propagation.REQUIRED)
-    public synchronized ConfigurationReference updateConfiguration(byte[] data, String fileName) {
+    public synchronized boolean updateConfiguration(byte[] data, String fileName) {
 
         String sha = DigestUtils.sha1Hex(data);
         int size = data.length;
 
+        // Пытаемся найти в базе конфигурацию с точно такими же данными jar-файла, если не находим, то создаём
         ConfigurationInfo configurationInfo = configurationInfoRepository.findByShaAndSize(sha, size).stream()
                 .filter(info -> Arrays.equals(entityManager.find(ConfigurationData.class, info.getId()).getData(), data))
                 .findFirst()
@@ -145,7 +146,9 @@ public class ConfigurationManager implements InitializingBean {
                 });
 
 
+        // Если новая конфигурация отличается от текущей, применим новую
         if (configuration.configurationReference == null || !configuration.configurationReference.getInfo().equals(configurationInfo)) {
+
             ConfigurationReference configurationReference = BaseEntity.newElement(ConfigurationReference.class);
             configurationReference.setInfo(configurationInfo);
             configurationReference.setFileName(fileName);
@@ -153,11 +156,11 @@ public class ConfigurationManager implements InitializingBean {
 
             updateConfiguration(configurationReference, data);
 
-            return configurationReference;
+            return true;
 
         }
 
-        return null;
+        return false;
 
     }
 
@@ -167,9 +170,11 @@ public class ConfigurationManager implements InitializingBean {
     @SuppressWarnings("unchecked")
     private void updateConfiguration(ConfigurationReference configurationReference, byte[] data) {
 
+        File jarPath = null;
+
         try {
 
-            File jarPath = File.createTempFile("e2_", ".jar");
+            jarPath = File.createTempFile("e2_", ".jar");
             jarPath.deleteOnExit();
             FileUtils.writeByteArrayToFile(jarPath, data);
 
@@ -181,13 +186,11 @@ public class ConfigurationManager implements InitializingBean {
             Class<? extends RouteConfigurer> clazz;
 
             try (JarFile jf = new JarFile(jarPath)) {
+
                 String mainClass = jf.getManifest().getMainAttributes().getValue(RouteConfigurer.CONFIGURER_CLASS);
 
                 clazz = (Class<? extends RouteConfigurer>) configurationClassLoader.loadClass(mainClass);
                 basePackage = jf.getManifest().getMainAttributes().getValue(RouteConfigurer.CONVERSION_PACKAGE);
-
-            } catch (IOException e) {
-                throw new RuntimeException(e);
             }
 
 
@@ -212,6 +215,15 @@ public class ConfigurationManager implements InitializingBean {
             );
 
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IOException e) {
+
+            if (jarPath != null && jarPath.exists()) {
+
+                if (jarPath.delete()) {
+                    log.info("Configuration file {} deleted", jarPath);
+                }
+
+            }
+
             throw new RuntimeException(e);
         }
 
