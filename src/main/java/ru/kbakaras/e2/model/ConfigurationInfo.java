@@ -21,13 +21,13 @@ public class ConfigurationInfo extends ProperEntity {
     private String sha;
 
     @Column(nullable = false)
-    private Instant created;
+    private Instant timestamp;
 
 
     @Override
     protected void newElement() {
         super.newElement();
-        created = Instant.now();
+        timestamp = Instant.now();
     }
 
 }

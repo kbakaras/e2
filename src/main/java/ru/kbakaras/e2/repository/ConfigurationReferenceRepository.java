@@ -7,6 +7,6 @@ import java.util.UUID;
 
 public interface ConfigurationReferenceRepository extends JpaRepository<ConfigurationReference, UUID> {
 
-    ConfigurationReference findFirstByOrderByCreatedDesc();
+    ConfigurationReference findFirstByOrderByTimestampDesc();
 
 }

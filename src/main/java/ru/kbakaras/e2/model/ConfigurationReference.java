@@ -27,19 +27,19 @@ public class ConfigurationReference extends ProperEntity {
      * Дата создания ссылки
      */
     @Column(nullable = false)
-    private Instant created;
+    private Instant timestamp;
 
 
     @Override
     protected void newElement() {
         super.newElement();
-        created = Instant.now();
+        timestamp = Instant.now();
     }
 
 
     @Override
     public String toString() {
-        return "Created on " + created.toString() + " (" + fileName + ")";
+        return "Created on " + timestamp.toString() + " (" + fileName + ")";
     }
 
 }

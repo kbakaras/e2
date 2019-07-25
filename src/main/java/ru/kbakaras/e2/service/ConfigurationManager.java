@@ -82,7 +82,7 @@ public class ConfigurationManager implements InitializingBean {
 
     private synchronized void updateConfiguration() {
 
-        ConfigurationReference configurationReference = configurationReferenceRepository.findFirstByOrderByCreatedDesc();
+        ConfigurationReference configurationReference = configurationReferenceRepository.findFirstByOrderByTimestampDesc();
 
         if (configurationReference != null) {
 
