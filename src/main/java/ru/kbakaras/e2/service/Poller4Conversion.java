@@ -68,13 +68,17 @@ public class Poller4Conversion extends BasicPoller<Queue4Conversion> {
 
     @Override
     protected void process(Queue4Conversion queue) {
+
+        Configuration4E2 conf = configurationManager.getConfiguration();
+
         try {
-            convert(new E2Update(
-                            DocumentHelper.parseText(queue.getMessage()).getRootElement()),
-                    queue.getId()
+            convert(new E2Update(DocumentHelper.parseText(queue.getMessage()).getRootElement()),
+                    queue.getId(),
+                    conf
             );
             queue.setDelivered();
             queue.setProcessed(true);
+            queue.setConfigurationReference(conf.configurationReference);
 
         } catch (Throwable e) {
             queue.incAttempt();
@@ -84,6 +88,7 @@ public class Poller4Conversion extends BasicPoller<Queue4Conversion> {
             error.setQueue(queue);
             error.setError(ExceptionUtils.getMessage(e));
             error.setStackTrace(ExceptionUtils.getStackTrace(e));
+            error.setConfigurationReference(conf.configurationReference);
             error4ConversionRepository.save(error);
 
             LOG.error("Conversion error!{}", error);
@@ -105,9 +110,7 @@ public class Poller4Conversion extends BasicPoller<Queue4Conversion> {
      * @param update          Входное update-сообщение.
      * @param sourceMessageId Уникальный идентификатор входного сообщения в очереди на конвертацию.
      */
-    private void convert(E2Update update, UUID sourceMessageId) {
-
-        Configuration4E2 conf = configurationManager.getConfiguration();
+    private void convert(E2Update update, UUID sourceMessageId, Configuration4E2 conf) {
 
         //SystemAccessor sourceAccessor = accessorRegistry.get(update.systemUid());
         //SystemAccessor sourceAccessor = conf.getSystemAccessor(update.systemUid());

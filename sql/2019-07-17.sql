@@ -96,3 +96,22 @@ ALTER TABLE queue4repeat     ALTER COLUMN timestamp TYPE timestamptz;
 ALTER TABLE queue4repeat     ALTER COLUMN delivered_timestamp TYPE timestamptz;
 
 ----------------------------------------------------------------------------------------------------
+
+----------------------------------------------------------------------------------------------------
+-- Будем помнить конфигурацию
+----------------------------------------------------------------------------------------------------
+
+ALTER TABLE queue4conversion ADD COLUMN configuration_reference_id uuid;
+
+ALTER TABLE queue4conversion
+    ADD CONSTRAINT queue4conversion_configuration_reference_id_fk FOREIGN KEY (configuration_reference_id)
+    REFERENCES configuration_reference (id) MATCH SIMPLE;
+
+
+ALTER TABLE error4conversion ADD COLUMN configuration_reference_id uuid;
+
+ALTER TABLE error4conversion
+    ADD CONSTRAINT error4conversion_configuration_reference_id_fk FOREIGN KEY (configuration_reference_id)
+    REFERENCES configuration_reference (id) MATCH SIMPLE;
+
+----------------------------------------------------------------------------------------------------
