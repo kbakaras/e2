@@ -18,7 +18,7 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping(
         produces = MediaType.APPLICATION_XML_VALUE,
-        consumes = MediaType.APPLICATION_XML_VALUE,
+        consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE},
         method = RequestMethod.POST, path = "rest")
 public class ExchangeRest {
     @Resource private Poller4Conversion  poller4Conversion;
