@@ -73,9 +73,9 @@ public class Configuration4E2 {
         if (sourceConnection != null && destinationConnection != null) {
 
             return new Conversions(
-                    conversionClasses
-                            .get(sourceConnection.systemType)
-                            .get(destinationConnection.systemType)
+                    Optional.ofNullable(conversionClasses.get(sourceConnection.systemType))
+                            .map(map -> map.get(destinationConnection.systemType))
+                            .orElse(null)
             );
 
         }
