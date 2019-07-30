@@ -180,7 +180,7 @@ public class ConfigurationManager implements InitializingBean {
 
             log.info("Configuration written to file {}", jarPath);
 
-            URLClassLoader configurationClassLoader = new URLClassLoader(new URL[]{jarPath.toURI().toURL()});
+            URLClassLoader configurationClassLoader = new URLClassLoader(new URL[]{jarPath.toURI().toURL()}, this.getClass().getClassLoader());
 
             String basePackage;
             Class<? extends RouteConfigurer> clazz;
