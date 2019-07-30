@@ -155,9 +155,9 @@ public class ManageQueueRest {
         if (QUEUE_Delivery.equals(queueName)) {
             poller4Delivery.resume();
         } else if (QUEUE_Conversion.equals(queueName)) {
-            //poller4Conversion.resume();
+            poller4Conversion.resume();
         } else if (QUEUE_Repeat.equals(queueName)) {
-            //poller4Repeat.resume();
+            poller4Repeat.resume();
         }
 
         return objectMapper.createObjectNode();

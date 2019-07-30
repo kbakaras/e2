@@ -8,4 +8,7 @@ import java.util.UUID;
 
 public interface Queue4ConversionRepository extends JpaRepository<Queue4Conversion, UUID>, QueueManage {
     Optional<Queue4Conversion> getFirstByProcessedIsFalseOrderByTimestampAsc();
+
+    Optional<Queue4Conversion> getFirstByProcessedIsFalseAndStuckIsTrueOrderByTimestampAsc();
+
 }

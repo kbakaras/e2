@@ -55,6 +55,17 @@ public class Poller4Conversion extends BasicPoller<Queue4Conversion> {
         processPoll();
     }
 
+    synchronized public void resume() {
+        if (!isPolling()) {
+            queue4ConversionRepository.getFirstByProcessedIsFalseAndStuckIsTrueOrderByTimestampAsc()
+                    .ifPresent(queue -> {
+                        queue.setStuck(false);
+                        queue4ConversionRepository.save(queue);
+                    });
+            start();
+        }
+    }
+
 
     @Override
     protected Optional<Queue4Conversion> next() {

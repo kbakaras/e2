@@ -81,6 +81,18 @@ public class Poller4Repeat extends BasicPoller<Queue4Repeat> {
     }
 
 
+    synchronized public void resume() {
+        if (!isPolling()) {
+            queue4RepeatRepository.getFirstByProcessedIsFalseAndStuckIsTrueOrderByTimestampAsc()
+                    .ifPresent(queue -> {
+                        queue.setStuck(false);
+                        queue4RepeatRepository.save(queue);
+                    });
+            start();
+        }
+    }
+
+
     private static final int ATTEMPT_MAX = 3;
 
 }

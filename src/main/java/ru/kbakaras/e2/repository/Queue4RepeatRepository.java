@@ -9,4 +9,6 @@ import java.util.UUID;
 public interface Queue4RepeatRepository extends JpaRepository<Queue4Repeat, UUID>, QueueManage {
     Optional<Queue4Repeat> getFirstByProcessedIsFalseAndStuckIsFalseOrderByTimestampAsc();
     Optional<Queue4Repeat> getFirstByProcessedIsFalseOrderByTimestampAsc();
+
+    Optional<Queue4Repeat> getFirstByProcessedIsFalseAndStuckIsTrueOrderByTimestampAsc();
 }
