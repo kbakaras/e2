@@ -105,11 +105,9 @@ public class Processor4Request {
         converters4request.getMap().forEach((destinationId, converter) -> {
 
             SystemConnection destination = conf.getSystemConnection(destinationId);
-
-            Element donorRequest = destination.convertRequest(converter.output.xml());
             LOG.info("    {}", destination.systemName);
 
-            tasks.add(() -> new ResponseContainer(destination, destination.request(donorRequest)));
+            tasks.add(() -> new ResponseContainer(destination, destination.sendRequest(converter.output)));
 
         });
 
@@ -161,9 +159,9 @@ public class Processor4Request {
     private static class ResponseContainer {
 
         final SystemConnection systemConnection;
-        final Element response;
+        final E2Response response;
 
-        private ResponseContainer(SystemConnection systemConnection, Element response) {
+        private ResponseContainer(SystemConnection systemConnection, E2Response response) {
             this.systemConnection = systemConnection;
             this.response = response;
         }

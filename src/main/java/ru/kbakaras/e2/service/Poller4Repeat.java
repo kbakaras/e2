@@ -1,11 +1,11 @@
 package ru.kbakaras.e2.service;
 
 import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import ru.kbakaras.e2.core.model.SystemConnection;
+import ru.kbakaras.e2.message.E2Update;
 import ru.kbakaras.e2.model.Configuration4E2;
 import ru.kbakaras.e2.model.Error4Repeat;
 import ru.kbakaras.e2.model.Queue4Repeat;
@@ -51,11 +51,14 @@ public class Poller4Repeat extends BasicPoller<Queue4Repeat> {
         Configuration4E2 conf = configurationManager.getConfiguration();
 
         try {
-            Element update = DocumentHelper.parseText(queue.getMessage()).getRootElement();
-
+            E2Update update = new E2Update(
+                    DocumentHelper
+                            .parseText(queue.getMessage())
+                            .getRootElement()
+            );
             SystemConnection connection = conf.getSystemConnection(queue.getDestination().getId());
 
-            connection.update(connection.convertRequest(update));
+            connection.sendRepeat(update);
             queue.setDelivered();
             queue.setProcessed(true);
 

@@ -1,7 +1,6 @@
 package ru.kbakaras.e2.service;
 
 import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -141,10 +140,14 @@ public class Poller4Delivery extends BasicPoller<Queue4Delivery> {
         Configuration4E2 conf = configurationManager.getConfiguration();
 
         try {
-            Element update = DocumentHelper.parseText(queue.getMessage()).getRootElement();
+            E2Update update = new E2Update(
+                    DocumentHelper
+                            .parseText(queue.getMessage())
+                            .getRootElement()
+            );
             SystemConnection connection = conf.getSystemConnection(queue.getDestination().getId());
 
-            connection.update(connection.convertRequest(update));
+            connection.sendUpdate(update);
             queue.setDelivered();
             queue.setProcessed(true);
 
@@ -167,5 +170,7 @@ public class Poller4Delivery extends BasicPoller<Queue4Delivery> {
 
     }
 
+
     private static final int ATTEMPT_MAX = 3;
+
 }

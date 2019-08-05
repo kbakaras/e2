@@ -382,6 +382,20 @@ public class ManageQueueRest {
         }
     }
 
+    /**
+     * Отправляет исходное сообщение обратно, в отправившую его систему, для повтора. Системы, поддерживающие
+     * повтор, должны принять исходное сообщение, выяснить из него список элементов, помеченных как изменённые
+     * (changed = "true"), и подготовить по ним новое update-сообщение зачитав текущее их состояние.<br/><br/>
+     *
+     * На вход методу подаётся идентификатор сообщения, для которого нужно выполнить повтор. Этот идентификатор
+     * может принадлежать либо сообщению из очереди на доставку, либо из очереди на конвертацию. Если сообщение
+     * по идентификатору обнаружено в очереди на доставку, на повтор будет отправлено сообщение из очереди конвертации,
+     * породившее данное сообщение. То есть на повтор в любом случае отправляется именно исходное сообщение.<br/><br/>
+     *
+     * После отправки исходного сообщения на повтор, все порождённые из него сообщения для доставки, если они не
+     * помечены как обработанные, помечаются, а также у них снимается флаг застревания (stuck). Они помечаются
+     * лишь как обработанные (processed), но не как доставленные (delivered).
+     */
     @RequestMapping(path = "repeat")
     public ObjectNode repeat(@RequestBody ObjectNode request) {
         UUID id = getId(request);
@@ -398,7 +412,7 @@ public class ManageQueueRest {
 
             Queue4Conversion queueConversion = queue4ConversionRepository.findById(id).orElse(null);
             if (queueConversion == null) {
-                throw new ManageQueueException("Message (" + id + ") is not found in queues: delivery, conversion!");
+                throw new ManageQueueException("Message (" + id + ") was not found in queues: delivery, conversion!");
             }
 
             UUID systemId = new E2Update(queueConversion.getMessage()).systemUid();
