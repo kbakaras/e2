@@ -7,9 +7,9 @@ import org.springframework.stereotype.Service;
 import ru.kbakaras.e2.core.conversion.Converter4Payload;
 import ru.kbakaras.e2.core.conversion.Converter4Request;
 import ru.kbakaras.e2.core.model.SystemConnection;
-import ru.kbakaras.e2.message.E2;
 import ru.kbakaras.e2.message.E2Request;
 import ru.kbakaras.e2.message.E2Response;
+import ru.kbakaras.e2.message.E2SystemError;
 import ru.kbakaras.e2.message.E2SystemResponse;
 import ru.kbakaras.e2.model.Configuration4E2;
 import ru.kbakaras.sugar.lazy.MapCache;
@@ -120,28 +120,34 @@ public class Processor4Request {
             E2Response outResponse = new E2Response(sourceRequest.requestType());
 
             for (Future<ResponseContainer> responseFuture: responseFutures) {
+
                 ResponseContainer responseContainer = responseFuture.get();
+                E2SystemResponse systemResponse = responseContainer.response.systemResponse();
 
-                if (!responseContainer.response.getName().equals(E2.ERROR)) {
-                    E2SystemResponse inSystemResponse =
-                            responseContainer.systemConnection.convertResponse(responseContainer.response).systemResponse();
+                // region Обработка ошибок
+                List<E2SystemError> errors = systemResponse.errors();
+                if (!errors.isEmpty()) {
+                    errors.forEach(
+                            error -> outResponse
+                                    .addSystemResponse(
+                                            responseContainer.systemConnection.systemId.toString(),
+                                            responseContainer.systemConnection.systemName)
+                                    .addSystemError().setText(error.text())
+                    );
 
-                    if (inSystemResponse != null) {
-                        new Converter4Payload(
-                                inSystemResponse,
-                                outResponse.addSystemResponse(
-                                        responseContainer.systemConnection.getId().toString(),
-                                        responseContainer.systemConnection.getName()),
-                                conf.getConversions(responseContainer.systemConnection.systemId, sourceId)
-                        ).convertChanged();
-                    }
-
-                } else {
-                    outResponse.addSystemError(
-                            responseContainer.systemConnection.getId().toString(),
-                            responseContainer.systemConnection.getName(),
-                            responseContainer.response);
+                    continue;
                 }
+                // endregion
+
+
+                new Converter4Payload(
+                        systemResponse,
+                        outResponse.addSystemResponse(
+                                responseContainer.systemConnection.systemId.toString(),
+                                responseContainer.systemConnection.systemName),
+                        conf.getConversions(responseContainer.systemConnection.systemId, sourceId)
+                ).convertChanged();
+
             }
 
             return outResponse.xml();

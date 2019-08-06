@@ -233,32 +233,33 @@ public class ConfigurationManager implements InitializingBean {
     private void registerSystem(Map<UUID, SystemInstance> instances, Map<UUID, SystemConnection> connections,
                                 SystemConnection systemConnection) {
 
-        SystemConnection connection = connections.get(systemConnection.getId());
+        SystemConnection connection = connections.get(systemConnection.systemId);
         if (connection == null) {
-            connections.put(systemConnection.getId(), systemConnection);
+            connections.put(systemConnection.systemId, systemConnection);
 
         } else if (connection != systemConnection) {
             throw new Configuration4E2Exception(MessageFormat.format(
-                    "Other connection with same id ({1}) already registered!", systemConnection.getId()
+                    "Other connection with same id ({1}) already registered!",
+                    systemConnection.systemId
             ));
         }
 
 
-        SystemInstance instance = instances.get(systemConnection.getId());
+        SystemInstance instance = instances.get(systemConnection.systemId);
 
         if (instance == null) {
-            instance = systemRepository.findById(systemConnection.getId())
+            instance = systemRepository.findById(systemConnection.systemId)
                     .orElseGet(() -> {
                         SystemInstance newInstance = ProperEntity.newElement(SystemInstance.class);
                         newInstance.setName(systemConnection.systemName);
-                        newInstance.setId(systemConnection.getId());
+                        newInstance.setId(systemConnection.systemId);
                         return systemRepository.save(newInstance);
                     });
             instances.put(instance.getId(), instance);
         }
 
-        if (!Objects.equals(instance.getName(), systemConnection.getName())) {
-            instance.setName(systemConnection.getName());
+        if (!Objects.equals(instance.getName(), systemConnection.systemName)) {
+            instance.setName(systemConnection.systemName);
             instance = systemRepository.save(instance);
             instances.put(instance.getId(), instance);
         }
@@ -275,7 +276,7 @@ public class ConfigurationManager implements InitializingBean {
 
         Map<String, Set<UUID>> map = routeMap.get(from.systemId);
         if (map == null) {
-            routeMap.put(from.getId(), map = new HashMap<>());
+            routeMap.put(from.systemId, map = new HashMap<>());
         }
 
         for (String entity: entities) {

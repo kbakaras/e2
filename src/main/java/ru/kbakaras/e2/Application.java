@@ -29,7 +29,7 @@ public class Application implements WebMvcConfigurer, ApplicationContextAware {
 
     /**
      * Конвертор объявлен бином в явном виде для того, чтобы при создании RestTemplate он добавлялся
-     * в список стандартный конверторов. Этот же бин добавляется в список конверторов контекста WebMVC.
+     * в список стандартных конверторов. Этот же бин добавляется в список конверторов контекста WebMVC.
      */
     @Bean
     public Element4jHttpMessageConverter element4jHttpMessageConverter() {

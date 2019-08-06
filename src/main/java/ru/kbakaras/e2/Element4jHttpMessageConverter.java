@@ -10,7 +10,7 @@ import org.springframework.http.converter.AbstractHttpMessageConverter;
 import org.springframework.util.StreamUtils;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 //@Component
 public class Element4jHttpMessageConverter extends AbstractHttpMessageConverter<Element> {
@@ -51,7 +51,7 @@ public class Element4jHttpMessageConverter extends AbstractHttpMessageConverter<
 
 	@Override
 	protected void writeInternal(Element element, HttpOutputMessage outputMessage) throws IOException {
-		StreamUtils.copy(element.asXML(), Charset.forName("UTF-8"), outputMessage.getBody());
+		StreamUtils.copy(element.asXML(), StandardCharsets.UTF_8, outputMessage.getBody());
 	}
 
 }
