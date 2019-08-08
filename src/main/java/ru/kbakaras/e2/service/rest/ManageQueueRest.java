@@ -236,15 +236,26 @@ public class ManageQueueRest {
         ArrayNode listNode = objectMapper.createArrayNode();
         response.set("list", listNode);
 
+        Function<BasicQueue, String> system4queue = queue -> {
+            if (queue instanceof Queue4Delivery) {
+                return ((Queue4Delivery) queue).getDestination().getName();
+            } else if (queue instanceof Queue4Repeat) {
+                return ((Queue4Repeat) queue).getDestination().getName();
+            } else {
+                return null;
+            }
+        };
+
         for (BasicQueue queue: list) {
             listNode.add(objectMapper.createObjectNode()
-                    .put("id",        queue.getId().toString())
-                    .put("timestamp", queue.getTimestamp().toString())
-                    .put("size",      queue.getSize())
-                    .put("attempt",   queue.getAttempt())
-                    .put("stuck",     queue.isStuck())
-                    .put("processed", queue.isProcessed())
-                    .put("delivered", Optional.ofNullable(queue.getDeliveredTimestamp()).map(Instant::toString).orElse(null))
+                    .put("id",          queue.getId().toString())
+                    .put("timestamp",   queue.getTimestamp().toString())
+                    .put("size",        queue.getSize())
+                    .put("attempt",     queue.getAttempt())
+                    .put("stuck",       queue.isStuck())
+                    .put("processed",   queue.isProcessed())
+                    .put("delivered",   Optional.ofNullable(queue.getDeliveredTimestamp()).map(Instant::toString).orElse(null))
+                    .put("destination", system4queue.apply(queue))
             );
         }
 
