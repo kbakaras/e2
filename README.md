@@ -2,6 +2,49 @@
 
 e2 Integration
 
+## Очереди
+
+### Состояния элементов очередей
+
+```plantuml
+@startuml
+
+state Unprocessed {
+
+    Awaiting: processed\t\t\t\t = false
+    Awaiting: stuck\t\t\t\t\t = false
+    Awaiting: delivered_timestamp\t\t = null
+
+    Stuck: processed\t\t\t\t = false
+    Stuck: stuck\t\t\t\t\t = true
+    Stuck: delivered_timestamp\t\t = null
+
+}
+
+state Processed {
+
+    Undelivered: processed\t\t\t\t = true
+    Undelivered: stuck\t\t\t\t\t = false
+    Undelivered: delivered_timestamp\t\t = null
+
+    Delivered: processed\t\t\t\t = true
+    Delivered: stuck\t\t\t\t\t = false
+    Delivered: delivered_timestamp\t\t = [TIMESTAMP]
+
+}
+
+[*] --> Awaiting
+
+Awaiting -> Stuck: Неудачная доставка
+Awaiting -> Delivered : Удачная доставка
+
+Stuck -left-> Awaiting : Перезапуск очереди
+Stuck --> Undelivered : Отправка на повтор
+
+@enduml
+
+```
+
 ## Взаимодействие с сервером e2
 
 В настоящее время взаимодействие с сервером происходит через
