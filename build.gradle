@@ -37,8 +37,8 @@ dependencyManagement {
 
 dependencies {
 
-    compileOnly 'org.projectlombok:lombok:1.18.8'
-    annotationProcessor 'org.projectlombok:lombok:1.18.8'
+    compileOnly 'org.projectlombok:lombok:1.18.10'
+    annotationProcessor 'org.projectlombok:lombok:1.18.10'
     
     implementation group: 'ru.kbakaras.e2',    name: 'e2-message',   version: '1.1.0', changing: true
     implementation group: 'ru.kbakaras.e2',    name: 'e2-core',      version: '1.1.0', changing: true
