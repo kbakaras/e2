@@ -26,8 +26,7 @@ public interface Queue4DeliveryRepository extends JpaRepository<Queue4Delivery, 
             "MAX(q.timestamp), "                                                                     +
             "MAX(q.deliveredTimestamp) ) "                                                           +
             "FROM Queue4Delivery AS q "                                                              +
-            "GROUP BY q.destination "                                                                +
-            "ORDER BY q.destination.name")
+            "GROUP BY q.destination")
     List<DestinationStat> getDeliveryStats();
 
 }

@@ -12,11 +12,9 @@ import ru.kbakaras.e2.message.E2Update;
 import ru.kbakaras.e2.model.Configuration4E2;
 import ru.kbakaras.e2.model.Error4Conversion;
 import ru.kbakaras.e2.model.Queue4Conversion;
-import ru.kbakaras.e2.model.Queue4Delivery;
 import ru.kbakaras.e2.model.SystemInstance;
 import ru.kbakaras.e2.repository.Error4ConversionRepository;
 import ru.kbakaras.e2.repository.Queue4ConversionRepository;
-import ru.kbakaras.e2.repository.Queue4DeliveryRepository;
 import ru.kbakaras.e2.repository.QueueManage;
 import ru.kbakaras.jpa.BaseEntity;
 import ru.kbakaras.sugar.lazy.MapCache;
@@ -34,9 +32,11 @@ public class Poller4Conversion extends BasicPoller<Queue4Conversion> {
 
     @Resource private Queue4ConversionRepository queue4ConversionRepository;
     @Resource private Error4ConversionRepository error4ConversionRepository;
-    @Resource private Queue4DeliveryRepository   queue4DeliveryRepository;
 
     @Resource private TimestampService           timestampService;
+
+    @Resource
+    private Manager4Delivery manager4Delivery;
 
     @Resource private ConfigurationManager configurationManager;
 
@@ -177,13 +177,12 @@ public class Poller4Conversion extends BasicPoller<Queue4Conversion> {
             SystemInstance destinationInstance = conf.getSystemInstance(destinationId);
 
             if (!convertedUpdate.output.entities().isEmpty()) {
-                Queue4Delivery queue = BaseEntity.newElement(Queue4Delivery.class);
-                queue.setMessage(((E2Update) convertedUpdate.output).xml().asXML());
-                queue.setSize(queue.getMessage().length());
-                queue.setTimestamp(timestampService.get());
-                queue.setSourceMessageId(sourceMessageId);
-                queue.setDestination(destinationInstance);
-                queue4DeliveryRepository.save(queue);
+
+                manager4Delivery.add4delivery(
+                        destinationInstance,
+                        sourceMessageId,
+                        (E2Update) convertedUpdate.output
+                );
 
             } else {
                 LOG.info("Message with id {} produced result with no entities for destination {}.",

@@ -1,21 +1,46 @@
 package ru.kbakaras.e2.manage;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import ru.kbakaras.e2.model.SystemInstance;
 
 import java.time.Instant;
 
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class DestinationStat {
 
     public final SystemInstance destination;
 
-    public final long unprocessed;
-    public final long stuck;
-    public final long processed;
-    public final long undelivered;
+    @Getter
+    private long unprocessed;
+    @Getter
+    private long stuck;
+    @Getter
+    private long processed;
+    @Getter
+    private long undelivered;
 
-    public final Instant timestamp;
-    public final Instant deliveredTimestamp;
+    @Getter @Setter
+    private Instant timestamp;
+    @Getter @Setter
+    private Instant deliveredTimestamp;
+
+
+    public DestinationStat(SystemInstance destination) {
+        this(destination, 0, 0, 0, 0, null, null);
+    }
+
+
+    public DestinationStat unprocessedInc() {
+        this.unprocessed++;
+        return this;
+    }
+
+    public DestinationStat processedInc() {
+        this.unprocessed--;
+        this.processed++;
+        return this;
+    }
 
 }

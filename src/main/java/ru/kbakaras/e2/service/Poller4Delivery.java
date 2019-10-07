@@ -39,6 +39,9 @@ public class Poller4Delivery extends BasicPoller<Queue4Delivery> {
     @Resource private Error4DeliveryRepository   error4DeliveryRepository;
     @Resource private Queue4ConversionRepository queue4ConversionRepository;
 
+    @Resource
+    private Manager4Delivery manager4Delivery;
+
     @Resource private ConfigurationManager configurationManager;
 
     @Resource private HistoryService     historyService;
@@ -148,8 +151,9 @@ public class Poller4Delivery extends BasicPoller<Queue4Delivery> {
             SystemConnection connection = conf.getSystemConnection(queue.getDestination().getId());
 
             connection.sendUpdate(update);
-            queue.setDelivered();
-            queue.setProcessed(true);
+
+            // TODO Внимательно изучить
+            manager4Delivery.setDelivered(queue);
 
         } catch (Throwable e) {
             queue.incAttempt();
