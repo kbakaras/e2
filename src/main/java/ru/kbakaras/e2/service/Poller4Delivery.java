@@ -10,18 +10,14 @@ import ru.kbakaras.e2.message.E2Element;
 import ru.kbakaras.e2.message.E2Entity;
 import ru.kbakaras.e2.message.E2Update;
 import ru.kbakaras.e2.model.Configuration4E2;
-import ru.kbakaras.e2.model.Error4Delivery;
 import ru.kbakaras.e2.model.History4Delivery;
 import ru.kbakaras.e2.model.Queue4Conversion;
 import ru.kbakaras.e2.model.Queue4Delivery;
-import ru.kbakaras.e2.repository.Error4DeliveryRepository;
 import ru.kbakaras.e2.repository.Queue4ConversionRepository;
 import ru.kbakaras.e2.repository.Queue4DeliveryRepository;
 import ru.kbakaras.e2.repository.QueueManage;
 import ru.kbakaras.e2.service.rest.ManageQueueException;
 import ru.kbakaras.e2.service.rest.ManageQueueSkipException;
-import ru.kbakaras.jpa.BaseEntity;
-import ru.kbakaras.sugar.utils.ExceptionUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -36,7 +32,6 @@ public class Poller4Delivery extends BasicPoller<Queue4Delivery> {
     private boolean stopOnStuck = true;
 
     @Resource private Queue4DeliveryRepository   queue4DeliveryRepository;
-    @Resource private Error4DeliveryRepository   error4DeliveryRepository;
     @Resource private Queue4ConversionRepository queue4ConversionRepository;
 
     @Resource
@@ -50,10 +45,7 @@ public class Poller4Delivery extends BasicPoller<Queue4Delivery> {
     synchronized public void resume() {
         if (!isPolling()) {
             queue4DeliveryRepository.getFirstByProcessedIsFalseAndStuckIsTrueOrderByTimestampAsc()
-                    .ifPresent(queue -> {
-                        queue.setStuck(false);
-                        queue4DeliveryRepository.save(queue);
-                    });
+                    .ifPresent(queue -> manager4Delivery.unstuck(queue));
             start();
         }
     }
@@ -143,6 +135,7 @@ public class Poller4Delivery extends BasicPoller<Queue4Delivery> {
         Configuration4E2 conf = configurationManager.getConfiguration();
 
         try {
+
             E2Update update = new E2Update(
                     DocumentHelper
                             .parseText(queue.getMessage())
@@ -152,29 +145,14 @@ public class Poller4Delivery extends BasicPoller<Queue4Delivery> {
 
             connection.sendUpdate(update);
 
-            // TODO Внимательно изучить
             manager4Delivery.setDelivered(queue);
 
         } catch (Throwable e) {
-            queue.incAttempt();
-            if (queue.getAttempt() >= ATTEMPT_MAX) {
-                queue.setStuck(true);
-            }
 
-            Error4Delivery error = BaseEntity.newElement(Error4Delivery.class);
-            error.setQueue(queue);
-            error.setError(ExceptionUtils.getMessage(e));
-            error.setStackTrace(ExceptionUtils.getStackTrace(e));
-            error4DeliveryRepository.save(error);
+            manager4Delivery.checkStuck(queue, e);
 
-            LOG.error("Update delivery error!{}", error);
         }
 
-        queue4DeliveryRepository.save(queue);
-
     }
-
-
-    private static final int ATTEMPT_MAX = 3;
 
 }

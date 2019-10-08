@@ -43,4 +43,14 @@ public class DestinationStat {
         return this;
     }
 
+    public DestinationStat stuckInc() {
+        this.stuck++;
+        return this;
+    }
+
+    public DestinationStat stuckDec() {
+        this.stuck--;
+        return this;
+    }
+
 }
