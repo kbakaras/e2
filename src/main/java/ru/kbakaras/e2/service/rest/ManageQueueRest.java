@@ -31,6 +31,7 @@ import ru.kbakaras.e2.repository.QueueManage;
 import ru.kbakaras.e2.repository.SystemInstanceRepository;
 import ru.kbakaras.e2.service.BasicPoller;
 import ru.kbakaras.e2.service.ConfigurationManager;
+import ru.kbakaras.e2.service.Manager4Delivery;
 import ru.kbakaras.e2.service.Poller4Conversion;
 import ru.kbakaras.e2.service.Poller4Delivery;
 import ru.kbakaras.e2.service.Poller4Repeat;
@@ -58,6 +59,7 @@ public class ManageQueueRest {
     @Resource private Poller4Delivery poller4Delivery;
     @Resource private Poller4Conversion poller4Conversion;
     @Resource private Poller4Repeat poller4Repeat;
+    @Resource private Manager4Delivery manager4Delivery;
 
     @Resource private Queue4DeliveryRepository   queue4DeliveryRepository;
     @Resource private Queue4ConversionRepository queue4ConversionRepository;
@@ -75,11 +77,31 @@ public class ManageQueueRest {
 
 
     @RequestMapping(path = "stats")
-    public ObjectNode stats(String value) {
-        return objectMapper.createObjectNode()
-                .putPOJO("conversion", getConversionStats())
-                .putPOJO("delivery",   getDeliveryStats())
-                .putPOJO("repeat",     getRepeatStats());
+    public ObjectNode stats(@RequestBody ObjectNode request) {
+
+        boolean deliveryStatFlag = Optional.ofNullable(request.get("queue"))
+                .map(JsonNode::asText)
+                .filter(QUEUE_Delivery::equals)
+                .isPresent();
+
+        if (deliveryStatFlag) {
+
+            ArrayNode statArray = objectMapper.createArrayNode();
+            manager4Delivery.getStats().forEach(statArray::addPOJO);
+
+            ObjectNode result = objectMapper.createObjectNode();
+            result.set("stats", statArray);
+
+            return result;
+
+        } else {
+
+            return objectMapper.createObjectNode()
+                    .putPOJO("conversion", getConversionStats())
+                    .putPOJO("delivery",   getDeliveryStats())
+                    .putPOJO("repeat",     getRepeatStats());
+
+        }
     }
 
     public QueueStats getConversionStats() {

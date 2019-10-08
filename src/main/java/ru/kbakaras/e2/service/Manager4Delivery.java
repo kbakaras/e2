@@ -17,6 +17,8 @@ import ru.kbakaras.jpa.BaseEntity;
 import ru.kbakaras.sugar.utils.ExceptionUtils;
 
 import javax.annotation.Resource;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -89,10 +91,17 @@ public class Manager4Delivery implements InitializingBean, DisposableBean {
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public void unstuck(Queue4Delivery queue) {
+    public synchronized void unstuck(Queue4Delivery queue) {
         queue.setStuck(false);
         queue4DeliveryRepository.save(queue);
         stats.get(queue.getDestination()).stuckDec();
+    }
+
+
+    public synchronized List<DestinationStat> getStats() {
+        return stats.values().stream()
+                .sorted(Comparator.comparing(st -> st.destination.getName()))
+                .collect(Collectors.toList());
     }
 
 
