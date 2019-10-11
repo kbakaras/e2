@@ -207,6 +207,7 @@ public class Manager4Delivery implements InitializingBean, DisposableBean {
         error.setError(ExceptionUtils.getMessage(deliveryException));
         error.setStackTrace(ExceptionUtils.getStackTrace(deliveryException));
         error4DeliveryRepository.save(error);
+        error4DeliveryRepository.flush(); // Если этого не сделать, то при второй попытке возникнет OptimisticLock
 
         log.error("Update delivery error!{}", error);
 
