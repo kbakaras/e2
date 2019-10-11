@@ -41,6 +41,10 @@ public class Poller4Delivery extends BasicPoller<Queue4Delivery> {
 
     @Resource private HistoryService     historyService;
 
+    @Override
+    public void afterPropertiesSet() {
+    }
+
 
     synchronized public void resume() {
         if (!isPolling()) {

@@ -1,13 +1,10 @@
 package ru.kbakaras.e2.manage;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 import ru.kbakaras.e2.model.SystemInstance;
 
 import java.time.Instant;
 
-@AllArgsConstructor
 public class DestinationStat {
 
     public final SystemInstance destination;
@@ -21,11 +18,29 @@ public class DestinationStat {
     @Getter
     private long undelivered;
 
-    @Getter @Setter
+    @Getter
+    private boolean inFlight;
+
+    @Getter
     private Instant timestamp;
-    @Getter @Setter
+    @Getter
     private Instant deliveredTimestamp;
 
+
+    @SuppressWarnings("WeakerAccess")
+    public DestinationStat(SystemInstance destination,
+                           long unprocessed, long stuck, long processed, long undelivered,
+                           Instant timestamp, Instant deliveredTimestamp) {
+
+        this.destination = destination;
+        this.unprocessed = unprocessed;
+        this.stuck = stuck;
+        this.processed = processed;
+        this.undelivered = undelivered;
+        this.timestamp = timestamp;
+        this.deliveredTimestamp = deliveredTimestamp;
+
+    }
 
     public DestinationStat(SystemInstance destination) {
         this(destination, 0, 0, 0, 0, null, null);
@@ -50,6 +65,23 @@ public class DestinationStat {
 
     public DestinationStat stuckDec() {
         this.stuck--;
+        return this;
+    }
+
+
+    public DestinationStat setTimestamp(Instant timestamp) {
+        this.timestamp = timestamp;
+        return this;
+    }
+
+    public DestinationStat setDeliveredTimestamp(Instant deliveredTimestamp) {
+        this.deliveredTimestamp = deliveredTimestamp;
+        return this;
+    }
+
+
+    public DestinationStat setInFlight(boolean inFlight) {
+        this.inFlight = inFlight;
         return this;
     }
 

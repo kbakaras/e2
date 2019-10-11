@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import ru.kbakaras.e2.manage.DestinationStat;
 import ru.kbakaras.e2.model.Queue4Delivery;
+import ru.kbakaras.e2.model.SystemInstance;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,6 +14,12 @@ public interface Queue4DeliveryRepository extends JpaRepository<Queue4Delivery, 
 
     Optional<Queue4Delivery> getFirstByProcessedIsFalseAndStuckIsFalseOrderByTimestampAsc();
     Optional<Queue4Delivery> getFirstByProcessedIsFalseOrderByTimestampAsc();
+
+
+    /**
+     * Получение следующего необработанного сообщения для указанной системы назначения
+     */
+    Optional<Queue4Delivery> getFirstByDestinationAndProcessedIsFalseOrderByTimestampAsc(SystemInstance destination);
 
     Optional<Queue4Delivery> getFirstByProcessedIsFalseAndStuckIsTrueOrderByTimestampAsc();
     List<Queue4Delivery> findBySourceMessageId(UUID sourceMessageId);
