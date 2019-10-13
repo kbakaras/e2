@@ -46,6 +46,8 @@ public class Manager4Delivery implements InitializingBean, DisposableBean {
 
     private ExecutorService executor;
 
+    private boolean active;
+
 
     @Override
     public void afterPropertiesSet() {
@@ -54,16 +56,7 @@ public class Manager4Delivery implements InitializingBean, DisposableBean {
                 .collect(Collectors.toMap(stat -> stat.destination, stat -> stat));
 
         executor = Executors.newSingleThreadExecutor();
-
-        // Запуск отправки во все системы
-        stats.values().stream()
-                .filter(stat -> stat.getStuck() == 0 && stat.getUnprocessed() > 0)
-                .map(stat -> stat.destination)
-                .map(queue4DeliveryRepository::getFirstByDestinationAndProcessedIsFalseOrderByTimestampAsc)
-                .forEach(result -> result.ifPresent(queue -> {
-                    stats.get(queue.getDestination()).setInFlight(true);
-                    executor.execute(() -> process(queue));
-                }));
+        start();
 
     }
 
@@ -100,7 +93,7 @@ public class Manager4Delivery implements InitializingBean, DisposableBean {
 
 
     private boolean possibleToRunDelivery(DestinationStat stat) {
-        return stat.getStuck() == 0 && !stat.isInFlight() && stat.getUnprocessed() > 0;
+        return active && stat.getStuck() == 0 && !stat.isInFlight() && stat.getUnprocessed() > 0;
     }
 
     private synchronized void runDelivery(DestinationStat stat) {
@@ -229,6 +222,26 @@ public class Manager4Delivery implements InitializingBean, DisposableBean {
         return stats.values().stream()
                 .sorted(Comparator.comparing(st -> st.destination.getName()))
                 .collect(Collectors.toList());
+    }
+
+    public synchronized void stop() {
+        this.active = false;
+    }
+
+    public synchronized void start() {
+
+        this.active = true;
+
+        // Запуск отправки во все системы
+        stats.values().stream()
+                .filter(stat -> stat.getStuck() == 0 && stat.getUnprocessed() > 0)
+                .map(stat -> stat.destination)
+                .map(queue4DeliveryRepository::getFirstByDestinationAndProcessedIsFalseOrderByTimestampAsc)
+                .forEach(result -> result.ifPresent(queue -> {
+                    stats.get(queue.getDestination()).setInFlight(true);
+                    executor.execute(() -> process(queue));
+                }));
+
     }
 
 
