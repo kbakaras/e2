@@ -5,8 +5,6 @@ import org.dom4j.DocumentHelper;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import ru.kbakaras.e2.core.model.SystemConnection;
 import ru.kbakaras.e2.manage.DestinationStat;
 import ru.kbakaras.e2.message.E2Update;
@@ -121,7 +119,6 @@ public class Manager4Delivery implements InitializingBean, DisposableBean {
      *                            данного сообщения для доставки
      * @param message             Само сообщение на доставку
      */
-    @Transactional(propagation = Propagation.REQUIRED)
     public synchronized void add4delivery(SystemInstance destinationInstance, UUID sourceMessageId, E2Update message) {
 
         Queue4Delivery queue = BaseEntity.newElement(Queue4Delivery.class);
@@ -151,7 +148,6 @@ public class Manager4Delivery implements InitializingBean, DisposableBean {
      *
      * @param queue Доставленное сообщение
      */
-    @Transactional(propagation = Propagation.REQUIRED)
     public synchronized void setDelivered(Queue4Delivery queue) {
 
         queue.setDelivered();
@@ -182,7 +178,6 @@ public class Manager4Delivery implements InitializingBean, DisposableBean {
      * @param queue             Сообщение, отправка которого не удалась
      * @param deliveryException Исключение, возникшее в результате неудачной попытки отправки
      */
-    @Transactional(propagation = Propagation.REQUIRED)
     public synchronized void checkStuck(Queue4Delivery queue, Throwable deliveryException) {
 
         DestinationStat stat = stats.get(queue.getDestination())
@@ -193,14 +188,13 @@ public class Manager4Delivery implements InitializingBean, DisposableBean {
             queue.setStuck(true);
             stat.stuckInc();
         }
-        queue4DeliveryRepository.save(queue);
+        queue = queue4DeliveryRepository.save(queue);
 
         Error4Delivery error = BaseEntity.newElement(Error4Delivery.class);
         error.setQueue(queue);
         error.setError(ExceptionUtils.getMessage(deliveryException));
         error.setStackTrace(ExceptionUtils.getStackTrace(deliveryException));
         error4DeliveryRepository.save(error);
-        error4DeliveryRepository.flush(); // Если этого не сделать, то при второй попытке возникнет OptimisticLock
 
         log.error("Update delivery error!{}", error);
 
@@ -210,7 +204,6 @@ public class Manager4Delivery implements InitializingBean, DisposableBean {
 
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
     public synchronized void unstuck(Queue4Delivery queue) {
         queue.setStuck(false);
         queue4DeliveryRepository.save(queue);
@@ -230,17 +223,19 @@ public class Manager4Delivery implements InitializingBean, DisposableBean {
 
     public synchronized void start() {
 
-        this.active = true;
+        if (!active) {
+            active = true;
 
-        // Запуск отправки во все системы
-        stats.values().stream()
-                .filter(stat -> stat.getStuck() == 0 && stat.getUnprocessed() > 0)
-                .map(stat -> stat.destination)
-                .map(queue4DeliveryRepository::getFirstByDestinationAndProcessedIsFalseOrderByTimestampAsc)
-                .forEach(result -> result.ifPresent(queue -> {
-                    stats.get(queue.getDestination()).setInFlight(true);
-                    executor.execute(() -> process(queue));
-                }));
+            // Запуск отправки во все системы
+            stats.values().stream()
+                    .filter(stat -> stat.getStuck() == 0 && stat.getUnprocessed() > 0)
+                    .map(stat -> stat.destination)
+                    .map(queue4DeliveryRepository::getFirstByDestinationAndProcessedIsFalseOrderByTimestampAsc)
+                    .forEach(result -> result.ifPresent(queue -> {
+                        stats.get(queue.getDestination()).setInFlight(true);
+                        executor.execute(() -> process(queue));
+                    }));
+        }
 
     }
 
