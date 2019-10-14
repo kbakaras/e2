@@ -56,10 +56,10 @@ public class ManageQueueRest {
     private static final Logger LOG = LoggerFactory.getLogger(ManageQueueRest.class);
 
 
-    @Resource private Poller4Delivery poller4Delivery;
+    @Resource private Poller4Delivery   poller4Delivery;
     @Resource private Poller4Conversion poller4Conversion;
-    @Resource private Poller4Repeat poller4Repeat;
-    @Resource private Manager4Delivery manager4Delivery;
+    @Resource private Poller4Repeat     poller4Repeat;
+    @Resource private Manager4Delivery  manager4Delivery;
 
     @Resource private Queue4DeliveryRepository   queue4DeliveryRepository;
     @Resource private Queue4ConversionRepository queue4ConversionRepository;
@@ -131,11 +131,25 @@ public class ManageQueueRest {
     public ObjectNode stop(@RequestBody ObjectNode request) {
         String queueName = request.get("queue").asText();
         if (QUEUE_Delivery.equals(queueName)) {
-            poller4Delivery.stop();
+            manager4Delivery.stop();
         } else if (QUEUE_Conversion.equals(queueName)) {
             poller4Conversion.stop();
         } else if (QUEUE_Repeat.equals(queueName)) {
             poller4Repeat.stop();
+        }
+
+        return objectMapper.createObjectNode();
+    }
+
+    @RequestMapping(path = "start")
+    public ObjectNode start(@RequestBody ObjectNode request) {
+        String queueName = request.get("queue").asText();
+        if (QUEUE_Delivery.equals(queueName)) {
+            manager4Delivery.start();
+        } else if (QUEUE_Conversion.equals(queueName)) {
+            //poller4Conversion.stop();
+        } else if (QUEUE_Repeat.equals(queueName)) {
+            //poller4Repeat.stop();
         }
 
         return objectMapper.createObjectNode();
