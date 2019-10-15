@@ -109,7 +109,13 @@ public class ManageQueueRest {
     }
 
     public QueueStats getDeliveryStats() {
-        return createStats(queue4DeliveryRepository, poller4Delivery);
+        return new ru.kbakaras.e2.manage.QueueStats(
+                queue4DeliveryRepository.countByProcessedIsTrue(),
+                queue4DeliveryRepository.countByProcessedIsTrueAndDeliveredTimestampIsNotNull(),
+                queue4DeliveryRepository.countByProcessedIsFalse(),
+                queue4DeliveryRepository.countByProcessedIsFalseAndStuckIsTrue(),
+                !manager4Delivery.isActive()
+        );
     }
 
     public QueueStats getRepeatStats() {

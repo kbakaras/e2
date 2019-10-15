@@ -1,5 +1,6 @@
 package ru.kbakaras.e2.service;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.dom4j.DocumentHelper;
 import org.springframework.beans.factory.DisposableBean;
@@ -44,7 +45,8 @@ public class Manager4Delivery implements InitializingBean, DisposableBean {
 
     private ExecutorService executor;
 
-    private boolean active;
+    @Getter
+    private volatile boolean active;
 
 
     @Override
@@ -238,7 +240,6 @@ public class Manager4Delivery implements InitializingBean, DisposableBean {
         }
 
     }
-
 
     @Override
     public void destroy() throws Exception {}
