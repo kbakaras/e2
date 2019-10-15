@@ -1,0 +1,13 @@
+@startuml
+
+[*] -> Queue4Conversion
+
+Queue4Conversion -> Queue4Delivery
+
+Queue4Conversion --> Queue4Repeat
+Queue4Delivery   --> Queue4Repeat : Помещение исходного\nсообщения в очередь\nна повтор
+
+Queue4Delivery -> [*] : Доставка\nполучателю
+Queue4Repeat   -> [*] : Доставка отправителю\nисходного сообщения\nдля повторной отправки
+
+@enduml
