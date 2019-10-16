@@ -6,25 +6,35 @@ import org.dom4j.DocumentHelper;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Service;
+import ru.kbakaras.e2.core.conversion.Converter4Payload;
 import ru.kbakaras.e2.core.model.SystemConnection;
 import ru.kbakaras.e2.manage.DestinationStat;
+import ru.kbakaras.e2.message.E2Element;
+import ru.kbakaras.e2.message.E2Entity;
 import ru.kbakaras.e2.message.E2Update;
 import ru.kbakaras.e2.model.Configuration4E2;
 import ru.kbakaras.e2.model.Error4Delivery;
+import ru.kbakaras.e2.model.History4Delivery;
+import ru.kbakaras.e2.model.Queue4Conversion;
 import ru.kbakaras.e2.model.Queue4Delivery;
 import ru.kbakaras.e2.model.SystemInstance;
 import ru.kbakaras.e2.repository.Error4DeliveryRepository;
+import ru.kbakaras.e2.repository.Queue4ConversionRepository;
 import ru.kbakaras.e2.repository.Queue4DeliveryRepository;
+import ru.kbakaras.e2.service.rest.ManageQueueException;
+import ru.kbakaras.e2.service.rest.ManageQueueSkipException;
 import ru.kbakaras.jpa.BaseEntity;
 import ru.kbakaras.sugar.utils.ExceptionUtils;
 
 import javax.annotation.Resource;
+import java.text.MessageFormat;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -34,7 +44,12 @@ public class Manager4Delivery implements InitializingBean, DisposableBean {
     @Resource
     private Queue4DeliveryRepository queue4DeliveryRepository;
     @Resource
+    private Queue4ConversionRepository queue4ConversionRepository;
+    @Resource
     private Error4DeliveryRepository error4DeliveryRepository;
+
+    @Resource
+    private HistoryService historyService;
 
     @Resource
     private TimestampService timestampService;
@@ -213,16 +228,113 @@ public class Manager4Delivery implements InitializingBean, DisposableBean {
     }
 
 
+    /**
+     * Выполняет повторную конвертацию для указанного сообщения очереди доставки. Конвертироваться
+     * будет исходное сообщение из очереди конвертации, на которое имеется ссылка в данном сообщении. Конвертация
+     * будет выполнена только для системы-получателя, которой было предназначено данное сообщение очереди
+     * на доставку.<br/><br/>
+     *
+     * Конвертация возможна, только если обработка сообщений на доставку для соответствующего получателя
+     * в данный момент остановлена. Для этого должна быть либо отключена обработка всей очереди на доставку
+     * (методом {@link #stop()}), либо очередь для данного получателя остановлена автоматически по причине
+     * <i>застревания</i> следующего сообщения.<br/><br/>
+     *
+     * Повторная конвертация возможна только для необработанных сообщений (флаг processed == false).
+     *
+     * @param queue Сообщение из очереди на доставку, содержимое которого будет обновлено путём выполнения
+     *              конвертации его исходного сообщения из очереди на конвертацию.
+     * @return Если повторная конвертация выполняется, создаётся запись в таблице истории, привязанная к данному
+     * сообщению очереди на доставку. Элемент такой записи метод вернёт.
+     */
+    public synchronized History4Delivery reconvert(Queue4Delivery queue) {
+
+        DestinationStat stat = stats.get(queue.getDestination());
+
+        if (active && stat.getStuck() == 0) {
+            throw new ManageQueueException(MessageFormat.format(
+                    "Delivery is active for destination {0}! It's not possible to reconvert.",
+                    stat.destination));
+        }
+
+        if (queue.isProcessed()) {
+            throw new ManageQueueException(MessageFormat.format(
+                    "Message for destination {0} with id {1} already processed! It's not possible to reconvert.",
+                    queue.getDestination(), queue.getId()));
+        }
+
+        Configuration4E2 conf = configurationManager.getConfiguration();
+
+        Queue4Conversion sourceQueue = queue4ConversionRepository.getOne(queue.getSourceMessageId());
+
+        E2Update sourceMessage = new E2Update(sourceQueue.getMessage());
+
+        UUID        sourceId   = sourceMessage.systemUid();
+        String      sourceName = conf.getSystemInstance(sourceId).getName();
+        UUID   destinationId   = queue.getDestination().getId();
+        String destinationName = conf.getSystemInstance(destinationId).getName();
+
+        log.info("Reconverting message {} from system {} for system {}:",
+                sourceQueue.getId(), sourceName, destinationName);
+
+
+        Converter4Payload converter = new Converter4Payload(sourceMessage,
+                new E2Update()
+                        .setSystemUid(sourceId.toString())
+                        .setSystemName(sourceName),
+                conf.getConversions(sourceId, destinationId)
+        );
+
+
+        for (E2Entity entity: sourceMessage.entities()) {
+            List<E2Element> elementsChanged = entity.elementsChanged();
+            if (!elementsChanged.isEmpty() && conf.updateRouteExists(sourceId, destinationId, entity.entityName())) {
+                elementsChanged.forEach(converter::convertElement);
+            }
+        }
+
+
+        E2Update destinationMessage = (E2Update) converter.output;
+
+        if (destinationMessage.entities().isEmpty()) {
+            throw new ManageQueueException(String.format(
+                    "Message with id (%s) produced result with no entities for destination [%s].",
+                    sourceQueue.getId(), destinationName
+            ));
+        }
+
+        String newMessage = destinationMessage.xml().asXML();
+
+        if (queue.getMessage().equals(newMessage)) {
+            throw new ManageQueueSkipException(String.format(
+                    "Original message with id (%s) is equal to reconverted!",
+                    sourceQueue.getId()
+            ));
+        }
+
+        return historyService.reconverted(queue, newMessage);
+
+    }
+
+
     public synchronized List<DestinationStat> getStats() {
         return stats.values().stream()
                 .sorted(Comparator.comparing(st -> st.destination.getName()))
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Останавливает отправку сообщений для всех получателей. Если в момент вызова
+     * данного метода выполняется отправка каких-либо сообщений, она не будет прервана,
+     * просто новые отправки не будут стартовать.
+     */
     public synchronized void stop() {
         this.active = false;
     }
 
+    /**
+     * Снова запускает остановленную методом {@link #stop()} отправку сообщений для всех систем,
+     * для которых это возможно.
+     */
     public synchronized void start() {
 
         if (!active) {
@@ -241,10 +353,16 @@ public class Manager4Delivery implements InitializingBean, DisposableBean {
 
     }
 
+
     @Override
-    public void destroy() throws Exception {}
+    public synchronized void destroy() throws InterruptedException {
+        stop();
+        executor.shutdown();
+        executor.awaitTermination(TERMINATION_TIMEOUT, TimeUnit.MINUTES);
+    }
 
 
     private static final int ATTEMPT_MAX = 3;
+    private static final long TERMINATION_TIMEOUT = 2; // В минутах
 
 }

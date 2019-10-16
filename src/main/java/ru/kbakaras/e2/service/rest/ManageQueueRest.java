@@ -410,7 +410,7 @@ public class ManageQueueRest {
                 throw new ManageQueueException("Message (" + id + ") is already processed!");
             }
 
-            History4Delivery history = poller4Delivery.reconvert(queue);
+            History4Delivery history = manager4Delivery.reconvert(queue);
 
             return objectMapper.createObjectNode()
                     .put(RESULT, RESULT_SUCCESS)
