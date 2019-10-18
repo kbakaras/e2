@@ -29,14 +29,6 @@ public class Poller4Delivery extends BasicPoller<Queue4Delivery> {
     public void afterPropertiesSet() {}
 
 
-    synchronized public void resume() {
-        if (!isPolling()) {
-            queue4DeliveryRepository.getFirstByProcessedIsFalseAndStuckIsTrueOrderByTimestampAsc()
-                    .ifPresent(queue -> manager4Delivery.unstuck(queue));
-            start();
-        }
-    }
-
     @Override
     protected Optional<Queue4Delivery> next() {
 

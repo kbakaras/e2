@@ -31,6 +31,7 @@ import java.text.MessageFormat;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -221,12 +222,6 @@ public class Manager4Delivery implements InitializingBean, DisposableBean {
 
     }
 
-    public synchronized void unstuck(Queue4Delivery queue) {
-        queue.setStuck(false);
-        queue4DeliveryRepository.save(queue);
-        stats.get(queue.getDestination()).stuckDec();
-    }
-
 
     /**
      * Выполняет повторную конвертацию для указанного сообщения очереди доставки. Конвертироваться
@@ -312,6 +307,29 @@ public class Manager4Delivery implements InitializingBean, DisposableBean {
         }
 
         return historyService.reconverted(queue, newMessage);
+
+    }
+
+    /**
+     * Снимает признак застревания со всех систем-назначения. Если очередь на доставку находится
+     * в активном состоянии, выполняет запуск отправки сообщений для этих систем.
+     */
+    public synchronized void resume() {
+
+        stats.values().stream()
+                .filter(stat -> stat.getStuck() > 0)
+                .map(stat -> stat.destination)
+                .map(queue4DeliveryRepository::getFirstByDestinationAndProcessedIsFalseAndStuckIsTrueOrderByTimestampAsc)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .forEach(queue -> {
+                    queue.setStuck(false);
+                    queue4DeliveryRepository.save(queue);
+                    DestinationStat stat = stats.get(queue.getDestination()).stuckDec();
+                    if (possibleToRunDelivery(stat)) {
+                        runDelivery(stat);
+                    }
+                });
 
     }
 

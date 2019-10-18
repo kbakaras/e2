@@ -195,7 +195,7 @@ public class ManageQueueRest {
     public ObjectNode resume(@RequestBody ObjectNode request) {
         String queueName = request.get("queue").asText();
         if (QUEUE_Delivery.equals(queueName)) {
-            poller4Delivery.resume();
+            manager4Delivery.resume();
         } else if (QUEUE_Conversion.equals(queueName)) {
             poller4Conversion.resume();
         } else if (QUEUE_Repeat.equals(queueName)) {

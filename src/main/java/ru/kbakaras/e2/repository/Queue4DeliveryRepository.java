@@ -21,7 +21,11 @@ public interface Queue4DeliveryRepository extends JpaRepository<Queue4Delivery, 
      */
     Optional<Queue4Delivery> getFirstByDestinationAndProcessedIsFalseOrderByTimestampAsc(SystemInstance destination);
 
-    Optional<Queue4Delivery> getFirstByProcessedIsFalseAndStuckIsTrueOrderByTimestampAsc();
+    /**
+     * Получение следующего застрявшего сообщения для указанной системы назначения
+     */
+    Optional<Queue4Delivery> getFirstByDestinationAndProcessedIsFalseAndStuckIsTrueOrderByTimestampAsc(SystemInstance destination);
+
     List<Queue4Delivery> findBySourceMessageId(UUID sourceMessageId);
 
     @Query("SELECT NEW ru.kbakaras.e2.manage.DestinationStat( "                                      +
