@@ -1,0 +1,85 @@
+@startuml
+
+  namespace ru.kbakaras.e2.message {
+
+    E2Request        .up.|> E2XmlProducer
+    E2Response       .up.|> E2XmlProducer
+    E2SystemResponse -up-|> E2Payload
+    E2SystemResponse --o    E2Response : parent
+    E2Update         .up.|> E2XmlProducer
+    E2Update         -up-|> E2Payload
+
+
+    interface E2XmlProducer {
+        {abstract} + xml()
+    }
+
+    class E2Payload {
+        # xml : Element
+        - entities : MapCache<String, E2Entity>
+        {static} - entityXPath : Lazy<XPath>
+        {static} - stateXPath : Lazy<XPath>
+        - states : MapCache<String, E2State>
+        + E2Payload()
+        + createEntity()
+        + createState()
+        + entities()
+        + entity()
+        + referencedElement()
+        + setSystemName()
+        + setSystemUid()
+        + setSystemUid()
+        + state()
+        + states()
+        + systemName()
+        + systemUid()
+        ~ reorderEntitiesAndStates()
+    }
+
+    class E2Request {
+        - lContext : Lazy<E2Payload>
+        - xml : Element
+        + E2Request()
+        + E2Request()
+        + addDestinationSystem()
+        + addEntityRequest()
+        + addReferenceRequest()
+        + context()
+        + createContext()
+        + destinationSystemUids()
+        + entities()
+        + references()
+        + requestType()
+        + setSourceSystem()
+        + sourceSystemName()
+        + sourceSystemUid()
+        + xml()
+    }
+
+    class E2Response {
+        + responseType : Lazy<String>
+        - responses : Lazy<List<E2SystemResponse>>
+        - xml : Element
+        + E2Response()
+        + E2Response()
+        + addSystemError()
+        + addSystemResponse()
+        + systemResponse()
+        + xml()
+    }
+
+    class E2SystemResponse {
+        + parent : E2Response
+        + E2SystemResponse()
+    }
+
+    class E2Update {
+        + E2Update()
+        + E2Update(Element xml)
+        + E2Update(String xmlString)
+        + xml()
+    }
+
+  }
+
+@enduml

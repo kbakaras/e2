@@ -1,0 +1,333 @@
+@startuml
+
+title __MESSAGE's Class Diagram__\n
+
+  namespace ru.kbakaras.e2.message {
+    class ru.kbakaras.e2.message.E2 {
+        {static} + ATTRIBUTE : String
+        {static} + ATTRIBUTE_NAME : String
+        {static} + CHANGED : String
+        {static} + CONDITION : String
+        {static} + CONTEXT : String
+        {static} + DELETED : String
+        {static} + E2MAP : Map<String, String>
+        {static} + ELEMENT : String
+        {static} + ELEMENT_UID : String
+        {static} + ENTITY : String
+        {static} + ENTITY_NAME : String
+        {static} + ERROR : String
+        {static} + ID : String
+        {static} + NS : String
+        {static} + REFERENCE : String
+        {static} + ROW : String
+        {static} + STATE : String
+        {static} + STATE_NAME : String
+        {static} + SYNTH : String
+        {static} + SYSTEM : String
+        {static} + SYSTEM_NAME : String
+        {static} + SYSTEM_UID : String
+        {static} + TABLE : String
+        {static} + TABLE_NAME : String
+        {static} + USE : String
+        {static} + USE_Always : String
+        {static} + USE_Create : String
+        {static} + USE_Load : String
+        {static} + USE_Reference : String
+        {static} + USE_Update : String
+        {static} + VALUE : String
+    }
+  }
+  
+
+  namespace ru.kbakaras.e2.message {
+    class ru.kbakaras.e2.message.E2Attribute {
+        - xml : Element
+        + E2Attribute()
+        + attributeName()
+        + attributeValue()
+        + isId()
+        + isReference()
+        + isValue()
+        {static} + mapDecimal()
+        {static} + mapInteger()
+        {static} + mapString()
+        + reference()
+        + setAttributeName()
+        + setId()
+        + setReference()
+        + setReference()
+        + setUse()
+        + setValue()
+        + use()
+        + value()
+    }
+  }
+  
+
+  namespace ru.kbakaras.e2.message {
+    enum E2AttributeUse {
+      Always
+      Create
+    }
+  }
+  
+
+  namespace ru.kbakaras.e2.message {
+    abstract class ru.kbakaras.e2.message.E2AttributeValue {
+        {abstract} + apply()
+    }
+  }
+  
+
+  namespace ru.kbakaras.e2.message {
+    class ru.kbakaras.e2.message.E2Attributes {
+        {static} - attributeXPath : Lazy<XPath>
+        - xml : Element
+        + add()
+        + get()
+        + getNullable()
+        + is()
+        + isEqual()
+        + list()
+        + stream()
+        ~ E2Attributes()
+    }
+  }
+  
+
+  namespace ru.kbakaras.e2.message {
+    class ru.kbakaras.e2.message.E2Element {
+        {static} - tableXPath : Lazy<XPath>
+        - xml : Element
+        + E2Element()
+        + addTable()
+        + asReference()
+        + entityName()
+        + equals()
+        + getUid()
+        + hashCode()
+        + isChanged()
+        + isDeleted()
+        + isSynth()
+        + setChanged()
+        + setDeleted()
+        + setSynth()
+        + setUid()
+        + setUse()
+        + table()
+        + tableOrNull()
+        + tables()
+        + toString()
+        + use()
+    }
+  }
+  
+
+  namespace ru.kbakaras.e2.message {
+    enum E2ElementUse {
+      Load
+      Reference
+      Update
+    }
+  }
+  
+
+  namespace ru.kbakaras.e2.message {
+    class ru.kbakaras.e2.message.E2Entity {
+        {static} - attributeXPath : Lazy<XPath>
+        {static} - changedXPath : Lazy<XPath>
+        {static} - elementXPath : Lazy<XPath>
+        - xml : Element
+        + E2Entity()
+        + addElement()
+        + addElement()
+        + element()
+        + elementsByAttribute()
+        + elementsChanged()
+        + entityName()
+        + find()
+    }
+  }
+  
+
+  namespace ru.kbakaras.e2.message {
+    class ru.kbakaras.e2.message.E2Entity.ElementFinder {
+        - expr : String
+        + by()
+        + by()
+        + list()
+        + single()
+        - createXPath()
+    }
+  }
+  
+
+  namespace ru.kbakaras.e2.message {
+    class ru.kbakaras.e2.message.E2EntityRequest {
+        - entityRequestElement : Element
+        + E2EntityRequest()
+        + addFilter()
+        + entityName()
+        + filters()
+    }
+  }
+  
+
+  namespace ru.kbakaras.e2.message {
+    class ru.kbakaras.e2.message.E2Exception4Read {
+        + E2Exception4Read()
+    }
+  }
+  
+
+  namespace ru.kbakaras.e2.message {
+    class ru.kbakaras.e2.message.E2Exception4Write {
+        + E2Exception4Write()
+        + E2Exception4Write()
+    }
+  }
+  
+
+  namespace ru.kbakaras.e2.message {
+    class ru.kbakaras.e2.message.E2Filter {
+        - xml : Element
+        + E2Filter()
+        + attributeName()
+        + attributeValue()
+        + condition()
+        + isReference()
+        + isValue()
+        + reference()
+        + setAttributeName()
+        + setCondition()
+        + setReference()
+        + setValue()
+        + value()
+    }
+  }
+  
+
+
+
+  namespace ru.kbakaras.e2.message {
+    class ru.kbakaras.e2.message.E2Reference {
+        + elementUid : String
+        + entityName : String
+        + E2Reference()
+        + apply()
+        + equals()
+        + hashCode()
+        + toString()
+    }
+  }
+  
+
+  namespace ru.kbakaras.e2.message {
+    class ru.kbakaras.e2.message.E2ReferenceRequest {
+        - xml : Element
+        + E2ReferenceRequest()
+        + elementUid()
+        + entityName()
+        + setElementUid()
+        + setEntityName()
+    }
+  }
+  
+
+  namespace ru.kbakaras.e2.message {
+    interface ru.kbakaras.e2.message.E2Referring {
+        {abstract} + setReference()
+        {abstract} + setValue()
+    }
+  }
+  
+
+
+
+  namespace ru.kbakaras.e2.message {
+    class ru.kbakaras.e2.message.E2Row {
+        - xml : Element
+        + E2Row()
+    }
+  }
+  
+
+  namespace ru.kbakaras.e2.message {
+    class ru.kbakaras.e2.message.E2Scalar {
+        - scalar : String
+        + E2Scalar()
+        + apply()
+        + equals()
+        + hashCode()
+        + string()
+    }
+  }
+  
+
+  namespace ru.kbakaras.e2.message {
+    class ru.kbakaras.e2.message.E2State {
+        - xml : Element
+        + E2State()
+        + addRow()
+        + iterator()
+        + setStateName()
+        + stateName()
+    }
+  }
+  
+
+
+  namespace ru.kbakaras.e2.message {
+    class ru.kbakaras.e2.message.E2Table {
+        - xml : Element
+        + E2Table()
+        + addRow()
+        + iterator()
+        + row()
+        + rowOrNull()
+        + setTableName()
+        + setUse()
+        + tableName()
+        + use()
+    }
+  }
+  
+
+
+
+  namespace ru.kbakaras.e2.message {
+    class ru.kbakaras.e2.message.Use {
+        {static} + createRoot()
+        {static} + createRoot()
+        {static} + parse4Root()
+    }
+  }
+  
+
+  ru.kbakaras.e2.message.E2Attribute .up.|> ru.kbakaras.e2.message.E2Referring
+  ru.kbakaras.e2.message.E2Element o-- ru.kbakaras.e2.message.E2Attributes : attributes
+  ru.kbakaras.e2.message.E2Element o-- ru.kbakaras.e2.message.E2Entity : parent
+  ru.kbakaras.e2.message.E2Entity +-down- ru.kbakaras.e2.message.E2Entity.ElementFinder
+  ru.kbakaras.e2.message.E2Filter .up.|> ru.kbakaras.e2.message.E2Referring
+  ru.kbakaras.e2.message.E2Reference -up-|> ru.kbakaras.e2.message.E2AttributeValue
+  ru.kbakaras.e2.message.E2Row o-- ru.kbakaras.e2.message.E2Attributes : attributes
+  ru.kbakaras.e2.message.E2Scalar -up-|> ru.kbakaras.e2.message.E2AttributeValue
+  ru.kbakaras.e2.message.E2State .up.|> java.lang.Iterable
+  ru.kbakaras.e2.message.E2Table .up.|> java.lang.Iterable
+  ru.kbakaras.e2.message.E2Table o-- ru.kbakaras.e2.message.E2Element : parent
+  ru.kbakaras.e2.message.E2Request .up.|> ru.kbakaras.e2.message.E2XmlProducer
+  ru.kbakaras.e2.message.E2Response .up.|> ru.kbakaras.e2.message.E2XmlProducer
+  ru.kbakaras.e2.message.E2SystemResponse -up-|> ru.kbakaras.e2.message.E2Payload
+  ru.kbakaras.e2.message.E2SystemResponse o-- ru.kbakaras.e2.message.E2Response : parent
+  ru.kbakaras.e2.message.E2Update .up.|> ru.kbakaras.e2.message.E2XmlProducer
+  ru.kbakaras.e2.message.E2Update -up-|> ru.kbakaras.e2.message.E2Payload
+
+
+right footer
+
+
+PlantUML diagram generated by SketchIt! (https://bitbucket.org/pmesmeur/sketch.it)
+For more information about this tool, please contact philippe.mesmeur@gmail.com
+endfooter
+
+@enduml
