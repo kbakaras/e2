@@ -23,7 +23,7 @@
         <dependency>
             <groupId>ru.kbakaras.sugar</groupId>
             <artifactId>sugar-spring</artifactId>
-            <version>0.1.0</version>
+            <version>${revision-sugar}</version>
         </dependency>
 
 

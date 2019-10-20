@@ -11,6 +11,7 @@
 
     <properties>
         <revision-e2>1.2.0</revision-e2>
+        <revision-sugar>1.4.0</revision-sugar>
         <revision-slf4j>1.7.28</revision-slf4j>
 
         <java.version>1.8</java.version>
