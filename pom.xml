@@ -11,6 +11,8 @@
 
     <properties>
         <revision-e2>1.2.0</revision-e2>
+        <revision-slf4j>1.7.28</revision-slf4j>
+
         <java.version>1.8</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
@@ -23,6 +25,7 @@
         <module>e2-core</module>
         <module>e2-test</module>
         <module>e2-cli</module>
+        <module>e2-jpa</module>
     </modules>
 
     <dependencies>

@@ -18,7 +18,6 @@
     </parent>-->
 
     <artifactId>e2-server</artifactId>
-    <version>1.2.0</version>
     <packaging>jar</packaging>
 
     <dependencies>
