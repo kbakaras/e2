@@ -42,10 +42,4 @@
 
     </dependencies>
 
-    <repositories>
-        <repository>
-            <id>sugar</id>
-            <url>https://maven.pkg.github.com/kbakaras/sugar</url>
-        </repository>
-    </repositories>
 </project>

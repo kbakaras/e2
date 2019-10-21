@@ -33,12 +33,12 @@
         </dependency>
     </dependencies>
 
-    <distributionManagement>
-        <repository>
-            <id>github</id>
-            <name>GitHub kbakaras Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/kbakaras/e2</url>
-        </repository>
-    </distributionManagement>
+<!--    <distributionManagement>-->
+<!--        <repository>-->
+<!--            <id>github</id>-->
+<!--            <name>GitHub kbakaras Apache Maven Packages</name>-->
+<!--            <url>https://maven.pkg.github.com/kbakaras/e2</url>-->
+<!--        </repository>-->
+<!--    </distributionManagement>-->
 
 </project>
