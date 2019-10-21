@@ -7,7 +7,7 @@
     <parent>
         <groupId>ru.kbakaras.e2</groupId>
         <artifactId>e2</artifactId>
-        <version>1.2.0</version>
+        <version>1.3.0</version>
     </parent>
 
     <artifactId>e2-message</artifactId>
@@ -17,7 +17,7 @@
         <dependency>
             <groupId>ru.kbakaras.sugar</groupId>
             <artifactId>sugar-core</artifactId>
-            <version>${revision-sugar}</version>
+            <version>1.4.0</version>
         </dependency>
 
         <dependency>
@@ -42,4 +42,10 @@
 
     </dependencies>
 
+    <repositories>
+        <repository>
+            <id>sugar</id>
+            <url>https://maven.pkg.github.com/kbakaras/sugar</url>
+        </repository>
+    </repositories>
 </project>

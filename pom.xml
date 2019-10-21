@@ -6,14 +6,10 @@
 
     <groupId>ru.kbakaras.e2</groupId>
     <artifactId>e2</artifactId>
-    <version>1.2.0</version>
+    <version>1.3.0</version>
     <packaging>pom</packaging>
 
     <properties>
-        <revision-e2>1.2.0</revision-e2>
-        <revision-sugar>1.4.0</revision-sugar>
-        <revision-slf4j>1.7.28</revision-slf4j>
-
         <java.version>1.8</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
@@ -36,5 +32,13 @@
             <version>1.18.10</version>
         </dependency>
     </dependencies>
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub kbakaras Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/kbakaras/e2</url>
+        </repository>
+    </distributionManagement>
 
 </project>
