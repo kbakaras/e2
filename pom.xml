@@ -33,12 +33,19 @@
         </dependency>
     </dependencies>
 
-<!--    <distributionManagement>-->
-<!--        <repository>-->
-<!--            <id>github</id>-->
-<!--            <name>GitHub kbakaras Apache Maven Packages</name>-->
-<!--            <url>https://maven.pkg.github.com/kbakaras/e2</url>-->
-<!--        </repository>-->
-<!--    </distributionManagement>-->
+    <repositories>
+        <repository>
+            <id>sugar</id>
+            <url>https://maven.pkg.github.com/kbakaras/sugar</url>
+        </repository>
+    </repositories>
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub kbakaras Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/kbakaras/e2</url>
+        </repository>
+    </distributionManagement>
 
 </project>
