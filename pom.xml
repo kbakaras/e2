@@ -42,8 +42,8 @@
 
     <distributionManagement>
         <repository>
-            <id>github</id>
-            <name>GitHub kbakaras Apache Maven Packages</name>
+            <id>e2</id>
+            <name>GitHub kbakaras e2 Apache Maven Packages</name>
             <url>https://maven.pkg.github.com/kbakaras/e2</url>
         </repository>
     </distributionManagement>
